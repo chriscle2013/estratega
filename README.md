@@ -1,0 +1,2 @@
+# estratega
+proyecto IA
