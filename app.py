@@ -1,3 +1,4 @@
+# app.py - Versión corregida con Session State
 import streamlit as st
 import pandas as pd
 import numpy as np
