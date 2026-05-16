@@ -1,0 +1,7 @@
+# streamlit.toml
+[server]
+fileWatcherType = "none"
+
+[deploy]
+# Especifica el archivo principal
+primaryApp = "app.py"
