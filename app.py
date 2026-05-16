@@ -14,11 +14,15 @@ from config import APP_CONFIG
 
 class BusinessDecisionApp:
     def __init__(self):
-        self.data_generator = DataGenerator()
-        self.ai_model = AIModel()
-        self.customer_data = None
-        self.model_metrics = None
-        
+        # Inicializar la aplicación usando session state
+        if 'app' not in st.session_state:
+            st.session_state.app = BusinessDecisionApp()
+            st.session_state.customer_data = None
+            st.session_state.model_metrics = None
+            st.session_state.ai_model = AIModel()
+            st.session_state.data_generator = DataGenerator()
+            st.session_state.page = "Dashboard Principal"
+    
     def setup_page(self):
         """Configuración inicial de la página"""
         st.set_page_config(
@@ -33,33 +37,34 @@ class BusinessDecisionApp:
     def generate_sample_data(self):
         """Genera datos de muestra para el prototipo"""
         with st.spinner("Generando datos de clientes..."):
-            self.customer_data = self.data_generator.generate_synthetic_data(1000)
-            st.success(f"✅ Datos generados: {len(self.customer_data)} clientes")
+            st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(1000)
+            st.success(f"✅ Datos generados: {len(st.session_state.customer_data)} clientes")
             
     def train_models(self):
         """Entrena los modelos de IA"""
-        if self.customer_data is None:
+        if st.session_state.customer_data is None:
             st.error("❌ Primero genere los datos de clientes")
             return
             
         with st.spinner("Entrenando modelos de IA..."):
             # Entrenar modelo de segmentación
-            segment_metrics = self.ai_model.train_segmentation_model(self.customer_data)
+            segment_metrics = st.session_state.ai_model.train_segmentation_model(st.session_state.customer_data)
             
             # Entrenar modelo de impacto
-            impact_metrics = self.ai_model.train_impact_model(self.customer_data)
+            impact_metrics = st.session_state.ai_model.train_impact_model(st.session_state.customer_data)
             
-            self.model_metrics = {
+            st.session_state.model_metrics = {
                 'segmentation': segment_metrics,
                 'impact': impact_metrics
             }
             
-            self.ai_model.is_trained = True
+            st.session_state.ai_model.is_trained = True
             st.success("✅ Modelos de IA entrenados exitosamente")
             
     def show_data_overview(self):
         """Muestra overview de los datos"""
-        if self.customer_data is None:
+        if st.session_state.customer_data is None:
+            st.warning("Primero genere los datos de clientes desde el Dashboard Principal")
             return
             
         st.subheader("📊 Vista General de Datos de Clientes")
@@ -68,21 +73,21 @@ class BusinessDecisionApp:
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Total Clientes", len(self.customer_data))
+            st.metric("Total Clientes", len(st.session_state.customer_data))
             
         with col2:
-            st.metric("Edad Promedio", f"{self.customer_data['edad'].mean():.1f} años")
+            st.metric("Edad Promedio", f"{st.session_state.customer_data['edad'].mean():.1f} años")
             
         with col3:
-            st.metric("Ingreso Promedio", f"${self.customer_data['ingreso_mensual'].mean():,.0f}")
+            st.metric("Ingreso Promedio", f"${st.session_state.customer_data['ingreso_mensual'].mean():,.0f}")
             
         with col4:
-            st.metric("Valor Promedio Compra", f"${self.customer_data['valor_promedio_compra'].mean():,.2f}")
+            st.metric("Valor Promedio Compra", f"${st.session_state.customer_data['valor_promedio_compra'].mean():,.2f}")
         
         # Distribución de segmentos
         st.subheader("🎯 Distribución de Segmentos de Clientes")
-        segment_counts = self.customer_data['segmento_cliente'].value_counts()
-        segment_labels = [self.data_generator.get_segment_description(seg) for seg in segment_counts.index]
+        segment_counts = st.session_state.customer_data['segmento_cliente'].value_counts()
+        segment_labels = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_counts.index]
         
         fig_pie = px.pie(
             values=segment_counts.values,
@@ -93,19 +98,20 @@ class BusinessDecisionApp:
         
         # Estadísticas por segmento
         st.subheader("📈 Estadísticas por Segmento")
-        segment_stats = self.customer_data.groupby('segmento_cliente').agg({
+        segment_stats = st.session_state.customer_data.groupby('segmento_cliente').agg({
             'edad': 'mean',
             'ingreso_mensual': 'mean',
             'valor_promedio_compra': 'mean',
             'lealtad_marca': 'mean'
         }).round(2)
         
-        segment_stats.index = [self.data_generator.get_segment_description(seg) for seg in segment_stats.index]
+        segment_stats.index = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_stats.index]
         st.dataframe(segment_stats)
         
     def show_model_performance(self):
         """Muestra el rendimiento de los modelos"""
-        if self.model_metrics is None:
+        if st.session_state.model_metrics is None:
+            st.warning("Primero entrene los modelos de IA desde el Dashboard Principal")
             return
             
         st.subheader("📊 Rendimiento de Modelos de IA")
@@ -114,7 +120,7 @@ class BusinessDecisionApp:
         
         with col1:
             st.subheader("Modelo de Segmentación")
-            metrics = self.model_metrics['segmentation']
+            metrics = st.session_state.model_metrics['segmentation']
             
             st.metric("Precisión", f"{metrics['accuracy']:.3f}")
             st.metric("Validación Cruzada", f"{metrics['cv_mean']:.3f} ± {metrics['cv_std']:.3f}")
@@ -126,15 +132,15 @@ class BusinessDecisionApp:
             
         with col2:
             st.subheader("Modelo de Impacto")
-            metrics = self.model_metrics['impact']
+            metrics = st.session_state.model_metrics['impact']
             
             st.metric("RMSE", f"{metrics['rmse']:.2f}")
             st.metric("R² Score", f"{metrics['r2_score']:.3f}")
             
             # Gráfico de dispersión
-            y_true = self.customer_data['valor_promedio_compra'].values
-            X, _ = self.ai_model.prepare_data(self.customer_data)
-            y_pred = self.ai_model.impact_model.predict(X)
+            y_true = st.session_state.customer_data['valor_promedio_compra'].values
+            X, _ = st.session_state.ai_model.prepare_data(st.session_state.customer_data)
+            y_pred = st.session_state.ai_model.impact_model.predict(X)
             
             fig = go.Figure()
             fig.add_trace(go.Scatter(
@@ -205,7 +211,7 @@ class BusinessDecisionApp:
                 
                 # Analizar escenario
                 with st.spinner("Analizando escenario..."):
-                    scenario_results = self.ai_model.analyze_scenario(test_customers)
+                    scenario_results = st.session_state.ai_model.analyze_scenario(test_customers)
                 
                 # Mostrar resultados
                 st.subheader("📈 Resultados del Análisis")
@@ -221,10 +227,10 @@ class BusinessDecisionApp:
                 # Distribución de segmentos
                 st.subheader("🎯 Distribución de Segmentos en el Escenario")
                 segment_dist = scenario_results['segment_distribution']
-                segment_labels = [self.data_generator.get_segment_description(seg) for seg in segment_dist.keys()]
+                segment_labels = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_dist.keys()]
                 
                 fig_segment = px.pie(
-                    values=segment_dist.values(),
+                    values=list(segment_dist.values()),
                     names=segment_labels,
                     title="Distribución de Segmentos"
                 )
@@ -253,7 +259,7 @@ class BusinessDecisionApp:
         
         # Recomendación basada en segmentos
         dominant_segment = max(segment_dist, key=segment_dist.get)
-        segment_name = self.data_generator.get_segment_description(dominant_segment)
+        segment_name = st.session_state.data_generator.get_segment_description(dominant_segment)
         
         recommendations.append(f"El segmento dominante es '{segment_name}'. Enfocar esfuerzos en este grupo.")
         
@@ -273,8 +279,12 @@ class BusinessDecisionApp:
 
 # Función principal
 def main():
+    # Inicializar aplicación con session state
     app = BusinessDecisionApp()
-    app.setup_page()
+    
+    if 'app_initialized' not in st.session_state:
+        st.session_state.app_initialized = True
+        app.setup_page()
     
     # Barra lateral con navegación
     st.sidebar.title("🔧 Menú de Navegación")
@@ -299,19 +309,19 @@ def main():
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            if app.customer_data is not None:
+            if st.session_state.customer_data is not None:
                 st.metric("✅ Datos Generados", "Sí")
             else:
                 st.metric("❌ Datos Generados", "No")
                 
         with col2:
-            if app.model_metrics is not None:
+            if st.session_state.model_metrics is not None:
                 st.metric("✅ Modelos Entrenados", "Sí")
             else:
                 st.metric("❌ Modelos Entrenados", "No")
                 
         with col3:
-            if app.ai_model.is_trained:
+            if st.session_state.ai_model.is_trained:
                 st.metric("✅ Sistema Activo", "Sí")
             else:
                 st.metric("❌ Sistema Activo", "No")
@@ -330,27 +340,15 @@ def main():
                 
     elif page == "Datos de Clientes":
         st.header("📊 Datos de Clientes")
-        
-        if app.customer_data is None:
-            st.warning("Primero genere los datos de clientes desde el Dashboard Principal")
-        else:
-            app.show_data_overview()
+        app.show_data_overview()
             
     elif page == "Modelos de IA":
         st.header("🤖 Modelos de IA")
-        
-        if app.model_metrics is None:
-            st.warning("Primero entrene los modelos de IA desde el Dashboard Principal")
-        else:
-            app.show_model_performance()
+        app.show_model_performance()
             
     elif page == "Análisis de Escenarios":
         st.header("🎯 Análisis de Escenarios")
-        
-        if not app.ai_model.is_trained:
-            st.warning("Primero entrene los modelos de IA desde el Dashboard Principal")
-        else:
-            app.create_scenario_analyzer()
+        app.create_scenario_analyzer()
 
 if __name__ == "__main__":
     main()
