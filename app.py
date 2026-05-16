@@ -210,4 +210,147 @@ class BusinessDecisionApp:
                 # Mostrar resultados
                 st.subheader("📈 Resultados del Análisis")
                 
-                col1, col2, col3 = st.columns
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Total Clientes", scenario_results['total_customers'])
+                with col2:
+                    st.metric("Impacto Promedio", f"${scenario_results['avg_impact']:.2f}")
+                with col3:
+                    st.metric("Impacto Total", f"${scenario_results['total_impact']:,.2f}")
+                
+                # Distribución de segmentos
+                st.subheader("🎯 Distribución de Segmentos en el Escenario")
+                segment_dist = scenario_results['segment_distribution']
+                segment_labels = [self.data_generator.get_segment_description(seg) for seg in segment_dist.keys()]
+                
+                fig_segment = px.pie(
+                    values=segment_dist.values(),
+                    names=segment_labels,
+                    title="Distribución de Segmentos"
+                )
+                st.plotly_chart(fig_segment, use_container_width=True)
+                
+                # Recomendaciones
+                st.subheader("💡 Recomendaciones Estratégicas")
+                recommendations = self.generate_recommendations(scenario_results, selected_scenario)
+                for rec in recommendations:
+                    st.write(f"• {rec}")
+    
+    def generate_recommendations(self, scenario_results, scenario_type):
+        """Genera recomendaciones basadas en el análisis"""
+        recommendations = []
+        
+        segment_dist = scenario_results['segment_distribution']
+        avg_impact = scenario_results['avg_impact']
+        
+        # Recomendación basada en impacto
+        if avg_impact > 100:
+            recommendations.append("El escenario muestra un impacto potencial alto. Considerar implementación gradual.")
+        elif avg_impact > 50:
+            recommendations.append("El escenario tiene un impacto moderado. Requiere monitoreo constante.")
+        else:
+            recommendations.append("El escenario tiene un impacto bajo. Evaluar si justifica la inversión.")
+        
+        # Recomendación basada en segmentos
+        dominant_segment = max(segment_dist, key=segment_dist.get)
+        segment_name = self.data_generator.get_segment_description(dominant_segment)
+        
+        recommendations.append(f"El segmento dominante es '{segment_name}'. Enfocar esfuerzos en este grupo.")
+        
+        # Recomendación específica por tipo de escenario
+        if "Lanzamiento" in scenario_type:
+            recommendations.append("Para lanzamientos, priorizar segmentos con alta lealtad y capacidad de compra.")
+        elif "Segmentación" in scenario_type:
+            recommendations.append("Usar segmentación para personalizar ofertas y mejorar experiencia del cliente.")
+        elif "Expansión" in scenario_type:
+            recommendations.append("Para expansión, identificar segmentos con crecimiento potencial y baja competencia.")
+        elif "Abastecimiento" in scenario_type:
+            recommendations.append("Optimizar cadenas de suministro basado en comportamiento de compra por segmento.")
+        elif "Inversión" in scenario_type:
+            recommendations.append("Evaluar ROI por segmento y priorizar inversiones con mayor retorno esperado.")
+        
+        return recommendations
+
+# Función principal
+def main():
+    app = BusinessDecisionApp()
+    app.setup_page()
+    
+    # Barra lateral con navegación
+    st.sidebar.title("🔧 Menú de Navegación")
+    page = st.sidebar.selectbox(
+        "Seleccionar página:",
+        ["Dashboard Principal", "Datos de Clientes", "Modelos de IA", "Análisis de Escenarios"]
+    )
+    
+    if page == "Dashboard Principal":
+        st.header("📊 Dashboard Principal")
+        
+        # Resumen del proyecto
+        st.subheader("🎯 Resumen del Proyecto")
+        st.markdown("""
+        **Prototipo de IA para Soporte en Toma de Decisiones Estratégicas**
+        
+        Este prototipo permite analizar diferentes escenarios de negocio y recomendar alternativas estratégicas basadas en evidencia analítica.
+        """)
+        
+        # Estado del sistema
+        st.subheader("📈 Estado del Sistema")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if app.customer_data is not None:
+                st.metric("✅ Datos Generados", "Sí")
+            else:
+                st.metric("❌ Datos Generados", "No")
+                
+        with col2:
+            if app.model_metrics is not None:
+                st.metric("✅ Modelos Entrenados", "Sí")
+            else:
+                st.metric("❌ Modelos Entrenados", "No")
+                
+        with col3:
+            if app.ai_model.is_trained:
+                st.metric("✅ Sistema Activo", "Sí")
+            else:
+                st.metric("❌ Sistema Activo", "No")
+        
+        # Botones de acción rápidos
+        st.subheader("🚀 Acciones Rápidas")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Generar Datos", type="primary"):
+                app.generate_sample_data()
+                
+        with col2:
+            if st.button("Entrenar Modelos", type="secondary"):
+                app.train_models()
+                
+    elif page == "Datos de Clientes":
+        st.header("📊 Datos de Clientes")
+        
+        if app.customer_data is None:
+            st.warning("Primero genere los datos de clientes desde el Dashboard Principal")
+        else:
+            app.show_data_overview()
+            
+    elif page == "Modelos de IA":
+        st.header("🤖 Modelos de IA")
+        
+        if app.model_metrics is None:
+            st.warning("Primero entrene los modelos de IA desde el Dashboard Principal")
+        else:
+            app.show_model_performance()
+            
+    elif page == "Análisis de Escenarios":
+        st.header("🎯 Análisis de Escenarios")
+        
+        if not app.ai_model.is_trained:
+            st.warning("Primero entrene los modelos de IA desde el Dashboard Principal")
+        else:
+            app.create_scenario_analyzer()
+
+if __name__ == "__main__":
+    main()
