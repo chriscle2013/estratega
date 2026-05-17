@@ -30,60 +30,134 @@ def setup_page():
         initial_sidebar_state="collapsed"  # Colapsar sidebar por defecto en móviles
     )
     
-    # CSS personalizado para mejor adaptación móvil
+    # CSS personalizado para mejor adaptación móvil - MEJORADO
     st.markdown("""
         <style>
-        /* Optimización para móviles */
+        /* Optimización AGRESIVA para móviles */
         @media (max-width: 768px) {
-            .stMetric {
-                padding: 0.5rem 0 !important;
-            }
+            /* TABS MÁS GRANDES */
             .stTabs [data-baseweb="tab-list"] {
-                gap: 0px !important;
+                gap: 4px !important;
+                padding: 8px !important;
+                flex-wrap: wrap !important;
+                background-color: transparent !important;
             }
+            
+            .stTabs [role="tablist"] button {
+                padding: 12px 16px !important;
+                font-size: 16px !important;
+                min-height: 50px !important;
+                margin: 4px !important;
+                flex: 1 1 45% !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                border-radius: 8px !important;
+            }
+            
+            .stMetric {
+                padding: 0.8rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+            
             .stButton > button {
                 width: 100% !important;
                 font-size: 16px !important;
-                min-height: 48px !important;
-                padding: 12px 16px !important;
-                margin-bottom: 12px !important;
-                border-radius: 8px !important;
+                min-height: 50px !important;
+                padding: 14px 18px !important;
+                margin-bottom: 14px !important;
+                border-radius: 10px !important;
             }
+            
             .stNumberInput, .stSlider, .stSelectbox, .stTextInput {
                 font-size: 14px !important;
             }
-            /* Mejorar espaciado de botones apilados */
+            
+            /* Mejorar espaciado de componentes */
             .stButton {
-                margin-bottom: 8px !important;
+                margin-bottom: 12px !important;
+            }
+            
+            /* Header y subheader */
+            h1, h2, h3 {
+                font-size: 1.4rem !important;
+                margin-bottom: 1rem !important;
+                word-wrap: break-word !important;
+            }
+            
+            /* Expandores más grandes */
+            .streamlit-expanderHeader {
+                font-size: 16px !important;
+                padding: 12px !important;
+                min-height: 48px !important;
             }
         }
         
-        /* Tamaño mínimo recomendado para touch targets (44-48px) */
+        /* ESTILOS GLOBALES PARA TODAS LAS PANTALLAS */
+        .stTabs [role="tablist"] {
+            background-color: transparent;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .stTabs [role="tablist"] button {
+            padding: 12px 20px !important;
+            font-size: 16px !important;
+            min-height: 48px !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .stTabs [role="tablist"] button[aria-selected="true"] {
+            background-color: #1f77b4 !important;
+            color: white !important;
+            border-bottom: 3px solid #1f77b4 !important;
+        }
+        
+        .stTabs [role="tablist"] button[aria-selected="false"] {
+            color: #555;
+        }
+        
+        /* Tamaño mínimo recomendado para touch targets */
         .stButton > button {
             min-height: 44px !important;
             font-size: 15px !important;
+            font-weight: 600;
         }
         
         /* Estilos generales responsive */
         .main {
             max-width: 100% !important;
-            padding: 1rem !important;
+            padding: 1.2rem !important;
         }
         
         .stMetric {
-            background-color: rgba(240, 242, 246, 0.5);
-            padding: 0.8rem;
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
+            background-color: rgba(240, 242, 246, 0.8);
+            padding: 1rem !important;
+            border-radius: 8px;
+            margin-bottom: 0.8rem !important;
+            border-left: 4px solid #1f77b4;
         }
         
         h1, h2, h3 {
             word-wrap: break-word;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
         }
         
-        /* Tabs responsivas */
-        .stTabs [data-baseweb="tab-list"] {
-            flex-wrap: wrap;
+        /* Expandores */
+        .streamlit-expanderHeader {
+            font-size: 15px !important;
+            padding: 12px 16px !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Mejorar selectbox y inputs */
+        .stSelectbox, .stNumberInput, .stSlider {
+            margin-bottom: 1rem !important;
+        }
+        
+        .stSelectbox > div > div {
+            font-size: 14px !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -93,12 +167,10 @@ def setup_page():
 
 def is_mobile():
     """Detecta si es dispositivo móvil basado en el tamaño de la pantalla"""
-    # Streamlit no proporciona detección nativa de móvil, usamos heurísticas
-    return True  # Asumir móvil para mejor adaptación
+    return True
 
 def get_responsive_cols(num_cols=4):
     """Retorna número de columnas adaptativo según dispositivo"""
-    # En móviles: max 2 cols, en desktop: cols solicitadas
     return min(num_cols, 2)
 
 def format_cop(value):
@@ -111,7 +183,6 @@ def generate_sample_data():
         st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(1000)
         st.success(f"✅ {len(st.session_state.customer_data)} clientes generados")
     
-    # Forzar re-renderizado
     st.rerun()
         
 def train_models():
@@ -121,10 +192,7 @@ def train_models():
         return
         
     with st.spinner("Entrenando modelos..."):
-        # Entrenar modelo de segmentación
         segment_metrics = st.session_state.ai_model.train_segmentation_model(st.session_state.customer_data)
-        
-        # Entrenar modelo de impacto
         impact_metrics = st.session_state.ai_model.train_impact_model(st.session_state.customer_data)
         
         st.session_state.model_metrics = {
@@ -135,7 +203,6 @@ def train_models():
         st.session_state.ai_model.is_trained = True
         st.success("✅ Modelos entrenados")
     
-    # Forzar re-renderizado
     st.rerun()
 
 def show_data_overview():
@@ -146,7 +213,6 @@ def show_data_overview():
         
     st.subheader("📊 Resumen de Clientes")
     
-    # Métricas en formato responsivo - vertical en móviles
     col_count = get_responsive_cols(4)
     cols = st.columns(col_count)
     
@@ -161,7 +227,7 @@ def show_data_overview():
         with cols[i % col_count]:
             st.metric(label, value)
     
-    # Distribución de segmentos
+    st.markdown("")
     st.subheader("🎯 Distribución de Segmentos")
     segment_counts = st.session_state.customer_data['segmento_cliente'].value_counts()
     segment_labels = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_counts.index]
@@ -173,12 +239,12 @@ def show_data_overview():
         height=350
     )
     fig_pie.update_layout(
-        font=dict(size=10),
+        font=dict(size=11),
         margin=dict(l=10, r=10, t=40, b=10)
     )
     st.plotly_chart(fig_pie, use_container_width=True)
     
-    # Estadísticas por segmento - tabla simplificada
+    st.markdown("")
     st.subheader("📈 Estadísticas por Segmento")
     segment_stats = st.session_state.customer_data.groupby('segmento_cliente').agg({
         'edad': 'mean',
@@ -190,7 +256,6 @@ def show_data_overview():
     segment_stats.index = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_stats.index]
     segment_stats.columns = ['Edad', 'Ingreso', 'Compra', 'Lealtad %']
     
-    # Formatear para tabla responsive
     segment_stats['Edad'] = segment_stats['Edad'].astype(int).astype(str)
     segment_stats['Ingreso'] = segment_stats['Ingreso'].apply(lambda x: f"${x/1e6:.1f}M")
     segment_stats['Compra'] = segment_stats['Compra'].apply(lambda x: f"${x/1e3:.0f}K")
@@ -206,8 +271,7 @@ def show_model_performance():
         
     st.subheader("🤖 Rendimiento de Modelos")
     
-    # Usar tabs para mejor organización en móviles
-    tab1, tab2 = st.tabs(["Segmentación", "Impacto"])
+    tab1, tab2 = st.tabs(["📊 Segmentación", "📈 Impacto"])
     
     with tab1:
         metrics = st.session_state.model_metrics['segmentation']
@@ -218,9 +282,9 @@ def show_model_performance():
         with col2:
             st.metric("Val. Cruzada", f"{metrics['cv_mean']:.3f}")
         
+        st.markdown("")
         st.write("**Reporte de Clasificación:**")
         report_df = pd.DataFrame(metrics['classification_report']).transpose()
-        # Simplificar columnas para móvil
         report_df = report_df[['precision', 'recall', 'f1-score']].round(3)
         st.dataframe(report_df, use_container_width=True)
     
@@ -233,7 +297,7 @@ def show_model_performance():
         with col2:
             st.metric("R² Score", f"{metrics['r2_score']:.3f}")
         
-        # Gráfico de dispersión optimizado
+        st.markdown("")
         y_true = st.session_state.customer_data['valor_promedio_compra'].values
         X, _ = st.session_state.ai_model.prepare_data(st.session_state.customer_data)
         y_pred = st.session_state.ai_model.impact_model.predict(X)
@@ -259,7 +323,7 @@ def show_model_performance():
             xaxis_title='Valor Real',
             yaxis_title='Predicción',
             height=350,
-            font=dict(size=10),
+            font=dict(size=11),
             margin=dict(l=40, r=20, t=40, b=40),
             hovermode='closest'
         )
@@ -269,7 +333,6 @@ def create_scenario_analyzer():
     """Crea el analizador de escenarios optimizado para móviles"""
     st.subheader("🎯 Analizador de Escenarios")
     
-    # Opciones de escenario
     scenario_types = [
         "Lanzamiento de Producto",
         "Segmentación de Clientes", 
@@ -280,16 +343,18 @@ def create_scenario_analyzer():
     
     selected_scenario = st.selectbox("Tipo de escenario:", scenario_types, key="scenario_type")
     
-    # Parámetros del escenario en expander para ahorrar espacio
-    with st.expander("⚙️ Configurar Parámetros"):
+    st.markdown("")
+    with st.expander("⚙️ Configurar Parámetros", expanded=False):
         n_customers = st.slider("Clientes:", 10, 500, 100, step=10)
         
+        st.markdown("")
         col1, col2 = st.columns(2)
         with col1:
             min_age = st.number_input("Edad min:", 18, 80, 25, 1)
         with col2:
             max_age = st.number_input("Edad máx:", 18, 80, 45, 1)
             
+        st.markdown("")
         col1, col2 = st.columns(2)
         with col1:
             min_income = st.number_input("Ing. mín (M COP):", 1, 50, 3, 1)
@@ -298,6 +363,7 @@ def create_scenario_analyzer():
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 8, 1)
             max_income *= 1000000
         
+        st.markdown("")
         if st.button("🔍 Analizar Escenario", type="primary", use_container_width=True):
             test_customers = []
             for i in range(n_customers):
@@ -313,7 +379,6 @@ def create_scenario_analyzer():
                 }
                 test_customers.append(customer)
             
-            # Analizar escenario
             with st.spinner("Analizando..."):
                 scenario_results = st.session_state.ai_model.analyze_scenario(test_customers)
             
@@ -321,14 +386,13 @@ def create_scenario_analyzer():
             st.session_state.test_customers = test_customers
             st.rerun()
     
-    # Mostrar resultados si existen
     if 'scenario_results' in st.session_state:
         scenario_results = st.session_state.scenario_results
         test_customers = st.session_state.test_customers
         
+        st.markdown("")
         st.subheader("📈 Resultados")
         
-        # Métricas principales en columnas responsivas
         col_count = get_responsive_cols(3)
         cols = st.columns(col_count)
         
@@ -342,7 +406,7 @@ def create_scenario_analyzer():
             with cols[i % col_count]:
                 st.metric(label, value)
         
-        # Distribución de segmentos
+        st.markdown("")
         st.subheader("🎯 Segmentos")
         segment_dist = scenario_results['segment_distribution']
         segment_labels = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_dist.keys()]
@@ -354,16 +418,15 @@ def create_scenario_analyzer():
             height=350
         )
         fig_segment.update_layout(
-            font=dict(size=10),
+            font=dict(size=11),
             margin=dict(l=10, r=10, t=40, b=10)
         )
         st.plotly_chart(fig_segment, use_container_width=True)
         
-        # Recomendaciones en tabs para móviles
+        st.markdown("")
         st.subheader("💡 Recomendaciones")
         recommendations = generate_recommendations(scenario_results, selected_scenario, test_customers)
         
-        # Mostrar en expanders para mejor navegación en móvil
         with st.expander("📌 Análisis General", expanded=True):
             for rec in recommendations[:5]:
                 if rec and not rec.startswith(" "):
@@ -388,14 +451,13 @@ def create_scenario_analyzer():
                     st.markdown(rec)
 
 def generate_recommendations(scenario_results, scenario_type, test_customers):
-    """Genera recomendaciones estratégicas optimizadas para móviles"""
+    """Genera recomendaciones estratégicas"""
     recommendations = []
     
     segment_dist = scenario_results['segment_distribution']
     avg_impact = scenario_results['avg_impact']
     total_customers = scenario_results['total_customers']
     
-    # Análisis de segmentos
     dominant_segment = max(segment_dist, key=segment_dist.get)
     segment_name = st.session_state.data_generator.get_segment_description(dominant_segment)
     segment_percentage = (segment_dist[dominant_segment] / total_customers) * 100
@@ -421,7 +483,6 @@ def generate_recommendations(scenario_results, scenario_type, test_customers):
         segment_analysis[segment]['avg_age'] = segment_analysis[segment]['avg_age'] / count
         segment_analysis[segment]['avg_loyalty'] = segment_analysis[segment]['avg_loyalty'] / count
     
-    # Recomendaciones generales
     recommendations.append(f"🎯 **Segmento Dominante**: {segment_name} ({segment_percentage:.0f}%)")
     
     if avg_impact > 5000000:
@@ -431,7 +492,6 @@ def generate_recommendations(scenario_results, scenario_type, test_customers):
     else:
         recommendations.append("⚠️ **Impacto Bajo**: Evaluar alternativas más rentables")
     
-    # Estrategias por tipo de escenario
     if "Lanzamiento" in scenario_type:
         recommendations.extend([
             "\n🚀 **LANZAMIENTO DE PRODUCTO**",
@@ -473,7 +533,6 @@ def generate_recommendations(scenario_results, scenario_type, test_customers):
             "• Diversificar riesgos"
         ])
     
-    # Análisis por segmento
     recommendations.append("\n📊 **ANÁLISIS POR SEGMENTO**")
     sorted_segments = sorted(segment_analysis.items(), 
                            key=lambda x: x[1]['avg_income'], reverse=True)
@@ -494,7 +553,6 @@ def generate_recommendations(scenario_results, scenario_type, test_customers):
         elif analysis['avg_loyalty'] > 60:
             recommendations.append("🤝 ALTA LEALTAD")
     
-    # Recomendaciones finales
     recommendations.append("\n🎯 **RECOMENDACIONES FINALES**")
     
     if avg_impact > 8000000:
@@ -515,7 +573,6 @@ def generate_recommendations(scenario_results, scenario_type, test_customers):
 
 # Función principal
 def main():
-    # Inicializar session state
     if 'data_generator' not in st.session_state:
         st.session_state.data_generator = DataGenerator()
     if 'ai_model' not in st.session_state:
@@ -534,7 +591,7 @@ def main():
         st.header("Dashboard")
         st.markdown("**Prototipo IA para Decisiones Estratégicas**")
         
-        # Estado del sistema (actualizado dinámicamente)
+        st.markdown("")
         st.subheader("📈 Estado del Sistema")
         col1, col2 = st.columns(2)
         with col1:
@@ -549,14 +606,13 @@ def main():
             else:
                 st.metric("❌ Modelos", "No")
         
-        # Botones de acción - Mejorados para móvil
+        st.markdown("")
         st.subheader("🚀 Acciones")
         
-        # CAMBIO: Botones apilados verticalmente con mejor espaciado
         if st.button("📊 Generar Datos", type="primary", use_container_width=True, key="btn_generate"):
             generate_sample_data()
         
-        st.markdown("")  # Espaciador visual
+        st.markdown("")
         
         if st.button("🤖 Entrenar Modelos", type="secondary", use_container_width=True, key="btn_train"):
             train_models()
