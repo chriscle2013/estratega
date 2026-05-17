@@ -1,3 +1,4 @@
+# data_generator.py - Versión con edad correlacionada a segmentos
 import pandas as pd
 import numpy as np
 from typing import Dict, List
@@ -10,12 +11,18 @@ class DataGenerator:
             2: "Familias con Hijos",
             3: "Adultos Mayores"
         }
+        self.segment_age_ranges = {
+            0: (18, 30),     # Jóvenes Urbanos: 18-30 años
+            1: (25, 50),     # Profesionales Establecidos: 25-50 años
+            2: (30, 55),     # Familias con Hijos: 30-55 años
+            3: (50, 80)      # Adultos Mayores: 50-80 años
+        }
     
     def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
-        """Genera datos simulados de clientes con valores realistas para Colombia"""
+        """Genera datos simulados de clientes con edad correlacionada a segmentos"""
         np.random.seed(42)
         
-        # Segmentos con diferentes niveles de ingreso
+        # Segmentos con diferentes rangos de edad e ingresos
         segment_incomes = {
             0: (1500000, 4000000),   # Jóvenes Urbanos: 1.5M - 4M COP
             1: (3000000, 8000000),   # Profesionales Establecidos: 3M - 8M COP
@@ -24,7 +31,6 @@ class DataGenerator:
         }
         
         data = {
-            'edad': np.random.normal(35, 15, n_samples).clip(18, 80),
             'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado'], n_samples, p=[0.1, 0.2, 0.5, 0.2]),
             'frecuencia_compra': np.random.poisson(3, n_samples),
             'valor_promedio_compra': np.random.exponential(50000, n_samples) + 5000,
@@ -34,13 +40,22 @@ class DataGenerator:
             'segmento_cliente': np.random.choice([0, 1, 2, 3], n_samples, p=[0.25, 0.35, 0.25, 0.15])
         }
         
-        # Asignar ingresos según segmento
+        # Asignar edad según segmento
+        edades = []
         ingresos = []
+        
         for segment in data['segmento_cliente']:
+            min_age, max_age = self.segment_age_ranges[segment]
             min_income, max_income = segment_incomes[segment]
+            
+            # Generar edad dentro del rango del segmento
+            age = np.random.randint(min_age, max_age + 1)
             income = np.random.uniform(min_income, max_income)
+            
+            edades.append(age)
             ingresos.append(income)
         
+        data['edad'] = edades
         data['ingreso_mensual'] = ingresos
         
         df = pd.DataFrame(data)
