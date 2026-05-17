@@ -24,7 +24,7 @@ class BusinessDecisionApp:
 def setup_page():
     """Configuración inicial de la página optimizada para móviles"""
     st.set_page_config(
-        page_title="Prototipo IA para Toma de Decisiones",
+        page_title="Prototipo IA para la toma de Decisiones",
         page_icon="🤖",
         layout="centered",  # Cambiar a centered para mejor adaptación en móviles
         initial_sidebar_state="collapsed"  # Colapsar sidebar por defecto en móviles
@@ -162,7 +162,7 @@ def setup_page():
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🤖 Estratega | Tu IA para Decisiones")
+    st.title("🤖 Estratega | Tu IA para la toma Decisiones")
     st.markdown("---")
 
 def is_mobile():
