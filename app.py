@@ -162,7 +162,7 @@ def setup_page():
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🤖 Estratega | Tu IA para la toma Decisiones")
+    st.title("🤖 Estratega IA / Toma Decisiones")
     st.markdown("---")
 
 def is_mobile():
