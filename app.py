@@ -46,7 +46,7 @@ def setup_page():
                 font-size: 16px !important;
                 min-height: 48px !important;
                 padding: 12px 16px !important;
-                margin-bottom: 10px !important;
+                margin-bottom: 12px !important;
                 border-radius: 8px !important;
             }
             .stNumberInput, .stSlider, .stSelectbox, .stTextInput {
@@ -298,7 +298,7 @@ def create_scenario_analyzer():
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 8, 1)
             max_income *= 1000000
         
-        if st.button("Analizar", type="primary", use_container_width=True):
+        if st.button("🔍 Analizar Escenario", type="primary", use_container_width=True):
             test_customers = []
             for i in range(n_customers):
                 customer = {
@@ -552,12 +552,22 @@ def main():
         # Botones de acción - Mejorados para móvil
         st.subheader("🚀 Acciones")
         
-        # CAMBIO: Botones apilados verticalmente para mejor UX en móvil
+        # CAMBIO: Botones apilados verticalmente con mejor espaciado
         if st.button("📊 Generar Datos", type="primary", use_container_width=True, key="btn_generate"):
             generate_sample_data()
         
+        st.markdown("")  # Espaciador visual
+        
         if st.button("🤖 Entrenar Modelos", type="secondary", use_container_width=True, key="btn_train"):
             train_models()
+        
+        st.markdown("---")
+        st.markdown("### ℹ️ Instrucciones")
+        st.markdown("""
+        1. **Generar Datos**: Crea un conjunto de 1,000 clientes
+        2. **Entrenar Modelos**: Entrena los modelos de IA
+        3. **Explorar**: Navega por otras secciones
+        """)
     
     with tab2:
         st.header("Datos")
