@@ -1,4 +1,4 @@
-# app.py - Versión corregida con valores enteros y pesos colombianos
+# app.py - Versión corregida para mostrar enteros en edad y pesos colombianos
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -59,6 +59,10 @@ def train_models():
         st.session_state.ai_model.is_trained = True
         st.success("✅ Modelos de IA entrenados exitosamente")
         
+def format_cop(value):
+    """Formatea valores como pesos colombianos"""
+    return f"${value:,.0f} COP"
+
 def show_data_overview():
     """Muestra overview de los datos"""
     if st.session_state.customer_data is None:
@@ -74,13 +78,16 @@ def show_data_overview():
         st.metric("Total Clientes", len(st.session_state.customer_data))
         
     with col2:
-        st.metric("Edad Promedio", f"{st.session_state.customer_data['edad'].mean():.0f} años")
+        # Edad como número entero
+        st.metric("Edad Promedio", f"{int(st.session_state.customer_data['edad'].mean())} años")
         
     with col3:
-        st.metric("Ingreso Promedio", f"${st.session_state.customer_data['ingreso_mensual'].mean():,.0f} COP")
+        # Ingreso en pesos colombianos
+        st.metric("Ingreso Promedio", format_cop(st.session_state.customer_data['ingreso_mensual'].mean()))
         
     with col4:
-        st.metric("Valor Promedio Compra", f"${st.session_state.customer_data['valor_promedio_compra'].mean():,.0f} COP")
+        # Valor de compra en pesos colombianos
+        st.metric("Valor Promedio Compra", format_cop(st.session_state.customer_data['valor_promedio_compra'].mean()))
     
     # Distribución de segmentos
     st.subheader("🎯 Distribución de Segmentos de Clientes")
@@ -104,6 +111,13 @@ def show_data_overview():
     }).round(2)
     
     segment_stats.index = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_stats.index]
+    
+    # Formatear los valores para mostrar enteros en edad y pesos colombianos
+    segment_stats['edad'] = segment_stats['edad'].astype(int).astype(str) + ' años'
+    segment_stats['ingreso_mensual'] = segment_stats['ingreso_mensual'].apply(format_cop)
+    segment_stats['valor_promedio_compra'] = segment_stats['valor_promedio_compra'].apply(format_cop)
+    segment_stats['lealtad_marca'] = segment_stats['lealtad_marca'].round(1).astype(str) + '%'
+    
     st.dataframe(segment_stats)
     
 def show_model_performance():
@@ -220,9 +234,9 @@ def create_scenario_analyzer():
             with col1:
                 st.metric("Total Clientes", scenario_results['total_customers'])
             with col2:
-                st.metric("Impacto Promedio", f"${scenario_results['avg_impact']:,.0f} COP")
+                st.metric("Impacto Promedio", format_cop(scenario_results['avg_impact']))
             with col3:
-                st.metric("Impacto Total", f"${scenario_results['total_impact']:,.0f} COP")
+                st.metric("Impacto Total", format_cop(scenario_results['total_impact']))
             
             # Distribución de segmentos
             st.subheader("🎯 Distribución de Segmentos en el Escenario")
