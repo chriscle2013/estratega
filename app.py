@@ -43,11 +43,25 @@ def setup_page():
             }
             .stButton > button {
                 width: 100% !important;
-                font-size: 14px !important;
+                font-size: 16px !important;
+                min-height: 48px !important;
+                padding: 12px 16px !important;
+                margin-bottom: 10px !important;
+                border-radius: 8px !important;
             }
             .stNumberInput, .stSlider, .stSelectbox, .stTextInput {
                 font-size: 14px !important;
             }
+            /* Mejorar espaciado de botones apilados */
+            .stButton {
+                margin-bottom: 8px !important;
+            }
+        }
+        
+        /* Tamaño mínimo recomendado para touch targets (44-48px) */
+        .stButton > button {
+            min-height: 44px !important;
+            font-size: 15px !important;
         }
         
         /* Estilos generales responsive */
@@ -535,16 +549,15 @@ def main():
             else:
                 st.metric("❌ Modelos", "No")
         
-        # Botones de acción
+        # Botones de acción - Mejorados para móvil
         st.subheader("🚀 Acciones")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("📊 Generar Datos", type="primary", use_container_width=True, key="btn_generate"):
-                generate_sample_data()
-                
-        with col2:
-            if st.button("🤖 Entrenar", type="secondary", use_container_width=True, key="btn_train"):
-                train_models()
+        
+        # CAMBIO: Botones apilados verticalmente para mejor UX en móvil
+        if st.button("📊 Generar Datos", type="primary", use_container_width=True, key="btn_generate"):
+            generate_sample_data()
+        
+        if st.button("🤖 Entrenar Modelos", type="secondary", use_container_width=True, key="btn_train"):
+            train_models()
     
     with tab2:
         st.header("Datos")
