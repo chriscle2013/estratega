@@ -199,12 +199,10 @@ def create_scenario_analyzer():
         
         col1, col2 = st.columns(2)
         with col1:
-            # Valores enteros para edad
             min_age = st.number_input("Edad mínima:", min_value=18, max_value=80, value=25, step=1)
             max_age = st.number_input("Edad máxima:", min_value=18, max_value=80, value=45, step=1)
             
         with col2:
-            # Valores en pesos colombianos (máximo más alto)
             min_income = st.number_input("Ingreso mínimo (COP):", min_value=1000000, max_value=50000000, value=3000000, step=100000)
             max_income = st.number_input("Ingreso máximo (COP):", min_value=1000000, max_value=100000000, value=8000000, step=100000)
         
@@ -212,11 +210,11 @@ def create_scenario_analyzer():
             test_customers = []
             for i in range(n_customers):
                 customer = {
-                    'edad': int(np.random.uniform(min_age, max_age)),  # Convertir a entero
+                    'edad': int(np.random.uniform(min_age, max_age)),
                     'ingreso_mensual': np.random.uniform(min_income, max_income),
                     'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado']),
                     'frecuencia_compra': np.random.poisson(3),
-                    'valor_promedio_compra': np.random.exponential(50000) + 10000,  # Valores más realistas para Colombia
+                    'valor_promedio_compra': np.random.exponential(50000) + 10000,
                     'lealtad_marca': np.random.beta(2, 2) * 100,
                     'crecimiento_mercado': np.random.uniform(0.05, 0.15),
                     'nivel_competencia': np.random.uniform(1, 10)
@@ -250,11 +248,22 @@ def create_scenario_analyzer():
             )
             st.plotly_chart(fig_segment, use_container_width=True)
             
-            # Recomendaciones
-            st.subheader("💡 Recomendaciones Estratégicas")
-            recommendations = generate_recommendations(scenario_results, selected_scenario)
-            for rec in recommendations:
-                st.write(f"• {rec}")
+            # Recomendaciones detalladas
+            st.subheader("💡 **RECOMENDACIONES ESTRATÉGICAS DETALLADAS**")
+            recommendations = generate_recommendations(scenario_results, selected_scenario, test_customers)
+            
+            # Mostrar recomendaciones con formato
+            for i, rec in enumerate(recommendations):
+                if rec.startswith("🎯 **") or rec.startswith("💰 **") or rec.startswith("📊 **"):
+                    st.markdown(f"### {rec}")
+                elif rec.startswith("  •"):
+                    st.markdown(f"**{rec}**")
+                elif rec.startswith("  🏆") or rec.startswith("  💎") or rec.startswith("  🤝") or rec.startswith("  📱"):
+                    st.markdown(f"> {rec}")
+                elif rec == "":
+                    st.markdown("")
+                else:
+                    st.write(rec)
 
 def generate_recommendations(scenario_results, scenario_type, test_customers):
     """Genera recomendaciones estratégicas detalladas basadas en el análisis"""
