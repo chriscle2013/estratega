@@ -256,38 +256,166 @@ def create_scenario_analyzer():
             for rec in recommendations:
                 st.write(f"• {rec}")
 
-def generate_recommendations(scenario_results, scenario_type):
-    """Genera recomendaciones basadas en el análisis"""
+def generate_recommendations(scenario_results, scenario_type, test_customers):
+    """Genera recomendaciones estratégicas detalladas basadas en el análisis"""
     recommendations = []
     
     segment_dist = scenario_results['segment_distribution']
     avg_impact = scenario_results['avg_impact']
+    total_customers = scenario_results['total_customers']
+    
+    # --- ANÁLISIS DE SEGMENTOS DOMINANTES ---
+    dominant_segment = max(segment_dist, key=segment_dist.get)
+    segment_name = st.session_state.data_generator.get_segment_description(dominant_segment)
+    segment_percentage = (segment_dist[dominant_segment] / total_customers) * 100
+    
+    # --- ANÁLISIS DE COMPORTAMIENTO POR SEGMENTO ---
+    segment_analysis = {}
+    for customer in test_customers:
+        segment = st.session_state.ai_model.predict_segment(customer)
+        if segment not in segment_analysis:
+            segment_analysis[segment] = {
+                'count': 0,
+                'total_income': 0,
+                'total_purchase': 0,
+                'avg_age': 0,
+                'avg_loyalty': 0
+            }
+        segment_analysis[segment]['count'] += 1
+        segment_analysis[segment]['total_income'] += customer['ingreso_mensual']
+        segment_analysis[segment]['total_purchase'] += customer['valor_promedio_compra']
+        segment_analysis[segment]['avg_age'] += customer['edad']
+        segment_analysis[segment]['avg_loyalty'] += customer['lealtad_marca']
+    
+    # Calcular promedios
+    for segment in segment_analysis:
+        count = segment_analysis[segment]['count']
+        segment_analysis[segment]['avg_income'] = segment_analysis[segment]['total_income'] / count
+        segment_analysis[segment]['avg_purchase'] = segment_analysis[segment]['total_purchase'] / count
+        segment_analysis[segment]['avg_age'] = segment_analysis[segment]['avg_age'] / count
+        segment_analysis[segment]['avg_loyalty'] = segment_analysis[segment]['avg_loyalty'] / count
+    
+    # --- RECOMENDACIONES GENERALES ---
+    recommendations.append(f"🎯 **SEGMENTO DOMINANTE**: {segment_name} ({segment_percentage:.1f}% del total)")
     
     # Recomendación basada en impacto
     if avg_impact > 5000000:  # 5 millones COP
-        recommendations.append("El escenario muestra un impacto potencial alto. Considerar implementación gradual.")
+        recommendations.append("💰 **IMPACTO ALTO**: El escenario muestra un impacto potencial significativo. Considerar implementación gradual con monitoreo constante.")
     elif avg_impact > 2000000:  # 2 millones COP
-        recommendations.append("El escenario tiene un impacto moderado. Requiere monitoreo constante.")
+        recommendations.append("📊 **IMPACTO MODERADO**: El escenario tiene un impacto viable. Requiere seguimiento periódico y ajustes basados en resultados.")
     else:
-        recommendations.append("El escenario tiene un impacto bajo. Evaluar si justifica la inversión.")
+        recommendations.append("⚠️ **IMPACTO BAJO**: El escenario tiene un impacto limitado. Evaluar si justifica la inversión o buscar alternativas más rentables.")
     
-    # Recomendación basada en segmentos
-    dominant_segment = max(segment_dist, key=segment_dist.get)
-    segment_name = st.session_state.data_generator.get_segment_description(dominant_segment)
-    
-    recommendations.append(f"El segmento dominante es '{segment_name}'. Enfocar esfuerzos en este grupo.")
-    
-    # Recomendación específica por tipo de escenario
+    # --- RECOMENDACIONES ESPECÍFICAS POR TIPO DE ESCENARIO ---
     if "Lanzamiento" in scenario_type:
-        recommendations.append("Para lanzamientos, priorizar segmentos con alta lealtad y capacidad de compra.")
+        recommendations.extend([
+            "🚀 **LANZAMIENTO DE PRODUCTO**:",
+            "  • Priorizar segmentos con alta lealtad y capacidad de compra",
+            "  • Considerar estrategia de penetración de mercado con precios competitivos",
+            "  • Planear campaña de marketing dirigida al segmento dominante",
+            "  • Establecer indicadores clave de desempeño (KPI) para medir éxito",
+            "  • Preparar plan de contingencia para escenarios de bajo rendimiento"
+        ])
+        
     elif "Segmentación" in scenario_type:
-        recommendations.append("Usar segmentación para personalizar ofertas y mejorar experiencia del cliente.")
+        recommendations.extend([
+            "🎯 **SEGMENTACIÓN DE CLIENTES**:",
+            "  • Personalizar ofertas según características demográficas y de comportamiento",
+            "  • Desarrollar programas de fidelización específicos para cada segmento",
+            "  • Optimizar canales de comunicación según preferencias del segmento dominante",
+            "  • Implementar estrategia de pricing diferencial por segmento",
+            "  • Crear métricas de satisfacción por grupo demográfico"
+        ])
+        
     elif "Expansión" in scenario_type:
-        recommendations.append("Para expansión, identificar segmentos con crecimiento potencial y baja competencia.")
+        recommendations.extend([
+            "📈 **EXPANSIÓN DE PORTAFOLIO**:",
+            "  • Identificar segmentos con mayor potencial de crecimiento",
+            "  • Evaluar barreras de entrada y competencia en nuevos mercados",
+            "  • Desarrollar estrategia de posicionamiento diferencial",
+            "  • Considerar alianzas estratégicas con empresas complementarias",
+            "  • Planear escalabilidad del sistema para manejar mayor demanda"
+        ])
+        
     elif "Abastecimiento" in scenario_type:
-        recommendations.append("Optimizar cadenas de suministro basado en comportamiento de compra por segmento.")
+        recommendations.extend([
+            "📦 **ESTRATEGIA DE ABASTECIMIENTO**:",
+            "  • Optimizar cadenas de suministro basado en comportamiento por segmento",
+            "  • Diversificar proveedores para reducir riesgos operativos",
+            "  • Implementar sistema de inventario predictivo según demanda",
+            "  • Negociar condiciones comerciales específicas con proveedores clave",
+            "  • Establecer indicadores de desempeño logístico (KPIs)"
+        ])
+        
     elif "Inversión" in scenario_type:
-        recommendations.append("Evaluar ROI por segmento y priorizar inversiones con mayor retorno esperado.")
+        recommendations.extend([
+            "💼 **INVERSIÓN COMERCIAL**:",
+            "  • Evaluar ROI por segmento y priorizar inversiones con mayor retorno",
+            "  • Considerar horizonte temporal de recuperación de inversión",
+            "  • Analizar sensibilidad del escenario a variables macroeconómicas",
+            "  • Diversificar portafolio de inversiones para mitigar riesgos",
+            "  • Establecer puntos de control y evaluación periódica"
+        ])
+    
+    # --- ANÁLISIS DE SEGMENTOS DETALLADO ---
+    recommendations.append("\n📊 **ANÁLISIS DETALLADO POR SEGMENTO**:")
+    
+    # Ordenar segmentos por impacto en el escenario
+    sorted_segments = sorted(segment_analysis.items(), 
+                           key=lambda x: x[1]['avg_income'], reverse=True)
+    
+    for segment_id, analysis in sorted_segments:
+        segment_name = st.session_state.data_generator.get_segment_description(segment_id)
+        avg_income = analysis['avg_income']
+        avg_purchase = analysis['avg_purchase']
+        avg_age = int(analysis['avg_age'])
+        avg_loyalty = analysis['avg_loyalty']
+        segment_count = analysis['count']
+        
+        recommendations.append(f"  • **{segment_name}** ({segment_count} clientes):")
+        recommendations.append(f"    - Edad promedio: {avg_age} años")
+        recommendations.append(f"    - Ingreso mensual: ${avg_income:,.0f} COP")
+        recommendations.append(f"    - Valor promedio de compra: ${avg_purchase:,.0f} COP")
+        recommendations.append(f"    - Lealtad a marca: {avg_loyalty:.1f}%")
+        
+        # Recomendación específica para este segmento
+        if segment_id == dominant_segment:
+            recommendations.append(f"    🏆 **SEGMENTO PRIORITARIO** - Enfocar esfuerzos principales aquí")
+        elif avg_income > 4000000:
+            recommendations.append(f"    💎 **ALTA CAPACIDAD ADQUISITIVA** - Ofrecer productos premium")
+        elif avg_loyalty > 60:
+            recommendations.append(f"    🤝 **ALTA LEALTAD** - Implementar programas de fidelización")
+        elif avg_age < 30:
+            recommendations.append(f"    📱 **JÓVENES DIGITALES** - Enfocar estrategia digital")
+        else:
+            recommendations.append(f"    🎯 **OPORTUNIDAD DE CRECIMIENTO** - Desarrollar estrategias específicas")
+    
+    # --- RECOMENDACIONES ESTRATÉGICAS FINALES ---
+    recommendations.append("\n🎯 **RECOMENDACIONES ESTRATÉGICAS FINALES**:")
+    
+    # Análisis de riesgo
+    if avg_impact > 8000000:
+        recommendations.append("  ⚠️ **RIESGO ALTO**: Considerar implementación piloto antes de despliegue completo")
+    elif avg_impact > 3000000:
+        recommendations.append("  📊 **RIESGO MODERADO**: Monitoreo constante con ajustes basados en resultados")
+    else:
+        recommendations.append("  ✅ **RIESGO BAJO**: Implementación directa con controles básicos")
+    
+    # Recomendación de escalabilidad
+    if total_customers > 200:
+        recommendations.append("  🚀 **ESCALABILIDAD**: El escenario permite expansión a mayor escala")
+    elif total_customers > 100:
+        recommendations.append("  📈 **CRECIMIENTO**: Potencial de expansión con optimización")
+    else:
+        recommendations.append("  🎯 **ENFOQUE**: Priorizar calidad sobre cantidad en implementación")
+    
+    # Recomendación temporal
+    if "Lanzamiento" in scenario_type or "Expansión" in scenario_type:
+        recommendations.append("  ⏰ **HORIZONTE TEMPORAL**: Implementación a 3-6 meses con evaluación trimestral")
+    elif "Inversión" in scenario_type:
+        recommendations.append("  💰 **HORIZONTE TEMPORAL**: Evaluación a 12 meses con revisiones semestrales")
+    else:
+        recommendations.append("  📊 **HORIZONTE TEMPORAL**: Monitoreo continuo con evaluaciones mensuales")
     
     return recommendations
 
