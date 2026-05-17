@@ -1,4 +1,4 @@
-# app.py - Versión corregida sin recursión
+# app.py - Versión corregida con valores enteros y pesos colombianos
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -15,7 +15,7 @@ from config import APP_CONFIG
 
 class BusinessDecisionApp:
     def __init__(self):
-        # Inicializar variables de la aplicación (sin recursión)
+        # Inicializar variables de la aplicación
         self.customer_data = None
         self.model_metrics = None
         self.ai_model = AIModel()
@@ -74,13 +74,13 @@ def show_data_overview():
         st.metric("Total Clientes", len(st.session_state.customer_data))
         
     with col2:
-        st.metric("Edad Promedio", f"{st.session_state.customer_data['edad'].mean():.1f} años")
+        st.metric("Edad Promedio", f"{st.session_state.customer_data['edad'].mean():.0f} años")
         
     with col3:
-        st.metric("Ingreso Promedio", f"${st.session_state.customer_data['ingreso_mensual'].mean():,.0f}")
+        st.metric("Ingreso Promedio", f"${st.session_state.customer_data['ingreso_mensual'].mean():,.0f} COP")
         
     with col4:
-        st.metric("Valor Promedio Compra", f"${st.session_state.customer_data['valor_promedio_compra'].mean():,.2f}")
+        st.metric("Valor Promedio Compra", f"${st.session_state.customer_data['valor_promedio_compra'].mean():,.0f} COP")
     
     # Distribución de segmentos
     st.subheader("🎯 Distribución de Segmentos de Clientes")
@@ -157,8 +157,8 @@ def show_model_performance():
         
         fig.update_layout(
             title='Predicciones vs Valores Reales',
-            xaxis_title='Valor Real',
-            yaxis_title='Predicción'
+            xaxis_title='Valor Real (COP)',
+            yaxis_title='Predicción (COP)'
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -185,22 +185,24 @@ def create_scenario_analyzer():
         
         col1, col2 = st.columns(2)
         with col1:
-            min_age = st.number_input("Edad mínima:", 18, 80, 25)
-            max_age = st.number_input("Edad máxima:", 18, 80, 45)
+            # Valores enteros para edad
+            min_age = st.number_input("Edad mínima:", min_value=18, max_value=80, value=25, step=1)
+            max_age = st.number_input("Edad máxima:", min_value=18, max_value=80, value=45, step=1)
             
         with col2:
-            min_income = st.number_input("Ingreso mínimo ($):", 1000, 50000, 30000)
-            max_income = st.number_input("Ingreso máximo ($):", 1000, 50000, 80000)
+            # Valores en pesos colombianos (máximo más alto)
+            min_income = st.number_input("Ingreso mínimo (COP):", min_value=1000000, max_value=50000000, value=3000000, step=100000)
+            max_income = st.number_input("Ingreso máximo (COP):", min_value=1000000, max_value=100000000, value=8000000, step=100000)
         
         if st.button("Generar clientes de prueba"):
             test_customers = []
             for i in range(n_customers):
                 customer = {
-                    'edad': np.random.uniform(min_age, max_age),
+                    'edad': int(np.random.uniform(min_age, max_age)),  # Convertir a entero
                     'ingreso_mensual': np.random.uniform(min_income, max_income),
                     'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado']),
                     'frecuencia_compra': np.random.poisson(3),
-                    'valor_promedio_compra': np.random.exponential(50) + 10,
+                    'valor_promedio_compra': np.random.exponential(50000) + 10000,  # Valores más realistas para Colombia
                     'lealtad_marca': np.random.beta(2, 2) * 100,
                     'crecimiento_mercado': np.random.uniform(0.05, 0.15),
                     'nivel_competencia': np.random.uniform(1, 10)
@@ -218,9 +220,9 @@ def create_scenario_analyzer():
             with col1:
                 st.metric("Total Clientes", scenario_results['total_customers'])
             with col2:
-                st.metric("Impacto Promedio", f"${scenario_results['avg_impact']:.2f}")
+                st.metric("Impacto Promedio", f"${scenario_results['avg_impact']:,.0f} COP")
             with col3:
-                st.metric("Impacto Total", f"${scenario_results['total_impact']:,.2f}")
+                st.metric("Impacto Total", f"${scenario_results['total_impact']:,.0f} COP")
             
             # Distribución de segmentos
             st.subheader("🎯 Distribución de Segmentos en el Escenario")
@@ -248,9 +250,9 @@ def generate_recommendations(scenario_results, scenario_type):
     avg_impact = scenario_results['avg_impact']
     
     # Recomendación basada en impacto
-    if avg_impact > 100:
+    if avg_impact > 5000000:  # 5 millones COP
         recommendations.append("El escenario muestra un impacto potencial alto. Considerar implementación gradual.")
-    elif avg_impact > 50:
+    elif avg_impact > 2000000:  # 2 millones COP
         recommendations.append("El escenario tiene un impacto moderado. Requiere monitoreo constante.")
     else:
         recommendations.append("El escenario tiene un impacto bajo. Evaluar si justifica la inversión.")
