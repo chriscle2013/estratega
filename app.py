@@ -96,6 +96,9 @@ def generate_sample_data():
     with st.spinner("Generando datos..."):
         st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(1000)
         st.success(f"✅ {len(st.session_state.customer_data)} clientes generados")
+    
+    # Forzar re-renderizado
+    st.rerun()
         
 def train_models():
     """Entrena los modelos de IA"""
@@ -117,6 +120,9 @@ def train_models():
         
         st.session_state.ai_model.is_trained = True
         st.success("✅ Modelos entrenados")
+    
+    # Forzar re-renderizado
+    st.rerun()
 
 def show_data_overview():
     """Muestra overview de los datos optimizado para móviles"""
@@ -514,6 +520,8 @@ def main():
         st.header("Dashboard")
         st.markdown("**Prototipo IA para Decisiones Estratégicas**")
         
+        # Estado del sistema (actualizado dinámicamente)
+        st.subheader("📈 Estado del Sistema")
         col1, col2 = st.columns(2)
         with col1:
             if st.session_state.customer_data is not None:
@@ -527,13 +535,15 @@ def main():
             else:
                 st.metric("❌ Modelos", "No")
         
+        # Botones de acción
+        st.subheader("🚀 Acciones")
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("📊 Generar Datos", type="primary", use_container_width=True):
+            if st.button("📊 Generar Datos", type="primary", use_container_width=True, key="btn_generate"):
                 generate_sample_data()
                 
         with col2:
-            if st.button("🤖 Entrenar", type="secondary", use_container_width=True):
+            if st.button("🤖 Entrenar", type="secondary", use_container_width=True, key="btn_train"):
                 train_models()
     
     with tab2:
