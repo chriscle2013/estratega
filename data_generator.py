@@ -18,7 +18,7 @@ class DataGenerator:
             3: (50, 80)      # Adultos Mayores: 50-80 años
         }
     
-    def generate_synthetic_data(self, n_samples: int = 2000) -> pd.DataFrame:
+    def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
         """Genera datos simulados de clientes con edad correlacionada a segmentos"""
         np.random.seed(42)
         
