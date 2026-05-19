@@ -1,4 +1,4 @@
-# data_generator.py - Versión con edad correlacionada a segmentos
+# data_generator.py - Versión con edad correlacionada a segmentos y selector de muestras
 import pandas as pd
 import numpy as np
 from typing import Dict, List
@@ -18,8 +18,18 @@ class DataGenerator:
             3: (50, 80)      # Adultos Mayores: 50-80 años
         }
     
+    def get_available_sample_sizes(self) -> List[int]:
+        """Retorna lista de tamaños de muestra disponibles"""
+        return [1000, 2000, 3000, 4000, 5000]
+    
     def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
         """Genera datos simulados de clientes con edad correlacionada a segmentos"""
+        
+        # Validar tamaño de muestra
+        available_sizes = self.get_available_sample_sizes()
+        if n_samples not in available_sizes:
+            raise ValueError(f"Tamaño de muestra debe ser uno de: {available_sizes}")
+        
         np.random.seed(42)
         
         # Segmentos con diferentes rangos de edad e ingresos
