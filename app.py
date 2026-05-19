@@ -227,23 +227,20 @@ def create_launch_analyzer():
     """Analizador para lanzamiento de producto ajustado dinámicamente a la data real"""
     st.subheader("🚀 Lanzamiento de Producto")
     
-    # Evaluar tamaño real del dataset generado
     max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 1000
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
         col1, col2 = st.columns(2)
         
         with col1:
-            # CORREGIDO: Ajuste dinámico del límite superior en base a la data real
             n_customers = st.slider(
                 "Clientes a analizar:", 
                 min_value=50, 
                 max_value=int(max_customers_available), 
                 value=min(300, int(max_customers_available)), 
-                step=50
+                step=5
             )
         with col2:
-            # CORREGIDO: Límite superior ampliado para soportar precios de mayor escala
             product_price = st.number_input("Precio del producto (COP):", 5000, 2000000, 25000, step=1000)
         
         st.markdown("")
@@ -261,12 +258,10 @@ def create_launch_analyzer():
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 8, 1) * 1000000
         
         st.markdown("")
-        # CORREGIDO: Límite ampliado de viabilidad para evitar conflictos de validación
         min_viable = st.number_input("Ingresos mínimos viables (M COP):", 10, 5000, 30, 1) * 1000000
         
         st.markdown("")
         if st.button("🔍 Analizar Lanzamiento", type="primary", use_container_width=True):
-            # CORREGIDO: Filtrar por segmento demográfico en base a los inputs del usuario y extraer una muestra real
             filtered_data = st.session_state.customer_data[
                 (st.session_state.customer_data['edad'] >= min_age) & 
                 (st.session_state.customer_data['edad'] <= max_age) &
@@ -274,7 +269,6 @@ def create_launch_analyzer():
                 (st.session_state.customer_data['ingreso_mensual'] <= max_income)
             ]
             
-            # Si el filtro es muy estricto y no hay suficientes datos, usamos la data general como fallback seguro
             if len(filtered_data) < 10:
                 filtered_data = st.session_state.customer_data
                 
@@ -338,14 +332,12 @@ def create_investment_analyzer():
     """Analizador para inversión comercial con Margen de Contribución ajustado dinámicamente a la data real"""
     st.subheader("💼 Inversión Comercial (Infraestructura)")
     
-    # Evaluar tamaño real del dataset generado
     max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 2000
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
         col1, col2 = st.columns(2)
         
         with col1:
-            # CORREGIDO: Ajuste dinámico del límite superior del slider en base a la data real
             n_customers = st.slider(
                 "Clientes a analizar:", 
                 min_value=100, 
@@ -354,7 +346,7 @@ def create_investment_analyzer():
                 step=100
             )
         with col2:
-            # CORREGIDO: Se amplía el max_value a 50000 para corregir el bloqueo del aviso naranja "inferior o igual a 500"
+            # CORREGIDO: max_value elevado a 50,000 para eliminar de raíz el bloqueo de "inferior o igual a 500"
             investment = st.number_input(
                 "Inversión requerida (M COP):", 
                 min_value=10, 
@@ -377,20 +369,19 @@ def create_investment_analyzer():
         with col2:
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 9, 1) * 1000000
         
-        # NUEVO INPUT: Selector de tasa de Costo Variable Operativo
+        # AJUSTADO: Rango extendido hasta el 100% y desplazamiento preciso de 1 en 1
         st.markdown("")
         cost_ratio_input = st.slider(
             "Tasa estimada de Costo Variable (% sobre ingreso):",
             min_value=10,
-            max_value=90,
+            max_value=100,
             value=35,
-            step=5,
+            step=1,
             help="Porcentaje del ingreso que se consume directamente en la operación logística o de servicio por cada cliente atraído."
         )
         
         st.markdown("")
         if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
-            # CORREGIDO: Filtrar de forma real por el segmento demográfico seleccionado antes de tomar la muestra
             filtered_data = st.session_state.customer_data[
                 (st.session_state.customer_data['edad'] >= min_age) & 
                 (st.session_state.customer_data['edad'] <= max_age) &
@@ -405,7 +396,6 @@ def create_investment_analyzer():
             test_customers = filtered_data.sample(n=sample_n).to_dict(orient='records')
             
             with st.spinner("Analizando..."):
-                # Ejecutar el modelo predictivo enviando el nuevo parámetro matemático
                 investment_result = st.session_state.ai_model.evaluate_infrastructure_investment(
                     test_customers,
                     investment_required=investment,
@@ -435,7 +425,7 @@ def create_investment_analyzer():
         
         st.markdown("")
         
-        # NUEVA DISTRIBUCIÓN: Análisis de Margen de Contribución y Costos Variables
+        # Estructura del Margen de Contribución
         st.subheader("📊 Estructura del Margen de Contribución")
         
         col_f1_1, col_f1_2 = st.columns(2)
