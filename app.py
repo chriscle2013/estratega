@@ -276,8 +276,8 @@ def create_launch_analyzer():
                     min_viable_revenue=min_viable
                 )
             
-            st.session_state.launch_result = launch_result
-            st.rerun()
+                st.session_state.launch_result = launch_result
+                st.rerun()
     
     # Mostrar resultados
     if 'launch_result' in st.session_state:
@@ -332,7 +332,8 @@ def create_investment_analyzer():
         with col1:
             n_customers = st.slider("Clientes a analizar:", 100, 2000, 500, step=100)
         with col2:
-            investment = st.number_input("Inversión requerida (M COP):", 10, 500, 100, step=10) * 1000000
+            # CORREGIDO: Se cambia el rango máximo de 500 a 10000 y el valor por defecto a 10000
+            investment = st.number_input("Inversión requerida (M COP):", 10, 10000, 10000, step=10) * 1000000
         
         st.markdown("")
         col1, col2 = st.columns(2)
@@ -371,8 +372,8 @@ def create_investment_analyzer():
                     investment_required=investment
                 )
             
-            st.session_state.investment_result = investment_result
-            st.rerun()
+                st.session_state.investment_result = investment_result
+                st.rerun()
     
     # Mostrar resultados
     if 'investment_result' in st.session_state:
@@ -503,7 +504,7 @@ def main():
         st.markdown("---")
         st.markdown("### ℹ️ Instrucciones")
         st.markdown("""
-        1. **Seleccionar Muestra**: Elige 1K, 2K, 3K, 4K o 5K clientes
+        1. **Seleccionar Muestra**: Elige un tamaño de muestra permitido
         2. **Generar Datos**: Crea el dataset sintético
         3. **Entrenar Modelos**: Entrena los modelos de IA
         4. **Explorar**: Navega por otras secciones
