@@ -1,4 +1,4 @@
-# app.py - Versión 2.0 con Análisis de Decisión IA
+# app.py - Versión 2.1 con Filtro Geográfico Comercial
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -96,7 +96,7 @@ def setup_page():
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🤖 Estratega IA / Toma Decisiones v2.0")
+    st.title("🤖 Estratega IA / Toma Decisiones v2.1")
     st.markdown("---")
 
 def format_cop(value):
@@ -329,14 +329,26 @@ def create_launch_analyzer():
             st.markdown(f"• {justif}")
 
 def create_investment_analyzer():
-    """Analizador para inversión comercial con Margen de Contribución ajustado dinámicamente a la data real"""
+    """Analizador para inversión comercial con Filtro Demográfico de Ciudades de Colombia"""
     st.subheader("💼 Inversión Comercial (Infraestructura)")
     
     max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 2000
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
-        col1, col2 = st.columns(2)
         
+        # NUEVO: Selección de Población por Ciudades Principales
+        st.markdown("### 🌆 Población Objetivo Geográfica")
+        ciudades_disponibles = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
+        ciudades_seleccionadas = st.multiselect(
+            "Selecciona las ciudades para enfocar el análisis:",
+            options=ciudades_disponibles,
+            default=ciudades_disponibles, # Por defecto analiza todo el espectro dispersado
+            help="Permite aislar o consolidar el mercado según las principales ciudades de Colombia."
+        )
+        
+        st.markdown("---")
+        
+        col1, col2 = st.columns(2)
         with col1:
             n_customers = st.slider(
                 "Clientes a analizar:", 
@@ -346,7 +358,6 @@ def create_investment_analyzer():
                 step=100
             )
         with col2:
-            # CORREGIDO: max_value elevado a 50,000 para eliminar de raíz el bloqueo de "inferior o igual a 500"
             investment = st.number_input(
                 "Inversión requerida (M COP):", 
                 min_value=10, 
@@ -369,7 +380,6 @@ def create_investment_analyzer():
         with col2:
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 9, 1) * 1000000
         
-        # AJUSTADO: Rango extendido hasta el 100% y desplazamiento preciso de 1 en 1
         st.markdown("")
         cost_ratio_input = st.slider(
             "Tasa estimada de Costo Variable (% sobre ingreso):",
@@ -382,11 +392,13 @@ def create_investment_analyzer():
         
         st.markdown("")
         if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
+            # APLICADO: Filtro que incluye la condición de ciudad seleccionada
             filtered_data = st.session_state.customer_data[
                 (st.session_state.customer_data['edad'] >= min_age) & 
                 (st.session_state.customer_data['edad'] <= max_age) &
                 (st.session_state.customer_data['ingreso_mensual'] >= min_income) &
-                (st.session_state.customer_data['ingreso_mensual'] <= max_income)
+                (st.session_state.customer_data['ingreso_mensual'] <= max_income) &
+                (st.session_state.customer_data['ciudad'].isin(ciudades_seleccionadas))
             ]
             
             if len(filtered_data) < 10:
@@ -531,7 +543,7 @@ def main():
     
     with tab1:
         st.header("Dashboard")
-        st.markdown("**Prototipo IA para Decisiones Estratégicas v2.0**")
+        st.markdown("**Prototipo IA para Decisiones Estratégicas v2.1**")
         
         st.markdown("")
         st.subheader("📈 Estado del Sistema")
@@ -572,11 +584,11 @@ def main():
         st.markdown("---")
         st.markdown("### ℹ️ Instrucciones")
         st.markdown("""
-        1. **Seleccionar Muestra**: Elige un tamaño de muestra permitido
-        2. **Generar Datos**: Crea el dataset sintético
+        1. **Seleccionar Muestra**: Elige un tamaño de muestra permitido (ej. 5,000)
+        2. **Generar Datos**: Crea el dataset sintético distribuido en Colombia
         3. **Entrenar Modelos**: Entrena los modelos de IA
         4. **Explorar**: Navega por otras secciones
-        5. **Analizar**: Usa la sección "Decisión" para análisis
+        5. **Analizar**: Usa la sección "Decisión" para análisis geográfico
         """)
     
     with tab2:
