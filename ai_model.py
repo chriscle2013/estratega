@@ -19,7 +19,6 @@ class AIModel:
     
     def prepare_data(self, df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
         """Prepara los datos para entrenamiento"""
-        # Seleccionar características para segmentación
         feature_cols = ['edad', 'ingreso_mensual', 'educacion', 'frecuencia_compra', 
                        'valor_promedio_compra', 'lealtad_marca', 'crecimiento_mercado', 
                        'nivel_competencia']
@@ -27,14 +26,12 @@ class AIModel:
         X = df[feature_cols].copy()
         y_segment = df['segmento_cliente']
         
-        # Codificar variables categóricas
         for col in ['educacion']:
             if col in X.columns:
                 le = LabelEncoder()
                 X[col] = le.fit_transform(X[col])
                 self.label_encoders[col] = le
         
-        # Escalar características
         X_scaled = self.scaler.fit_transform(X)
         self.feature_names = feature_cols
         
@@ -44,12 +41,10 @@ class AIModel:
         """Entrena el modelo de segmentación de clientes"""
         X, y = self.prepare_data(df)
         
-        # Dividir datos
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, random_state=42, stratify=y
         )
         
-        # Entrenar modelo de segmentación
         self.segment_model = RandomForestClassifier(
             n_estimators=100, 
             random_state=42,
@@ -59,11 +54,9 @@ class AIModel:
         
         self.segment_model.fit(X_train, y_train)
         
-        # Evaluar modelo
         y_pred = self.segment_model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
         
-        # Validación cruzada
         cv_scores = cross_val_score(self.segment_model, X, y, cv=5, scoring='accuracy')
         
         return {
@@ -75,17 +68,14 @@ class AIModel:
     
     def train_impact_model(self, df: pd.DataFrame) -> Dict:
         """Entrena el modelo de impacto de decisiones"""
-        # Crear variable objetivo de impacto (puede ser ingreso promedio o valor de compra)
         y_impact = df['valor_promedio_compra']
         
         X, _ = self.prepare_data(df)
         
-        # Dividir datos
         X_train, X_test, y_train, y_test = train_test_split(
             X, y_impact, test_size=0.2, random_state=42
         )
         
-        # Entrenar modelo de impacto
         self.impact_model = RandomForestRegressor(
             n_estimators=100,
             random_state=42,
@@ -94,7 +84,6 @@ class AIModel:
         
         self.impact_model.fit(X_train, y_train)
         
-        # Evaluar modelo
         y_pred = self.impact_model.predict(X_test)
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
         
@@ -108,18 +97,14 @@ class AIModel:
         if not self.is_trained:
             raise ValueError("El modelo no ha sido entrenado")
         
-        # Convertir diccionario a DataFrame
         df = pd.DataFrame([customer_data])
         
-        # Preparar datos igual que en entrenamiento
         for col in self.label_encoders:
             if col in df.columns:
                 df[col] = self.label_encoders[col].transform(df[col])
         
-        # Escalar características
         X_scaled = self.scaler.transform(df[self.feature_names])
         
-        # Predecir segmento
         segment = self.segment_model.predict(X_scaled)[0]
         return int(segment)
     
@@ -128,62 +113,46 @@ class AIModel:
         if not self.is_trained:
             raise ValueError("El modelo no ha sido entrenado")
         
-        # Convertir diccionario a DataFrame
         df = pd.DataFrame([customer_data])
         
-        # Preparar datos igual que en entrenamiento
         for col in self.label_encoders:
             if col in df.columns:
                 df[col] = self.label_encoders[col].transform(df[col])
         
-        # Escalar características
         X_scaled = self.scaler.transform(df[self.feature_names])
         
-        # Predecir impacto
         impact = self.impact_model.predict(X_scaled)[0]
         return float(impact)
     
     def calculate_purchase_propensity(self, customer_data: Dict) -> float:
         """Calcula la propensión de compra de un cliente (0-1)"""
-        # Normalizar valores
-        lealtad_norm = customer_data.get('lealtad_marca', 50) / 100.0  # 0-1
-        valor_compra_norm = min(customer_data.get('valor_promedio_compra', 30000) / 100000.0, 1.0)  # 0-1
-        frecuencia_norm = min(customer_data.get('frecuencia_compra', 3) / 10.0, 1.0)  # 0-1
+        lealtad_norm = customer_data.get('lealtad_marca', 50) / 100.0
+        valor_compra_norm = min(customer_data.get('valor_promedio_compra', 30000) / 100000.0, 1.0)
+        frecuencia_norm = min(customer_data.get('frecuencia_compra', 3) / 10.0, 1.0)
         
-        # Propensión = ponderado de factores
         propensity = (lealtad_norm * 0.4) + (valor_compra_norm * 0.3) + (frecuencia_norm * 0.3)
-        return min(max(propensity, 0), 1)  # Asegurar rango 0-1
+        return min(max(propensity, 0), 1)
     
     def evaluate_product_launch(self, scenario_data: List[Dict], 
                                product_price: float = 25000,
                                min_viable_revenue: float = 30000000) -> Dict:
-        """Evalúa si es viable lanzar un producto
-        
-        Responde: ¿La población objetivo COMPRARÁ el producto?
-                  ¿Generará VENTAS SUFICIENTES?
-        """
+        """Evalúa si es viable lanzar un producto"""
         if not self.is_trained:
             raise ValueError("El modelo no ha sido entrenado")
         
-        # Calcular propensión de compra para cada cliente
         propensities = [self.calculate_purchase_propensity(customer) for customer in scenario_data]
         
-        # Estimar compradores (propensión > 0.5)
         estimated_buyers = sum(1 for p in propensities if p > 0.5)
         purchase_percentage = (estimated_buyers / len(scenario_data)) * 100 if scenario_data else 0
         
-        # Proyectar ingresos
         projected_revenue = estimated_buyers * product_price
         avg_propensity = np.mean(propensities) if propensities else 0
         estimated_roi = ((projected_revenue - min_viable_revenue) / min_viable_revenue * 100) if min_viable_revenue > 0 else 0
         
-        # Determinar viabilidad
         is_viable = projected_revenue >= min_viable_revenue
         
-        # Calcular confianza (0-100)
         confidence = (avg_propensity * 100) * 0.5 + (min(purchase_percentage, 100) * 0.5)
         
-        # Generar justificación
         justification = self._generate_launch_justification({
             'avg_propensity': avg_propensity,
             'purchase_percentage': purchase_percentage,
@@ -207,55 +176,51 @@ class AIModel:
         }
     
     def evaluate_infrastructure_investment(self, scenario_data: List[Dict],
-                                         investment_required: float = 100000000) -> Dict:
-        """Evalúa si es viable hacer inversión en infraestructura
-        
-        Responde: ¿El mercado objetivo generará INGRESOS SUFICIENTES?
-                  ¿RECUPERARÉ la inversión en tiempo razonable?
-        """
+                                           investment_required: float = 100000000,
+                                           variable_cost_ratio: float = 0.35) -> Dict:
+        """Evalúa si es viable hacer inversión en infraestructura calculando el Margen de Contribución"""
         if not self.is_trained:
             raise ValueError("El modelo no ha sido entrenado")
         
-        # Calcular propensión de compra
         propensities = [self.calculate_purchase_propensity(customer) for customer in scenario_data]
         avg_propensity = np.mean(propensities) if propensities else 0
         
-        # Calcular ingresos anuales proyectados
-        # Ingresos = Clientes × Propensión × Ingreso mensual × 12
+        # Calcular ingresos anuales proyectados brutos
         total_monthly_income = sum(customer.get('ingreso_mensual', 3000000) for customer in scenario_data)
         avg_monthly_income = total_monthly_income / len(scenario_data) if scenario_data else 0
         projected_annual_income = len(scenario_data) * avg_propensity * avg_monthly_income * 12
         
+        # --- NUEVOS CÁLCULOS: MARGEN DE CONTRIBUCIÓN ---
+        total_variable_costs = projected_annual_income * variable_cost_ratio
+        contribution_margin = projected_annual_income - total_variable_costs
+        contribution_margin_pct = (contribution_margin / projected_annual_income * 100) if projected_annual_income > 0 else 0
+        
         # Criterios de viabilidad
         criteria_met = {}
-        
-        # Criterio 1: Tamaño mínimo de mercado
         criteria_met['market_size'] = len(scenario_data) >= 500
         
-        # Criterio 2: Ingresos >= 50% de inversión
+        # Criterio 2: El ingreso bruto >= 50% de la inversión requerida
         criteria_met['income_ratio'] = projected_annual_income >= (investment_required * 0.5)
         
-        # Criterio 3: Período de recuperación <= 18 meses
+        # Criterio 3: Recuperación basada en el Ingreso Mensual Bruto (Lógica original de tu app)
         payback_months = (investment_required / (projected_annual_income / 12)) if projected_annual_income > 0 else float('inf')
         criteria_met['payback'] = payback_months <= 18
         
-        # Criterio 4: Propensión >= 45%
         criteria_met['propensity'] = avg_propensity >= 0.45
         
-        # Decisión: >= 3 de 4 criterios
         criteria_count = sum(1 for v in criteria_met.values() if v)
         is_viable = criteria_count >= 3
         
-        # Calcular rentabilidad
         profitability = ((projected_annual_income - investment_required) / investment_required * 100) if investment_required > 0 else 0
-        
-        # Confianza basada en criterios cumplidos
         confidence = (criteria_count / 4) * 100
         
-        # Generar justificación
+        # Generar justificación enriquecida con datos de costos
         justification = self._generate_investment_justification({
             'criteria_met': criteria_met,
             'projected_annual_income': projected_annual_income,
+            'total_variable_costs': total_variable_costs,
+            'contribution_margin': contribution_margin,
+            'contribution_margin_pct': contribution_margin_pct,
             'investment_required': investment_required,
             'payback_months': payback_months,
             'profitability': profitability,
@@ -267,6 +232,9 @@ class AIModel:
             'is_viable': is_viable,
             'investment_required': round(investment_required, 2),
             'projected_annual_income': round(projected_annual_income, 2),
+            'total_variable_costs': round(total_variable_costs, 2),             # <-- NUEVO
+            'contribution_margin': round(contribution_margin, 2),               # <-- NUEVO
+            'contribution_margin_pct': round(contribution_margin_pct, 2),       # <-- NUEVO
             'total_customers': len(scenario_data),
             'payback_months': round(payback_months, 1),
             'profitability_percentage': round(profitability, 2),
@@ -279,14 +247,12 @@ class AIModel:
     def _generate_launch_justification(self, analysis: Dict) -> List[str]:
         """Genera justificación automática para decisión de lanzamiento"""
         justifications = []
-        
         avg_propensity = analysis['avg_propensity'] * 100
         purchase_pct = analysis['purchase_percentage']
         roi = analysis['estimated_roi']
         revenue = analysis['projected_revenue']
         min_revenue = analysis['min_viable_revenue']
         
-        # Análisis de propensión
         if avg_propensity >= 70:
             justifications.append(f"✅ Propensión: Excelente nivel de interés ({avg_propensity:.1f}%)")
         elif avg_propensity >= 50:
@@ -294,7 +260,6 @@ class AIModel:
         else:
             justifications.append(f"❌ Propensión: Baja ({avg_propensity:.1f}%)")
         
-        # Análisis de ingresos
         if revenue >= min_revenue * 1.5:
             justifications.append(f"💰 Ingresos: Proyección muy favorable (${revenue/1e6:.1f}M >> ${min_revenue/1e6:.1f}M)")
         elif revenue >= min_revenue:
@@ -302,7 +267,6 @@ class AIModel:
         else:
             justifications.append(f"⚠️ Ingresos: Por debajo del mínimo viable (${revenue/1e6:.1f}M < ${min_revenue/1e6:.1f}M)")
         
-        # Análisis de ROI
         if roi > 100:
             justifications.append(f"📈 ROI: Excelente retorno esperado ({roi:.1f}%)")
         elif roi > 0:
@@ -310,7 +274,6 @@ class AIModel:
         else:
             justifications.append(f"⚠️ ROI: Retorno negativo ({roi:.1f}%)")
         
-        # Análisis de demanda
         if purchase_pct >= 60:
             justifications.append(f"🎯 Demanda: Alta ({purchase_pct:.1f}% de clientes)")
         elif purchase_pct >= 40:
@@ -321,11 +284,14 @@ class AIModel:
         return justifications
     
     def _generate_investment_justification(self, analysis: Dict) -> List[str]:
-        """Genera justificación automática para decisión de inversión"""
+        """Genera justificación automática para decisión de inversión incluyendo análisis de costos"""
         justifications = []
         
         criteria_met = analysis['criteria_met']
         income = analysis['projected_annual_income']
+        costs = analysis['total_variable_costs']
+        margin = analysis['contribution_margin']
+        margin_pct = analysis['contribution_margin_pct']
         investment = analysis['investment_required']
         payback = analysis['payback_months']
         profitability = analysis['profitability']
@@ -333,7 +299,6 @@ class AIModel:
         
         criteria_count = sum(1 for v in criteria_met.values() if v)
         
-        # Análisis de criterios
         if criteria_met['market_size']:
             justifications.append("✅ Tamaño de mercado: Suficiente (>= 500 clientes)")
         else:
@@ -343,6 +308,9 @@ class AIModel:
             justifications.append(f"✅ Ingresos anuales: ${income/1e6:.1f}M >= 50% inversión")
         else:
             justifications.append(f"❌ Ingresos anuales: ${income/1e6:.1f}M < 50% inversión")
+            
+        # Añadir dato del Margen al bloque explicativo
+        justifications.append(f"📊 Estructura Operativa: Margen de Contribución del {margin_pct:.1f}% (${margin/1e6:.1f}M libres tras absorber costos variables de ${costs/1e6:.1f}M)")
         
         if criteria_met['payback']:
             justifications.append(f"✅ Período de recuperación: {payback:.1f} meses (<= 18 meses)")
@@ -354,7 +322,6 @@ class AIModel:
         else:
             justifications.append(f"❌ Propensión de compra: {propensity:.1f}% (< 45%)")
         
-        # Análisis de rentabilidad
         if profitability > 50:
             justifications.append(f"💎 Rentabilidad: Excelente (+{profitability:.1f}%)")
         elif profitability > 0:
@@ -362,7 +329,6 @@ class AIModel:
         else:
             justifications.append(f"📉 Rentabilidad: Negativa ({profitability:.1f}%)")
         
-        # Resumen
         justifications.append(f"\n📊 Criterios cumplidos: {criteria_count}/4")
         
         return justifications
@@ -381,7 +347,6 @@ class AIModel:
                 'customer_data': customer
             })
         
-        # Agregar métricas de resumen
         segments = [r['segment'] for r in results]
         impacts = [r['impact'] for r in results]
         
