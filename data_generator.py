@@ -1,4 +1,4 @@
-# data_generator.py - Versión con edad correlacionada a segmentos y selector de muestras
+# data_generator.py - Versión con edad correlacionada a segmentos, selector de muestras y dispersión geográfica en Colombia
 import pandas as pd
 import numpy as np
 from typing import Dict, List
@@ -24,7 +24,7 @@ class DataGenerator:
         return [1000, 2000, 3000, 4000, 5000]
     
     def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
-        """Genera datos simulados de clientes con edad correlacionada a segmentos"""
+        """Genera datos simulados de clientes con edad correlacionada y distribución en ciudades de Colombia"""
         
         # Validar tamaño de muestra
         available_sizes = self.get_available_sample_sizes()
@@ -41,6 +41,10 @@ class DataGenerator:
             3: (1200000, 3000000)    # Adultos Mayores: 1.2M - 3M COP
         }
         
+        # Definición de las principales ciudades de Colombia y sus pesos de dispersión
+        ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
+        pesos_ciudades = [0.40, 0.20, 0.18, 0.10, 0.06, 0.06] # Cali representa el 18% de la población dispersada
+        
         data = {
             'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado'], n_samples, p=[0.1, 0.2, 0.5, 0.2]),
             'frecuencia_compra': np.random.poisson(3, n_samples),
@@ -48,7 +52,9 @@ class DataGenerator:
             'lealtad_marca': np.random.beta(2, 2, n_samples),
             'crecimiento_mercado': np.random.uniform(0.05, 0.15, n_samples),
             'nivel_competencia': np.random.uniform(1, 10, n_samples),
-            'segmento_cliente': np.random.choice([0, 1, 2, 3], n_samples, p=[0.25, 0.35, 0.25, 0.15])
+            'segmento_cliente': np.random.choice([0, 1, 2, 3], n_samples, p=[0.25, 0.35, 0.25, 0.15]),
+            # NUEVO: Dispersión aleatoria de la base de datos en las ciudades seleccionadas
+            'ciudad': np.random.choice(ciudades, n_samples, p=pesos_ciudades)
         }
         
         # Asignar edad según segmento (Mismo algoritmo original tuyo)
