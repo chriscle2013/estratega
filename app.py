@@ -224,16 +224,27 @@ def create_decision_analyzer():
         create_investment_analyzer()
 
 def create_launch_analyzer():
-    """Analizador para lanzamiento de producto"""
+    """Analizador para lanzamiento de producto ajustado dinámicamente a la data real"""
     st.subheader("🚀 Lanzamiento de Producto")
+    
+    # Evaluar tamaño real del dataset generado
+    max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 1000
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
         col1, col2 = st.columns(2)
         
         with col1:
-            n_customers = st.slider("Clientes a analizar:", 50, 1000, 300, step=50)
+            # CORREGIDO: Ajuste dinámico del límite superior en base a la data real
+            n_customers = st.slider(
+                "Clientes a analizar:", 
+                min_value=50, 
+                max_value=int(max_customers_available), 
+                value=min(300, int(max_customers_available)), 
+                step=50
+            )
         with col2:
-            product_price = st.number_input("Precio del producto (COP):", 5000, 100000, 25000, step=1000)
+            # CORREGIDO: Límite superior ampliado para soportar precios de mayor escala
+            product_price = st.number_input("Precio del producto (COP):", 5000, 2000000, 25000, step=1000)
         
         st.markdown("")
         col1, col2 = st.columns(2)
@@ -250,24 +261,25 @@ def create_launch_analyzer():
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 8, 1) * 1000000
         
         st.markdown("")
-        min_viable = st.number_input("Ingresos mínimos viables (M COP):", 10, 100, 30, 1) * 1000000
+        # CORREGIDO: Límite ampliado de viabilidad para evitar conflictos de validación
+        min_viable = st.number_input("Ingresos mínimos viables (M COP):", 10, 5000, 30, 1) * 1000000
         
         st.markdown("")
         if st.button("🔍 Analizar Lanzamiento", type="primary", use_container_width=True):
-            # Generar clientes de prueba
-            test_customers = []
-            for i in range(n_customers):
-                customer = {
-                    'edad': int(np.random.uniform(min_age, max_age)),
-                    'ingreso_mensual': np.random.uniform(min_income, max_income),
-                    'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado']),
-                    'frecuencia_compra': np.random.poisson(3),
-                    'valor_promedio_compra': np.random.exponential(50000) + 10000,
-                    'lealtad_marca': np.random.beta(2, 2) * 100,
-                    'crecimiento_mercado': np.random.uniform(0.05, 0.15),
-                    'nivel_competencia': np.random.uniform(1, 10)
-                }
-                test_customers.append(customer)
+            # CORREGIDO: Filtrar por segmento demográfico en base a los inputs del usuario y extraer una muestra real
+            filtered_data = st.session_state.customer_data[
+                (st.session_state.customer_data['edad'] >= min_age) & 
+                (st.session_state.customer_data['edad'] <= max_age) &
+                (st.session_state.customer_data['ingreso_mensual'] >= min_income) &
+                (st.session_state.customer_data['ingreso_mensual'] <= max_income)
+            ]
+            
+            # Si el filtro es muy estricto y no hay suficientes datos, usamos la data general como fallback seguro
+            if len(filtered_data) < 10:
+                filtered_data = st.session_state.customer_data
+                
+            sample_n = min(n_customers, len(filtered_data))
+            test_customers = filtered_data.sample(n=sample_n).to_dict(orient='records')
             
             with st.spinner("Analizando..."):
                 launch_result = st.session_state.ai_model.evaluate_product_launch(
@@ -323,16 +335,33 @@ def create_launch_analyzer():
             st.markdown(f"• {justif}")
 
 def create_investment_analyzer():
-    """Analizador para inversión comercial con Margen de Contribución y Costos Variables"""
+    """Analizador para inversión comercial con Margen de Contribución ajustado dinámicamente a la data real"""
     st.subheader("💼 Inversión Comercial (Infraestructura)")
+    
+    # Evaluar tamaño real del dataset generado
+    max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 2000
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
         col1, col2 = st.columns(2)
         
         with col1:
-            n_customers = st.slider("Clientes a analizar:", 100, 2000, 500, step=100)
+            # CORREGIDO: Ajuste dinámico del límite superior del slider en base a la data real
+            n_customers = st.slider(
+                "Clientes a analizar:", 
+                min_value=100, 
+                max_value=int(max_customers_available), 
+                value=min(500, int(max_customers_available)), 
+                step=100
+            )
         with col2:
-            investment = st.number_input("Inversión requerida (M COP):", 10, 10000, 10000, step=10) * 1000000
+            # CORREGIDO: Se amplía el max_value a 50000 para corregir el bloqueo del aviso naranja "inferior o igual a 500"
+            investment = st.number_input(
+                "Inversión requerida (M COP):", 
+                min_value=10, 
+                max_value=50000, 
+                value=10000, 
+                step=10
+            ) * 1000000
         
         st.markdown("")
         col1, col2 = st.columns(2)
@@ -361,20 +390,19 @@ def create_investment_analyzer():
         
         st.markdown("")
         if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
-            # Generar clientes de prueba
-            test_customers = []
-            for i in range(n_customers):
-                customer = {
-                    'edad': int(np.random.uniform(min_age, max_age)),
-                    'ingreso_mensual': np.random.uniform(min_income, max_income),
-                    'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado']),
-                    'frecuencia_compra': np.random.poisson(3),
-                    'valor_promedio_compra': np.random.exponential(50000) + 10000,
-                    'lealtad_marca': np.random.beta(2, 2) * 100,
-                    'crecimiento_mercado': np.random.uniform(0.05, 0.15),
-                    'nivel_competencia': np.random.uniform(1, 10)
-                }
-                test_customers.append(customer)
+            # CORREGIDO: Filtrar de forma real por el segmento demográfico seleccionado antes de tomar la muestra
+            filtered_data = st.session_state.customer_data[
+                (st.session_state.customer_data['edad'] >= min_age) & 
+                (st.session_state.customer_data['edad'] <= max_age) &
+                (st.session_state.customer_data['ingreso_mensual'] >= min_income) &
+                (st.session_state.customer_data['ingreso_mensual'] <= max_income)
+            ]
+            
+            if len(filtered_data) < 10:
+                filtered_data = st.session_state.customer_data
+                
+            sample_n = min(n_customers, len(filtered_data))
+            test_customers = filtered_data.sample(n=sample_n).to_dict(orient='records')
             
             with st.spinner("Analizando..."):
                 # Ejecutar el modelo predictivo enviando el nuevo parámetro matemático
