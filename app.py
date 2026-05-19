@@ -1,4 +1,14 @@
-# app.py - Versión 2.1 con Filtro Geográfico Comercial
+Aquí tienes el código completo y actualizado de app.py.
+
+He replicado exactamente la misma lógica de segmentación geográfica en la pantalla de 🚀 Lanzamiento de Producto. Ahora, antes de procesar las métricas, podrás segmentar la población objetivo eligiendo entre las principales ciudades de Colombia dispersadas desde tu base de datos (Bogotá, Medellín, Cali, Barranquilla, Bucaramanga y Cartagena).
+
+Cambios aplicados:
+Población Objetivo Geográfica en Lanzamiento: Se añadió el componente st.multiselect dentro del expander de configuración de parámetros de lanzamiento.
+
+Filtrado Dinámico por Ciudades: Al hacer clic en "Analizar Lanzamiento", el DataFrame de clientes se filtra cruzando las ciudades seleccionadas junto con los rangos de edad e ingresos.
+
+Python
+# app.py - Versión 2.2 con Filtro Geográfico Completo (Lanzamiento e Inversión)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -96,7 +106,7 @@ def setup_page():
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🤖 Estratega IA / Toma Decisiones v2.1")
+    st.title("🤖 Estratega IA / Toma Decisiones v2.2")
     st.markdown("---")
 
 def format_cop(value):
@@ -224,14 +234,27 @@ def create_decision_analyzer():
         create_investment_analyzer()
 
 def create_launch_analyzer():
-    """Analizador para lanzamiento de producto ajustado dinámicamente a la data real"""
+    """Analizador para lanzamiento de producto con Filtro Demográfico de Ciudades de Colombia"""
     st.subheader("🚀 Lanzamiento de Producto")
     
     max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 1000
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
-        col1, col2 = st.columns(2)
         
+        # NUEVO: Selección de Población Geográfica para Lanzamientos
+        st.markdown("### 🌆 Población Objetivo Geográfica")
+        ciudades_disponibles = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
+        ciudades_seleccionadas = st.multiselect(
+            "Selecciona las ciudades para enfocar el análisis de lanzamiento:",
+            options=ciudades_disponibles,
+            default=ciudades_disponibles, # Por defecto analiza toda la población dispersada
+            key="ciudades_launch",
+            help="Permite aislar o consolidar el mercado según las principales ciudades de Colombia."
+        )
+        
+        st.markdown("---")
+        
+        col1, col2 = st.columns(2)
         with col1:
             n_customers = st.slider(
                 "Clientes a analizar:", 
@@ -262,11 +285,13 @@ def create_launch_analyzer():
         
         st.markdown("")
         if st.button("🔍 Analizar Lanzamiento", type="primary", use_container_width=True):
+            # APLICADO: Filtro demográfico cruzado con las ciudades seleccionadas
             filtered_data = st.session_state.customer_data[
                 (st.session_state.customer_data['edad'] >= min_age) & 
                 (st.session_state.customer_data['edad'] <= max_age) &
                 (st.session_state.customer_data['ingreso_mensual'] >= min_income) &
-                (st.session_state.customer_data['ingreso_mensual'] <= max_income)
+                (st.session_state.customer_data['ingreso_mensual'] <= max_income) &
+                (st.session_state.customer_data['ciudad'].isin(ciudades_seleccionadas))
             ]
             
             if len(filtered_data) < 10:
@@ -336,13 +361,13 @@ def create_investment_analyzer():
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
         
-        # NUEVO: Selección de Población por Ciudades Principales
         st.markdown("### 🌆 Población Objetivo Geográfica")
         ciudades_disponibles = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
         ciudades_seleccionadas = st.multiselect(
             "Selecciona las ciudades para enfocar el análisis:",
             options=ciudades_disponibles,
-            default=ciudades_disponibles, # Por defecto analiza todo el espectro dispersado
+            default=ciudades_disponibles,
+            key="ciudades_investment",
             help="Permite aislar o consolidar el mercado según las principales ciudades de Colombia."
         )
         
@@ -392,7 +417,6 @@ def create_investment_analyzer():
         
         st.markdown("")
         if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
-            # APLICADO: Filtro que incluye la condición de ciudad seleccionada
             filtered_data = st.session_state.customer_data[
                 (st.session_state.customer_data['edad'] >= min_age) & 
                 (st.session_state.customer_data['edad'] <= max_age) &
@@ -543,7 +567,7 @@ def main():
     
     with tab1:
         st.header("Dashboard")
-        st.markdown("**Prototipo IA para Decisiones Estratégicas v2.1**")
+        st.markdown("**Prototipo IA para Decisiones Estratégicas v2.2**")
         
         st.markdown("")
         st.subheader("📈 Estado del Sistema")
@@ -588,7 +612,7 @@ def main():
         2. **Generar Datos**: Crea el dataset sintético distribuido en Colombia
         3. **Entrenar Modelos**: Entrena los modelos de IA
         4. **Explorar**: Navega por otras secciones
-        5. **Analizar**: Usa la sección "Decisión" para análisis geográfico
+        5. **Analizar**: Usa la sección "Decisión" para análisis geográfico en ambos módulos
         """)
     
     with tab2:
