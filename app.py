@@ -1,4 +1,4 @@
-# app.py - Versión optimizada y adaptativa para dispositivos móviles
+# app.py - Versión 2.0 con Análisis de Decisión IA
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -26,16 +26,13 @@ def setup_page():
     st.set_page_config(
         page_title="Prototipo IA para la toma de Decisiones",
         page_icon="🤖",
-        layout="centered",  # Cambiar a centered para mejor adaptación en móviles
-        initial_sidebar_state="collapsed"  # Colapsar sidebar por defecto en móviles
+        layout="centered",
+        initial_sidebar_state="collapsed"
     )
     
-    # CSS personalizado para mejor adaptación móvil - MEJORADO
     st.markdown("""
         <style>
-        /* Optimización AGRESIVA para móviles */
         @media (max-width: 768px) {
-            /* TABS MÁS GRANDES */
             .stTabs [data-baseweb="tab-list"] {
                 gap: 4px !important;
                 padding: 8px !important;
@@ -67,32 +64,8 @@ def setup_page():
                 margin-bottom: 14px !important;
                 border-radius: 10px !important;
             }
-            
-            .stNumberInput, .stSlider, .stSelectbox, .stTextInput {
-                font-size: 14px !important;
-            }
-            
-            /* Mejorar espaciado de componentes */
-            .stButton {
-                margin-bottom: 12px !important;
-            }
-            
-            /* Header y subheader */
-            h1, h2, h3 {
-                font-size: 1.4rem !important;
-                margin-bottom: 1rem !important;
-                word-wrap: break-word !important;
-            }
-            
-            /* Expandores más grandes */
-            .streamlit-expanderHeader {
-                font-size: 16px !important;
-                padding: 12px !important;
-                min-height: 48px !important;
-            }
         }
         
-        /* ESTILOS GLOBALES PARA TODAS LAS PANTALLAS */
         .stTabs [role="tablist"] {
             background-color: transparent;
             border-bottom: 2px solid #e0e0e0;
@@ -113,23 +86,6 @@ def setup_page():
             border-bottom: 3px solid #1f77b4 !important;
         }
         
-        .stTabs [role="tablist"] button[aria-selected="false"] {
-            color: #555;
-        }
-        
-        /* Tamaño mínimo recomendado para touch targets */
-        .stButton > button {
-            min-height: 44px !important;
-            font-size: 15px !important;
-            font-weight: 600;
-        }
-        
-        /* Estilos generales responsive */
-        .main {
-            max-width: 100% !important;
-            padding: 1.2rem !important;
-        }
-        
         .stMetric {
             background-color: rgba(240, 242, 246, 0.8);
             padding: 1rem !important;
@@ -137,54 +93,28 @@ def setup_page():
             margin-bottom: 0.8rem !important;
             border-left: 4px solid #1f77b4;
         }
-        
-        h1, h2, h3 {
-            word-wrap: break-word;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        /* Expandores */
-        .streamlit-expanderHeader {
-            font-size: 15px !important;
-            padding: 12px 16px !important;
-            font-weight: 600 !important;
-        }
-        
-        /* Mejorar selectbox y inputs */
-        .stSelectbox, .stNumberInput, .stSlider {
-            margin-bottom: 1rem !important;
-        }
-        
-        .stSelectbox > div > div {
-            font-size: 14px !important;
-        }
         </style>
     """, unsafe_allow_html=True)
     
-    st.title("🤖 Estratega IA / Toma Decisiones")
+    st.title("🤖 Estratega IA / Toma Decisiones v2.0")
     st.markdown("---")
-
-def is_mobile():
-    """Detecta si es dispositivo móvil basado en el tamaño de la pantalla"""
-    return True
-
-def get_responsive_cols(num_cols=4):
-    """Retorna número de columnas adaptativo según dispositivo"""
-    return min(num_cols, 2)
 
 def format_cop(value):
     """Formatea valores como pesos colombianos"""
     return f"${value:,.0f} COP"
 
-def generate_sample_data():
+def format_percentage(value):
+    """Formatea porcentajes"""
+    return f"{value:.1f}%"
+
+def generate_sample_data(n_samples):
     """Genera datos de muestra para el prototipo"""
-    with st.spinner("Generando datos..."):
-        st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(1000)
+    with st.spinner(f"Generando {n_samples:,} clientes..."):
+        st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(n_samples)
         st.success(f"✅ {len(st.session_state.customer_data)} clientes generados")
     
     st.rerun()
-        
+
 def train_models():
     """Entrena los modelos de IA"""
     if st.session_state.customer_data is None:
@@ -206,25 +136,24 @@ def train_models():
     st.rerun()
 
 def show_data_overview():
-    """Muestra overview de los datos optimizado para móviles"""
+    """Muestra overview de los datos"""
     if st.session_state.customer_data is None:
         st.warning("Genere los datos primero")
         return
         
     st.subheader("📊 Resumen de Clientes")
     
-    col_count = get_responsive_cols(4)
-    cols = st.columns(col_count)
+    cols = st.columns(2)
     
     metrics_data = [
-        ("Total Clientes", len(st.session_state.customer_data)),
+        ("Total Clientes", f"{len(st.session_state.customer_data):,}"),
         ("Edad Promedio", f"{int(st.session_state.customer_data['edad'].mean())} años"),
         ("Ingreso Promedio", format_cop(st.session_state.customer_data['ingreso_mensual'].mean())),
         ("Valor Compra Prom.", format_cop(st.session_state.customer_data['valor_promedio_compra'].mean()))
     ]
     
     for i, (label, value) in enumerate(metrics_data):
-        with cols[i % col_count]:
+        with cols[i % 2]:
             st.metric(label, value)
     
     st.markdown("")
@@ -243,28 +172,9 @@ def show_data_overview():
         margin=dict(l=10, r=10, t=40, b=10)
     )
     st.plotly_chart(fig_pie, use_container_width=True)
-    
-    st.markdown("")
-    st.subheader("📈 Estadísticas por Segmento")
-    segment_stats = st.session_state.customer_data.groupby('segmento_cliente').agg({
-        'edad': 'mean',
-        'ingreso_mensual': 'mean',
-        'valor_promedio_compra': 'mean',
-        'lealtad_marca': 'mean'
-    }).round(2)
-    
-    segment_stats.index = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_stats.index]
-    segment_stats.columns = ['Edad', 'Ingreso', 'Compra', 'Lealtad %']
-    
-    segment_stats['Edad'] = segment_stats['Edad'].astype(int).astype(str)
-    segment_stats['Ingreso'] = segment_stats['Ingreso'].apply(lambda x: f"${x/1e6:.1f}M")
-    segment_stats['Compra'] = segment_stats['Compra'].apply(lambda x: f"${x/1e3:.0f}K")
-    segment_stats['Lealtad %'] = segment_stats['Lealtad %'].round(0).astype(int).astype(str)
-    
-    st.dataframe(segment_stats, use_container_width=True)
 
 def show_model_performance():
-    """Muestra el rendimiento de los modelos optimizado para móviles"""
+    """Muestra el rendimiento de los modelos"""
     if st.session_state.model_metrics is None:
         st.warning("Entrene los modelos primero")
         return
@@ -281,12 +191,6 @@ def show_model_performance():
             st.metric("Precisión", f"{metrics['accuracy']:.3f}")
         with col2:
             st.metric("Val. Cruzada", f"{metrics['cv_mean']:.3f}")
-        
-        st.markdown("")
-        st.write("**Reporte de Clasificación:**")
-        report_df = pd.DataFrame(metrics['classification_report']).transpose()
-        report_df = report_df[['precision', 'recall', 'f1-score']].round(3)
-        st.dataframe(report_df, use_container_width=True)
     
     with tab2:
         metrics = st.session_state.model_metrics['impact']
@@ -296,75 +200,61 @@ def show_model_performance():
             st.metric("RMSE", f"{metrics['rmse']:.2f}")
         with col2:
             st.metric("R² Score", f"{metrics['r2_score']:.3f}")
-        
-        st.markdown("")
-        y_true = st.session_state.customer_data['valor_promedio_compra'].values
-        X, _ = st.session_state.ai_model.prepare_data(st.session_state.customer_data)
-        y_pred = st.session_state.ai_model.impact_model.predict(X)
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=y_true,
-            y=y_pred,
-            mode='markers',
-            marker=dict(size=4),
-            name='Predicciones'
-        ))
-        fig.add_trace(go.Scatter(
-            x=[y_true.min(), y_true.max()],
-            y=[y_true.min(), y_true.max()],
-            mode='lines',
-            name='Perfecto',
-            line=dict(color='red', dash='dash', width=1)
-        ))
-        
-        fig.update_layout(
-            title='Predicciones vs Reales',
-            xaxis_title='Valor Real',
-            yaxis_title='Predicción',
-            height=350,
-            font=dict(size=11),
-            margin=dict(l=40, r=20, t=40, b=40),
-            hovermode='closest'
-        )
-        st.plotly_chart(fig, use_container_width=True)
 
-def create_scenario_analyzer():
-    """Crea el analizador de escenarios optimizado para móviles"""
-    st.subheader("🎯 Analizador de Escenarios")
+def create_decision_analyzer():
+    """Analizador de decisiones con 2 opciones: Lanzamiento e Inversión"""
+    st.subheader("🎯 Análisis de Decisión IA")
     
-    scenario_types = [
-        "Lanzamiento de Producto",
-        "Segmentación de Clientes", 
-        "Expansión de Portafolio",
-        "Estrategia Abastecimiento",
-        "Inversión Comercial"
-    ]
+    if not st.session_state.ai_model.is_trained:
+        st.error("❌ Entrene los modelos primero (Tab Modelos)")
+        return
     
-    selected_scenario = st.selectbox("Tipo de escenario:", scenario_types, key="scenario_type")
+    # Selector de tipo de análisis
+    analysis_type = st.radio(
+        "Selecciona tipo de análisis:",
+        options=["🚀 Lanzamiento de Producto", "💼 Inversión Comercial (Infraestructura)"],
+        horizontal=False
+    )
     
     st.markdown("")
-    with st.expander("⚙️ Configurar Parámetros", expanded=False):
-        n_customers = st.slider("Clientes:", 10, 500, 100, step=10)
+    
+    if analysis_type == "🚀 Lanzamiento de Producto":
+        create_launch_analyzer()
+    else:
+        create_investment_analyzer()
+
+def create_launch_analyzer():
+    """Analizador para lanzamiento de producto"""
+    st.subheader("🚀 Lanzamiento de Producto")
+    
+    with st.expander("⚙️ Configurar Parámetros", expanded=True):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            n_customers = st.slider("Clientes a analizar:", 50, 1000, 300, step=50)
+        with col2:
+            product_price = st.number_input("Precio del producto (COP):", 5000, 100000, 25000, step=1000)
         
         st.markdown("")
         col1, col2 = st.columns(2)
         with col1:
-            min_age = st.number_input("Edad min:", 18, 80, 25, 1)
+            min_age = st.number_input("Edad mín:", 18, 80, 20, 1)
         with col2:
-            max_age = st.number_input("Edad máx:", 18, 80, 45, 1)
-            
+            max_age = st.number_input("Edad máx:", 18, 80, 60, 1)
+        
         st.markdown("")
         col1, col2 = st.columns(2)
         with col1:
-            min_income = st.number_input("Ing. mín (M COP):", 1, 50, 3, 1)
-            min_income *= 1000000
+            min_income = st.number_input("Ing. mín (M COP):", 1, 50, 2, 1) * 1000000
         with col2:
-            max_income = st.number_input("Ing. máx (M COP):", 1, 100, 8, 1)
-            max_income *= 1000000
+            max_income = st.number_input("Ing. máx (M COP):", 1, 100, 8, 1) * 1000000
         
         st.markdown("")
-        if st.button("🔍 Analizar Escenario", type="primary", use_container_width=True):
+        min_viable = st.number_input("Ingresos mínimos viables (M COP):", 10, 100, 30, 1) * 1000000
+        
+        st.markdown("")
+        if st.button("🔍 Analizar Lanzamiento", type="primary", use_container_width=True):
+            # Generar clientes de prueba
             test_customers = []
             for i in range(n_customers):
                 customer = {
@@ -380,198 +270,181 @@ def create_scenario_analyzer():
                 test_customers.append(customer)
             
             with st.spinner("Analizando..."):
-                scenario_results = st.session_state.ai_model.analyze_scenario(test_customers)
+                launch_result = st.session_state.ai_model.evaluate_product_launch(
+                    test_customers,
+                    product_price=product_price,
+                    min_viable_revenue=min_viable
+                )
             
-            st.session_state.scenario_results = scenario_results
-            st.session_state.test_customers = test_customers
+            st.session_state.launch_result = launch_result
             st.rerun()
     
-    if 'scenario_results' in st.session_state:
-        scenario_results = st.session_state.scenario_results
-        test_customers = st.session_state.test_customers
+    # Mostrar resultados
+    if 'launch_result' in st.session_state:
+        result = st.session_state.launch_result
         
         st.markdown("")
-        st.subheader("📈 Resultados")
+        st.markdown("---")
         
-        col_count = get_responsive_cols(3)
-        cols = st.columns(col_count)
+        # Recomendación principal
+        recommendation = result['recommendation']
+        confidence = result['confidence']
         
-        metrics_data = [
-            ("Clientes", f"{scenario_results['total_customers']}"),
-            ("Impacto Prom.", format_cop(scenario_results['avg_impact'])),
-            ("Impacto Total", format_cop(scenario_results['total_impact']))
-        ]
-        
-        for i, (label, value) in enumerate(metrics_data):
-            with cols[i % col_count]:
-                st.metric(label, value)
+        if '✅' in recommendation:
+            st.success(f"### {recommendation} (Confianza: {confidence:.1f}%)")
+        else:
+            st.error(f"### {recommendation} (Confianza: {confidence:.1f}%)")
         
         st.markdown("")
-        st.subheader("🎯 Segmentos")
-        segment_dist = scenario_results['segment_distribution']
-        segment_labels = [st.session_state.data_generator.get_segment_description(seg) for seg in segment_dist.keys()]
         
-        fig_segment = px.pie(
-            values=list(segment_dist.values()),
-            names=segment_labels,
-            title="Distribución",
-            height=350
-        )
-        fig_segment.update_layout(
-            font=dict(size=11),
-            margin=dict(l=10, r=10, t=40, b=10)
-        )
-        st.plotly_chart(fig_segment, use_container_width=True)
+        # Métricas principales
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Compradores Est.", f"{result['estimated_buyers']:,}")
+        with col2:
+            st.metric("% de Compra", format_percentage(result['purchase_percentage']))
+        with col3:
+            st.metric("ROI Est.", format_percentage(result['estimated_roi']))
         
         st.markdown("")
-        st.subheader("💡 Recomendaciones")
-        recommendations = generate_recommendations(scenario_results, selected_scenario, test_customers)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Ingresos Proy.", format_cop(result['projected_revenue']))
+        with col2:
+            st.metric("Mínimo Viable", format_cop(result['min_viable_revenue']))
         
-        with st.expander("📌 Análisis General", expanded=True):
-            for rec in recommendations[:5]:
-                if rec and not rec.startswith(" "):
-                    st.markdown(f"**{rec}**" if "**" in rec else rec)
+        st.markdown("")
+        st.metric("Propensión Promedio", format_percentage(result['avg_propensity']))
         
-        with st.expander("📊 Análisis por Segmento"):
-            in_segment_section = False
-            for rec in recommendations:
-                if "ANÁLISIS POR SEGMENTO" in rec:
-                    in_segment_section = True
-                elif "RECOMENDACIONES FINALES" in rec:
-                    in_segment_section = False
-                elif in_segment_section and rec.strip():
-                    st.markdown(rec)
-        
-        with st.expander("🎯 Estrategias"):
-            in_strategy_section = False
-            for rec in recommendations:
-                if any(x in rec for x in ["LANZAMIENTO", "SEGMENTACIÓN", "EXPANSIÓN", "ABASTECIMIENTO", "INVERSIÓN"]):
-                    in_strategy_section = True
-                if in_strategy_section and rec.strip():
-                    st.markdown(rec)
+        # Justificación
+        st.markdown("")
+        st.subheader("💡 Justificación")
+        for justif in result['justification']:
+            st.markdown(f"• {justif}")
 
-def generate_recommendations(scenario_results, scenario_type, test_customers):
-    """Genera recomendaciones estratégicas"""
-    recommendations = []
+def create_investment_analyzer():
+    """Analizador para inversión comercial"""
+    st.subheader("💼 Inversión Comercial (Infraestructura)")
     
-    segment_dist = scenario_results['segment_distribution']
-    avg_impact = scenario_results['avg_impact']
-    total_customers = scenario_results['total_customers']
-    
-    dominant_segment = max(segment_dist, key=segment_dist.get)
-    segment_name = st.session_state.data_generator.get_segment_description(dominant_segment)
-    segment_percentage = (segment_dist[dominant_segment] / total_customers) * 100
-    
-    segment_analysis = {}
-    for customer in test_customers:
-        segment = st.session_state.ai_model.predict_segment(customer)
-        if segment not in segment_analysis:
-            segment_analysis[segment] = {
-                'count': 0, 'total_income': 0, 'total_purchase': 0,
-                'avg_age': 0, 'avg_loyalty': 0
-            }
-        segment_analysis[segment]['count'] += 1
-        segment_analysis[segment]['total_income'] += customer['ingreso_mensual']
-        segment_analysis[segment]['total_purchase'] += customer['valor_promedio_compra']
-        segment_analysis[segment]['avg_age'] += customer['edad']
-        segment_analysis[segment]['avg_loyalty'] += customer['lealtad_marca']
-    
-    for segment in segment_analysis:
-        count = segment_analysis[segment]['count']
-        segment_analysis[segment]['avg_income'] = segment_analysis[segment]['total_income'] / count
-        segment_analysis[segment]['avg_purchase'] = segment_analysis[segment]['total_purchase'] / count
-        segment_analysis[segment]['avg_age'] = segment_analysis[segment]['avg_age'] / count
-        segment_analysis[segment]['avg_loyalty'] = segment_analysis[segment]['avg_loyalty'] / count
-    
-    recommendations.append(f"🎯 **Segmento Dominante**: {segment_name} ({segment_percentage:.0f}%)")
-    
-    if avg_impact > 5000000:
-        recommendations.append("💰 **Impacto Alto**: Implementar gradualmente con monitoreo")
-    elif avg_impact > 2000000:
-        recommendations.append("📊 **Impacto Moderado**: Requiere seguimiento periódico")
-    else:
-        recommendations.append("⚠️ **Impacto Bajo**: Evaluar alternativas más rentables")
-    
-    if "Lanzamiento" in scenario_type:
-        recommendations.extend([
-            "\n🚀 **LANZAMIENTO DE PRODUCTO**",
-            "• Priorizar segmentos de alta capacidad",
-            "• Precios competitivos para penetración",
-            "• Marketing dirigido al segmento dominante",
-            "• KPIs claros para medir éxito"
-        ])
-    elif "Segmentación" in scenario_type:
-        recommendations.extend([
-            "\n🎯 **SEGMENTACIÓN DE CLIENTES**",
-            "• Personalizar ofertas por grupo",
-            "• Programas de fidelización específicos",
-            "• Canales optimizados por segmento",
-            "• Pricing diferencial por grupo"
-        ])
-    elif "Expansión" in scenario_type:
-        recommendations.extend([
-            "\n📈 **EXPANSIÓN DE PORTAFOLIO**",
-            "• Identificar segmentos de mayor potencial",
-            "• Evaluar barreras competitivas",
-            "• Alianzas estratégicas",
-            "• Planear escalabilidad del sistema"
-        ])
-    elif "Abastecimiento" in scenario_type:
-        recommendations.extend([
-            "\n📦 **ABASTECIMIENTO**",
-            "• Optimizar cadena de suministro",
-            "• Diversificar proveedores",
-            "• Inventario predictivo",
-            "• KPIs logísticos clave"
-        ])
-    elif "Inversión" in scenario_type:
-        recommendations.extend([
-            "\n💼 **INVERSIÓN COMERCIAL**",
-            "• Evaluar ROI por segmento",
-            "• Horizonte de recuperación claro",
-            "• Análisis de sensibilidad",
-            "• Diversificar riesgos"
-        ])
-    
-    recommendations.append("\n📊 **ANÁLISIS POR SEGMENTO**")
-    sorted_segments = sorted(segment_analysis.items(), 
-                           key=lambda x: x[1]['avg_income'], reverse=True)
-    
-    for segment_id, analysis in sorted_segments:
-        segment_name = st.session_state.data_generator.get_segment_description(segment_id)
-        count = analysis['count']
-        recommendations.append(f"\n**{segment_name}** ({count} clientes)")
-        recommendations.append(f"• Edad: {int(analysis['avg_age'])} años")
-        recommendations.append(f"• Ingreso: ${analysis['avg_income']/1e6:.1f}M COP")
-        recommendations.append(f"• Compra: ${analysis['avg_purchase']/1e3:.0f}K COP")
-        recommendations.append(f"• Lealtad: {analysis['avg_loyalty']:.0f}%")
+    with st.expander("⚙️ Configurar Parámetros", expanded=True):
+        col1, col2 = st.columns(2)
         
-        if segment_id == dominant_segment:
-            recommendations.append("🏆 PRIORITARIO")
-        elif analysis['avg_income'] > 4000000:
-            recommendations.append("💎 ALTA CAPACIDAD")
-        elif analysis['avg_loyalty'] > 60:
-            recommendations.append("🤝 ALTA LEALTAD")
+        with col1:
+            n_customers = st.slider("Clientes a analizar:", 100, 2000, 500, step=100)
+        with col2:
+            investment = st.number_input("Inversión requerida (M COP):", 10, 500, 100, step=10) * 1000000
+        
+        st.markdown("")
+        col1, col2 = st.columns(2)
+        with col1:
+            min_age = st.number_input("Edad mín:", 18, 80, 25, 1)
+        with col2:
+            max_age = st.number_input("Edad máx:", 18, 80, 65, 1)
+        
+        st.markdown("")
+        col1, col2 = st.columns(2)
+        with col1:
+            min_income = st.number_input("Ing. mín (M COP):", 1, 50, 2, 1) * 1000000
+        with col2:
+            max_income = st.number_input("Ing. máx (M COP):", 1, 100, 9, 1) * 1000000
+        
+        st.markdown("")
+        if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
+            # Generar clientes de prueba
+            test_customers = []
+            for i in range(n_customers):
+                customer = {
+                    'edad': int(np.random.uniform(min_age, max_age)),
+                    'ingreso_mensual': np.random.uniform(min_income, max_income),
+                    'educacion': np.random.choice(['Primaria', 'Secundaria', 'Universidad', 'Posgrado']),
+                    'frecuencia_compra': np.random.poisson(3),
+                    'valor_promedio_compra': np.random.exponential(50000) + 10000,
+                    'lealtad_marca': np.random.beta(2, 2) * 100,
+                    'crecimiento_mercado': np.random.uniform(0.05, 0.15),
+                    'nivel_competencia': np.random.uniform(1, 10)
+                }
+                test_customers.append(customer)
+            
+            with st.spinner("Analizando..."):
+                investment_result = st.session_state.ai_model.evaluate_infrastructure_investment(
+                    test_customers,
+                    investment_required=investment
+                )
+            
+            st.session_state.investment_result = investment_result
+            st.rerun()
     
-    recommendations.append("\n🎯 **RECOMENDACIONES FINALES**")
-    
-    if avg_impact > 8000000:
-        recommendations.append("⚠️ RIESGO ALTO: Piloto primero")
-    elif avg_impact > 3000000:
-        recommendations.append("📊 RIESGO MODERADO: Monitoreo constante")
-    else:
-        recommendations.append("✅ RIESGO BAJO: Implementación directa")
-    
-    if total_customers > 200:
-        recommendations.append("🚀 ESCALABILIDAD: Alto potencial de expansión")
-    elif total_customers > 100:
-        recommendations.append("📈 CRECIMIENTO: Potencial con optimización")
-    else:
-        recommendations.append("🎯 ENFOQUE: Priorizar calidad")
-    
-    return recommendations
+    # Mostrar resultados
+    if 'investment_result' in st.session_state:
+        result = st.session_state.investment_result
+        
+        st.markdown("")
+        st.markdown("---")
+        
+        # Recomendación principal
+        recommendation = result['recommendation']
+        confidence = result['confidence']
+        
+        if '✅' in recommendation:
+            st.success(f"### {recommendation} (Confianza: {confidence:.1f}%)")
+        else:
+            st.error(f"### {recommendation} (Confianza: {confidence:.1f}%)")
+        
+        st.markdown("")
+        
+        # Análisis financiero
+        st.subheader("📊 Análisis Financiero")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Inversión Req.", format_cop(result['investment_required']))
+        with col2:
+            st.metric("Ingresos Anuales", format_cop(result['projected_annual_income']))
+        
+        st.markdown("")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Payback (meses)", f"{result['payback_months']:.1f}")
+        with col2:
+            st.metric("Rentabilidad", format_percentage(result['profitability_percentage']))
+        
+        st.markdown("")
+        st.metric("Propensión Promedio", format_percentage(result['avg_propensity']))
+        
+        # Criterios de viabilidad
+        st.markdown("")
+        st.subheader("✓ Criterios de Viabilidad")
+        
+        criteria = result['criteria_met']
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if criteria['market_size']:
+                st.markdown("✅ Tamaño de mercado >= 500 clientes")
+            else:
+                st.markdown("❌ Tamaño de mercado < 500 clientes")
+            
+            if criteria['income_ratio']:
+                st.markdown("✅ Ingresos >= 50% inversión")
+            else:
+                st.markdown("❌ Ingresos < 50% inversión")
+        
+        with col2:
+            if criteria['payback']:
+                st.markdown("✅ Payback <= 18 meses")
+            else:
+                st.markdown("❌ Payback > 18 meses")
+            
+            if criteria['propensity']:
+                st.markdown("✅ Propensión >= 45%")
+            else:
+                st.markdown("❌ Propensión < 45%")
+        
+        # Justificación
+        st.markdown("")
+        st.subheader("💡 Justificación")
+        for justif in result['justification']:
+            st.markdown(f"• {justif}")
 
-# Función principal
 def main():
     if 'data_generator' not in st.session_state:
         st.session_state.data_generator = DataGenerator()
@@ -584,12 +457,12 @@ def main():
     
     setup_page()
     
-    # Navegación con tabs para mejor adaptación móvil
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Dashboard", "📁 Datos", "🤖 Modelos", "🎯 Análisis"])
+    # Navegación con tabs
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Dashboard", "📁 Datos", "🤖 Modelos", "🎯 Decisión"])
     
     with tab1:
         st.header("Dashboard")
-        st.markdown("**Prototipo IA para Decisiones Estratégicas**")
+        st.markdown("**Prototipo IA para Decisiones Estratégicas v2.0**")
         
         st.markdown("")
         st.subheader("📈 Estado del Sistema")
@@ -607,10 +480,20 @@ def main():
                 st.metric("❌ Modelos", "No")
         
         st.markdown("")
-        st.subheader("🚀 Acciones")
+        st.subheader("📊 Seleccionar Tamaño de Muestra")
+        
+        available_sizes = st.session_state.data_generator.get_available_sample_sizes()
+        sample_size = st.selectbox(
+            "Cantidad de clientes para generar:",
+            options=available_sizes,
+            format_func=lambda x: f"{x:,} clientes",
+            key="sample_size"
+        )
+        
+        st.markdown("")
         
         if st.button("📊 Generar Datos", type="primary", use_container_width=True, key="btn_generate"):
-            generate_sample_data()
+            generate_sample_data(sample_size)
         
         st.markdown("")
         
@@ -620,9 +503,11 @@ def main():
         st.markdown("---")
         st.markdown("### ℹ️ Instrucciones")
         st.markdown("""
-        1. **Generar Datos**: Crea un conjunto de 1,000 clientes
-        2. **Entrenar Modelos**: Entrena los modelos de IA
-        3. **Explorar**: Navega por otras secciones
+        1. **Seleccionar Muestra**: Elige 1K, 2K, 3K, 4K o 5K clientes
+        2. **Generar Datos**: Crea el dataset sintético
+        3. **Entrenar Modelos**: Entrena los modelos de IA
+        4. **Explorar**: Navega por otras secciones
+        5. **Analizar**: Usa la sección "Decisión" para análisis
         """)
     
     with tab2:
@@ -634,8 +519,8 @@ def main():
         show_model_performance()
             
     with tab4:
-        st.header("Análisis")
-        create_scenario_analyzer()
+        st.header("Análisis de Decisión")
+        create_decision_analyzer()
 
 if __name__ == "__main__":
     main()
