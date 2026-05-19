@@ -1,13 +1,3 @@
-Aquí tienes el código completo y actualizado de app.py.
-
-He replicado exactamente la misma lógica de segmentación geográfica en la pantalla de 🚀 Lanzamiento de Producto. Ahora, antes de procesar las métricas, podrás segmentar la población objetivo eligiendo entre las principales ciudades de Colombia dispersadas desde tu base de datos (Bogotá, Medellín, Cali, Barranquilla, Bucaramanga y Cartagena).
-
-Cambios aplicados:
-Población Objetivo Geográfica en Lanzamiento: Se añadió el componente st.multiselect dentro del expander de configuración de parámetros de lanzamiento.
-
-Filtrado Dinámico por Ciudades: Al hacer clic en "Analizar Lanzamiento", el DataFrame de clientes se filtra cruzando las ciudades seleccionadas junto con los rangos de edad e ingresos.
-
-Python
 # app.py - Versión 2.2 con Filtro Geográfico Completo (Lanzamiento e Inversión)
 import streamlit as st
 import pandas as pd
