@@ -1,4 +1,5 @@
 # data_generator.py - Versión con edad correlacionada a segmentos y selector de muestras
+# data_generator.py - Versión con edad correlacionada a segmentos y selector de muestras
 import pandas as pd
 import numpy as np
 from typing import Dict, List
@@ -20,7 +21,8 @@ class DataGenerator:
     
     def get_available_sample_sizes(self) -> List[int]:
         """Retorna lista de tamaños de muestra disponibles"""
-        return [1000, 2000, 3000, 4000, 5000]
+        # Se agrega 10000 a la lista de tamaños permitidos
+        return [1000, 2000, 3000, 4000, 5000, 10000]
     
     def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
         """Genera datos simulados de clientes con edad correlacionada a segmentos"""
@@ -50,20 +52,20 @@ class DataGenerator:
             'segmento_cliente': np.random.choice([0, 1, 2, 3], n_samples, p=[0.25, 0.35, 0.25, 0.15])
         }
         
-        # Asignar edad según segmento
-        edades = []
-        ingresos = []
+        # Optimización con NumPy para agilizar la generación en muestras grandes (como 10000)
+        edades = np.zeros(n_samples, dtype=int)
+        ingresos = np.zeros(n_samples, dtype=float)
         
-        for segment in data['segmento_cliente']:
-            min_age, max_age = self.segment_age_ranges[segment]
-            min_income, max_income = segment_incomes[segment]
+        for segment in self.customer_segments.keys():
+            mask = (data['segmento_cliente'] == segment)
+            n_segment_samples = np.sum(mask)
             
-            # Generar edad dentro del rango del segmento
-            age = np.random.randint(min_age, max_age + 1)
-            income = np.random.uniform(min_income, max_income)
-            
-            edades.append(age)
-            ingresos.append(income)
+            if n_segment_samples > 0:
+                min_age, max_age = self.segment_age_ranges[segment]
+                min_income, max_income = segment_incomes[segment]
+                
+                edades[mask] = np.random.randint(min_age, max_age + 1, size=n_segment_samples)
+                ingresos[mask] = np.random.uniform(min_income, max_income, size=n_segment_samples)
         
         data['edad'] = edades
         data['ingreso_mensual'] = ingresos
