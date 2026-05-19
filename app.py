@@ -323,7 +323,7 @@ def create_launch_analyzer():
             st.markdown(f"• {justif}")
 
 def create_investment_analyzer():
-    """Analizador para inversión comercial"""
+    """Analizador para inversión comercial con Margen de Contribución y Costos Variables"""
     st.subheader("💼 Inversión Comercial (Infraestructura)")
     
     with st.expander("⚙️ Configurar Parámetros", expanded=True):
@@ -332,7 +332,6 @@ def create_investment_analyzer():
         with col1:
             n_customers = st.slider("Clientes a analizar:", 100, 2000, 500, step=100)
         with col2:
-            # CORREGIDO: Se cambia el rango máximo de 500 a 10000 y el valor por defecto a 10000
             investment = st.number_input("Inversión requerida (M COP):", 10, 10000, 10000, step=10) * 1000000
         
         st.markdown("")
@@ -348,6 +347,17 @@ def create_investment_analyzer():
             min_income = st.number_input("Ing. mín (M COP):", 1, 50, 2, 1) * 1000000
         with col2:
             max_income = st.number_input("Ing. máx (M COP):", 1, 100, 9, 1) * 1000000
+        
+        # NUEVO INPUT: Selector de tasa de Costo Variable Operativo
+        st.markdown("")
+        cost_ratio_input = st.slider(
+            "Tasa estimada de Costo Variable (% sobre ingreso):",
+            min_value=10,
+            max_value=90,
+            value=35,
+            step=5,
+            help="Porcentaje del ingreso que se consume directamente en la operación logística o de servicio por cada cliente atraído."
+        )
         
         st.markdown("")
         if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
@@ -367,17 +377,21 @@ def create_investment_analyzer():
                 test_customers.append(customer)
             
             with st.spinner("Analizando..."):
+                # Ejecutar el modelo predictivo enviando el nuevo parámetro matemático
                 investment_result = st.session_state.ai_model.evaluate_infrastructure_investment(
                     test_customers,
-                    investment_required=investment
+                    investment_required=investment,
+                    variable_cost_ratio=cost_ratio_input / 100.0
                 )
             
                 st.session_state.investment_result = investment_result
+                st.session_state.cost_ratio_selected = cost_ratio_input
                 st.rerun()
     
-    # Mostrar resultados
+    # Mostrar resultados reestructurados
     if 'investment_result' in st.session_state:
         result = st.session_state.investment_result
+        cost_ratio_label = st.session_state.get('cost_ratio_selected', 35)
         
         st.markdown("")
         st.markdown("---")
@@ -393,23 +407,59 @@ def create_investment_analyzer():
         
         st.markdown("")
         
-        # Análisis financiero
-        st.subheader("📊 Análisis Financiero")
-        col1, col2 = st.columns(2)
+        # NUEVA DISTRIBUCIÓN: Análisis de Margen de Contribución y Costos Variables
+        st.subheader("📊 Estructura del Margen de Contribución")
+        
+        col_f1_1, col_f1_2 = st.columns(2)
+        with col_f1_1:
+            st.metric(
+                label="Ingresos Anuales Proyectados (Bruto)", 
+                value=format_cop(result['projected_annual_income']),
+                help="Volumen total de ingresos brutos estimados."
+            )
+        with col_f1_2:
+            st.metric(
+                label=f"Costos Variables Proyectados ({cost_ratio_label}%)", 
+                value=format_cop(result['total_variable_costs']),
+                delta="- Costo Operativo",
+                delta_color="inverse",
+                help="Monto absorbido directamente por el costo de operación."
+            )
+            
+        col_f2_1, col_f2_2 = st.columns(2)
+        with col_f2_1:
+            st.metric(
+                label="👑 Margen de Contribución Absoluto", 
+                value=format_cop(result['contribution_margin']),
+                help="Dinero real disponible que le queda al proyecto para amortizar la infraestructura."
+            )
+        with col_f2_2:
+            st.metric(
+                label="Margen de Contribución Relativo (%)", 
+                value=format_percentage(result['contribution_margin_pct']),
+                help="Eficiencia del negocio libre de costos variables."
+            )
+        
+        st.markdown("---")
+        
+        # Métricas de Retorno e Inversión Base
+        st.subheader("📈 Viabilidad Financiera")
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Inversión Req.", format_cop(result['investment_required']))
         with col2:
-            st.metric("Ingresos Anuales", format_cop(result['projected_annual_income']))
-        
-        st.markdown("")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Payback (meses)", f"{result['payback_months']:.1f}")
-        with col2:
+            payback = result['payback_months']
+            st.metric(
+                label="Payback (meses)", 
+                value=f"{payback:.1f} meses",
+                delta="Excede Límite (18m)" if payback > 18 else "Tiempo Óptimo",
+                delta_color="inverse" if payback > 18 else "normal"
+            )
+        with col3:
             st.metric("Rentabilidad", format_percentage(result['profitability_percentage']))
         
         st.markdown("")
-        st.metric("Propensión Promedio", format_percentage(result['avg_propensity']))
+        st.metric("Propensión Promedio de Compra", format_percentage(result['avg_propensity']))
         
         # Criterios de viabilidad
         st.markdown("")
