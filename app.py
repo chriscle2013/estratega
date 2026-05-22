@@ -1,5 +1,5 @@
-# app.py - Versión 3.5 PRODUCTION ENGINE
-# Código completo blindado sin dependencias de paletas de strings para evitar AttributeError.
+# app.py - Versión 3.6 PRODUCTION ENGINE (STABLE RUN)
+# Soluciona de raíz el TypeError en el histograma aplicando color nativo por trazo.
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -386,15 +386,14 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # 2. Histograma de Edades con Lista de Colores Fija Blindada contra Errores
+            # 2. Histograma Nativo Seguro (Asignación Directa de Color para evitar TypeError)
             fig_edad = px.histogram(
                 df, x="edad", nbins=25,
                 title="DISTRIBUCIÓN PORCENTUAL DE EDADES (GRADIENTE DE DENSIDAD)",
                 labels={'edad': 'Edad (Años)', 'count': 'Frecuencia'},
-                template="plotly_dark",
-                color="edad",  
-                color_continuous_scale=["#00D2FF", "#0072FF", "#4ECCA3"]  # Mapeo manual seguro
+                template="plotly_dark"
             )
+            fig_edad.update_traces(marker_color='#00D2FF', marker_line_color='#0072FF', marker_line_width=1)
             fig_edad.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=400)
             st.plotly_chart(fig_edad, use_container_width=True)
             
