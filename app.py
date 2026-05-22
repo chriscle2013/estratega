@@ -1,4 +1,4 @@
-# app.py - Versión 7.1 PRODUCTION ENGINE (Advanced Launch Analytics - Fixed)
+# app.py - Versión 7.2 PRODUCTION ENGINE (Advanced Launch Analytics - Enhanced Charts)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -409,61 +409,158 @@ def create_launch_analyzer():
         
         if 'elasticidad_data' in st.session_state and st.session_state.elasticidad_data:
             st.markdown("### 📈 Análisis de Elasticidad Precio-Demanda")
-            st.caption("Simulación de demanda según diferentes puntos de precio")
+            st.caption("Simulación de demanda según diferentes puntos de precio | La línea punteada muestra el punto de maximización de ingresos")
             
             data_elast = pd.DataFrame(st.session_state.elasticidad_data)
+            data_elast = data_elast.sort_values('precio')
+            
             precio_optimo = data_elast.loc[data_elast['revenue'].idxmax(), 'precio']
             revenue_optimo = data_elast['revenue'].max()
+            demanda_optima = data_elast.loc[data_elast['revenue'].idxmax(), 'buyers']
             
-            col_e1, col_e2 = st.columns(2)
+            p1 = data_elast['precio'].iloc[0]
+            p2 = data_elast['precio'].iloc[-1]
+            q1 = data_elast['buyers'].iloc[0]
+            q2 = data_elast['buyers'].iloc[-1]
+            elasticidad_arco = abs(((q2 - q1) / ((q2 + q1)/2)) / ((p2 - p1) / ((p2 + p1)/2))) if (p2 - p1) != 0 else 1
+            
+            col_e1, col_e2 = st.columns([2, 1])
+            
             with col_e1:
                 fig_elasticidad = go.Figure()
+                
+                fig_elasticidad.add_trace(go.Bar(
+                    x=data_elast['precio'],
+                    y=data_elast['revenue'],
+                    name='💰 Ingresos Totales',
+                    marker_color='#4ECCA3',
+                    marker_opacity=0.7,
+                    yaxis='y2',
+                    text=data_elast['revenue'].apply(lambda x: format_cop(x)),
+                    textposition='outside',
+                    textfont=dict(size=10, color='#4ECCA3')
+                ))
+                
                 fig_elasticidad.add_trace(go.Scatter(
                     x=data_elast['precio'],
                     y=data_elast['buyers'],
                     mode='lines+markers',
-                    name='Demanda Estimada',
-                    line=dict(color='#00D2FF', width=3),
-                    marker=dict(size=10, color='#4ECCA3')
+                    name='📊 Unidades Demandadas',
+                    line=dict(color='#00D2FF', width=4, shape='spline'),
+                    marker=dict(size=14, color='#00D2FF', symbol='circle', line=dict(width=2, color='white')),
+                    yaxis='y1'
                 ))
+                
+                fig_elasticidad.add_vline(
+                    x=precio_optimo, 
+                    line_dash="dash", 
+                    line_color="#FFB347", 
+                    line_width=3,
+                    annotation_text=f"🎯 Precio Óptimo: {format_cop(precio_optimo)}",
+                    annotation_position="top right",
+                    annotation_font_size=11,
+                    annotation_font_color="#FFB347"
+                )
+                
                 fig_elasticidad.add_trace(go.Scatter(
-                    x=data_elast['precio'],
-                    y=data_elast['revenue'] / 1e6,
-                    mode='lines+markers',
-                    name='Revenue (Millones COP)',
-                    line=dict(color='#FF6B6B', width=3, dash='dot'),
-                    marker=dict(size=10, color='#FF6B6B'),
-                    yaxis='y2'
+                    x=[precio_optimo],
+                    y=[demanda_optima],
+                    mode='markers',
+                    name='Punto Óptimo',
+                    marker=dict(size=20, color='#FFB347', symbol='star', line=dict(width=2, color='white')),
+                    yaxis='y1',
+                    showlegend=True
                 ))
+                
                 fig_elasticidad.update_layout(
-                    title="Curva de Demanda vs Revenue",
-                    xaxis_title="Precio (COP)",
-                    yaxis_title="Unidades Demandadas",
-                    yaxis2=dict(title="Revenue (Millones COP)", overlaying='y', side='right'),
+                    title=dict(
+                        text="<b>Curva de Demanda vs Ingresos Totales</b>",
+                        font=dict(size=16, color='#e2e8f0', family='Orbitron'),
+                        x=0.05
+                    ),
+                    xaxis=dict(
+                        title=dict(text="<b>Precio del Producto (COP)</b>", font=dict(size=12, color='#94a3b8')),
+                        tickformat=',.0f',
+                        tickfont=dict(size=11, color='#cbd5e1'),
+                        gridcolor='rgba(255,255,255,0.08)',
+                        showgrid=True,
+                        zeroline=False
+                    ),
+                    yaxis=dict(
+                        title=dict(text="<b>Unidades Demandadas</b>", font=dict(size=12, color='#00D2FF')),
+                        tickfont=dict(size=11, color='#cbd5e1'),
+                        gridcolor='rgba(255,255,255,0.08)',
+                        showgrid=True,
+                        zeroline=False,
+                        side='left'
+                    ),
+                    yaxis2=dict(
+                        title=dict(text="<b>Ingresos Totales (COP)</b>", font=dict(size=12, color='#4ECCA3')),
+                        tickfont=dict(size=11, color='#cbd5e1'),
+                        tickformat=',.0f',
+                        side='right',
+                        overlaying='y',
+                        showgrid=False
+                    ),
                     template="plotly_dark",
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
-                    height=350,
-                    legend=dict(x=0.02, y=0.98)
+                    height=450,
+                    hovermode='x unified',
+                    legend=dict(
+                        orientation='h',
+                        yanchor='bottom',
+                        y=1.02,
+                        xanchor='right',
+                        x=1,
+                        bgcolor='rgba(13,17,26,0.8)',
+                        bordercolor='rgba(255,255,255,0.1)',
+                        borderwidth=1,
+                        font=dict(size=11)
+                    ),
+                    margin=dict(l=60, r=80, t=80, b=50)
                 )
+                
                 st.plotly_chart(fig_elasticidad, use_container_width=True)
             
             with col_e2:
                 st.markdown(f"""
-                <div style="background:#0d111a; padding:15px; border-radius:12px; border:1px solid rgba(0,210,255,0.2);">
-                    <p style="color:#00D2FF; font-family:'Orbitron'; margin-bottom:10px;">🎯 PRECIO ÓPTIMO ESTIMADO</p>
-                    <p style="font-size:28px; font-weight:700; margin:0;">{format_cop(precio_optimo)}</p>
-                    <p style="color:#94a3b8; font-size:12px;">Maximiza revenue estimado en {format_cop(revenue_optimo)}</p>
+                <div style="background:#0d111a; padding:20px; border-radius:12px; border:1px solid rgba(0,210,255,0.2);">
+                    <p style="color:#00D2FF; font-family:'Orbitron'; margin-bottom:15px; font-size:14px;">🎯 PRECIO ÓPTIMO</p>
+                    <p style="font-size:32px; font-weight:700; margin:0; color:#FFB347;">{format_cop(precio_optimo)}</p>
+                    <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Maximiza ingresos totales</p>
+                    
                     <hr style="margin:15px 0; border-color:#1e293b;">
-                    <p style="color:#4ECCA3; font-family:'Orbitron'; margin-bottom:5px;">⚡ ESTRATEGIA RECOMENDADA</p>
+                    
+                    <p style="color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;">📊 MÉTRICAS CLAVE</p>
+                    <table style="width:100%; font-size:13px;">
+                        <tr><td style="color:#94a3b8;">Ingreso Máximo:</td><td style="text-align:right; color:#4ECCA3; font-weight:bold;">{format_cop(revenue_optimo)}</td></tr>
+                        <tr><td style="color:#94a3b8;">Demanda Óptima:</td><td style="text-align:right; color:#00D2FF; font-weight:bold;">{demanda_optima:,.0f} und</td></tr>
+                        <tr><td style="color:#94a3b8;">Elasticidad Precio:</td><td style="text-align:right; color:#FFB347; font-weight:bold;">{elasticidad_arco:.2f}</td></tr>
+                    </table>
+                    
+                    <hr style="margin:15px 0; border-color:#1e293b;">
+                    
+                    <p style="color:#FFB347; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;">⚡ INTERPRETACIÓN</p>
                 """, unsafe_allow_html=True)
                 
-                if precio_optimo > st.session_state.base_price:
-                    st.markdown("<p style='margin:0;'>✅ El mercado tolera un precio <b>superior</b> al base. Considere reposicionamiento premium.</p>", unsafe_allow_html=True)
-                elif precio_optimo < st.session_state.base_price:
-                    st.markdown("<p style='margin:0;'>⚠️ El precio actual podría ser <b>elevado</b>. Evaluar reducción para maximizar volumen.</p>", unsafe_allow_html=True)
+                if elasticidad_arco > 1:
+                    st.markdown("<p style='margin:5px 0; font-size:13px;'>✅ Demanda <b>elástica</b> - Pequeños cambios en precio afectan significativamente la demanda.</p>", unsafe_allow_html=True)
+                elif elasticidad_arco < 0.5:
+                    st.markdown("<p style='margin:5px 0; font-size:13px;'>📌 Demanda <b>inelástica</b> - Los consumidores son poco sensibles al precio.</p>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='margin:0;'>✅ El precio base está <b>alineado</b> con el óptimo de mercado.</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='margin:5px 0; font-size:13px;'>⚖️ Demanda <b>elasticidad unitaria</b> - Cambios proporcionales en precio y demanda.</p>", unsafe_allow_html=True)
+                
+                st.markdown("<hr style='margin:15px 0; border-color:#1e293b;'>", unsafe_allow_html=True)
+                st.markdown("<p style='color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;'>💡 ESTRATEGIA RECOMENDADA</p>", unsafe_allow_html=True)
+                
+                if precio_optimo > st.session_state.base_price * 1.1:
+                    st.markdown(f"<p style='margin:0; font-size:13px;'>✅ El mercado tolera un precio <b>superior</b> (+{((precio_optimo/st.session_state.base_price)-1)*100:.0f}%). Considere reposicionamiento <b>premium</b>.</p>", unsafe_allow_html=True)
+                elif precio_optimo < st.session_state.base_price * 0.9:
+                    st.markdown(f"<p style='margin:0; font-size:13px;'>⚠️ El precio actual es <b>elevado</b> (óptimo es -{((1-precio_optimo/st.session_state.base_price))*100:.0f}%). Evaluar reducción para <b>maximizar volumen</b>.</p>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<p style='margin:0; font-size:13px;'>✅ El precio base está <b>alineado</b> con el óptimo de mercado. Excelente estrategia de pricing.</p>", unsafe_allow_html=True)
+                
                 st.markdown("</div>", unsafe_allow_html=True)
         
         if 'segment_analysis' in st.session_state and st.session_state.segment_analysis:
@@ -484,28 +581,31 @@ def create_launch_analyzer():
                         marker_color=seg_df['Intención de Compra'],
                         marker_colorscale=[[0, '#0072FF'], [1, '#4ECCA3']],
                         text=seg_df['Intención de Compra'].apply(lambda x: f"{x:.1f}%"),
-                        textposition='outside'
+                        textposition='outside',
+                        textfont=dict(size=12, color='white')
                     )
                 ])
                 fig_seg.update_layout(
-                    title="Intención de Compra por Segmento",
-                    xaxis_title="Segmento",
+                    title=dict(text="<b>Intención de Compra por Segmento</b>", font=dict(size=14)),
+                    xaxis_title="Segmento de Mercado",
                     yaxis_title="Intención de Compra (%)",
+                    yaxis=dict(range=[0, max(seg_df['Intención de Compra']) * 1.15]),
                     template="plotly_dark",
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
-                    height=350
+                    height=400,
+                    showlegend=False
                 )
                 st.plotly_chart(fig_seg, use_container_width=True)
             
             with col_s2:
                 top_segment = seg_df.iloc[0]
                 st.markdown(f"""
-                <div style="background:#0d111a; padding:15px; border-radius:12px; border:1px solid rgba(78,204,163,0.3);">
+                <div style="background:#0d111a; padding:20px; border-radius:12px; border:1px solid rgba(78,204,163,0.3);">
                     <p style="color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px;">🏆 BUYER PERSONA DOMINANTE</p>
-                    <p style="font-size:18px; font-weight:700; margin:0;">{top_segment['Segmento']}</p>
-                    <p style="font-size:24px; color:#00D2FF; margin:5px 0;">{top_segment['Intención de Compra']:.1f}%</p>
-                    <p style="color:#94a3b8; font-size:11px;">Intención de compra | Muestra: {top_segment['Muestra']} perfiles</p>
+                    <p style="font-size:20px; font-weight:700; margin:0;">{top_segment['Segmento']}</p>
+                    <p style="font-size:32px; color:#00D2FF; margin:10px 0 5px 0;">{top_segment['Intención de Compra']:.1f}%</p>
+                    <p style="color:#94a3b8; font-size:11px;">Intención de compra | Muestra: {top_segment['Muestra']:,} perfiles</p>
                 </div>
                 """, unsafe_allow_html=True)
         
@@ -540,30 +640,39 @@ def create_launch_analyzer():
             y=flujo_mensual,
             name="Flujo Mensual",
             marker_color="#00D2FF",
-            opacity=0.7
+            opacity=0.7,
+            text=flujo_mensual.apply(lambda x: format_cop(x)),
+            textposition='outside',
+            textfont=dict(size=9)
         ))
         fig_proy.add_trace(go.Scatter(
             x=meses,
             y=flujo_acumulado,
             name="Flujo Acumulado",
             line=dict(color="#4ECCA3", width=3),
+            fill='tozeroy',
+            fillcolor='rgba(78,204,163,0.1)',
             yaxis="y2"
         ))
-        fig_proy.add_hline(y=0, line_dash="dash", line_color="red", opacity=0.5)
+        fig_proy.add_hline(y=0, line_dash="dash", line_color="#FF5E5E", opacity=0.7, line_width=2)
         if break_even:
-            fig_proy.add_vline(x=break_even, line_dash="dash", line_color="#FFB347", opacity=0.8,
-                               annotation_text=f"Break-even mes {break_even}")
+            fig_proy.add_vline(x=break_even, line_dash="dash", line_color="#FFB347", opacity=0.9, line_width=2,
+                               annotation_text=f"⚡ Break-even mes {break_even}",
+                               annotation_position="top",
+                               annotation_font_size=11,
+                               annotation_font_color="#FFB347")
         
         fig_proy.update_layout(
-            title="Flujo de Caja Proyectado",
-            xaxis_title="Mes",
-            yaxis_title="Flujo Mensual (COP)",
-            yaxis2=dict(title="Flujo Acumulado (COP)", overlaying='y', side='right'),
+            title=dict(text="<b>Flujo de Caja Proyectado</b>", font=dict(size=14)),
+            xaxis=dict(title="Mes", tickmode='linear', dtick=3),
+            yaxis=dict(title="Flujo Mensual (COP)", tickformat=',.0f'),
+            yaxis2=dict(title="Flujo Acumulado (COP)", tickformat=',.0f', overlaying='y', side='right'),
             template="plotly_dark",
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            height=400,
-            legend=dict(x=0.02, y=0.98)
+            height=450,
+            hovermode='x unified',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
         )
         st.plotly_chart(fig_proy, use_container_width=True)
         
@@ -572,65 +681,71 @@ def create_launch_analyzer():
         riesgos = []
         
         if res['purchase_percentage'] < 15:
-            riesgos.append(("Alta", "Baja intención de compra (<15%)", "Reforzar propuesta de valor, testear con early adopters"))
+            riesgos.append(("🔴 Crítica", "Baja intención de compra (<15%)", "Reforzar propuesta de valor, testear con early adopters"))
         elif res['purchase_percentage'] < 25:
-            riesgos.append(("Media", "Intención de compra moderada", "Optimizar canales de conversión y mensaje"))
+            riesgos.append(("🟡 Media", "Intención de compra moderada", "Optimizar canales de conversión y mensaje"))
         
         if sample_size < 200:
-            riesgos.append(("Alta", "Muestra pequeña para inferencia robusta", "Ampliar dataset o realizar estudio cualitativo complementario"))
+            riesgos.append(("🟠 Alta", "Muestra pequeña para inferencia robusta", "Ampliar dataset o realizar estudio cualitativo complementario"))
         
         if res['estimated_roi'] < 20:
-            riesgos.append(("Media", "ROI estimado bajo (<20%)", "Revisar estructura de costos o ajustar precio"))
+            riesgos.append(("🟡 Media", "ROI estimado bajo (<20%)", "Revisar estructura de costos o ajustar precio"))
         
         if not is_viable:
-            riesgos.append(("Crítica", "No se alcanza el umbral mínimo de viabilidad", "Pausar lanzamiento, reevaluar mercado objetivo"))
+            riesgos.append(("🔴 Crítica", "No se alcanza el umbral mínimo de viabilidad", "Pausar lanzamiento, reevaluar mercado objetivo"))
         
         if not riesgos:
-            riesgos.append(("Baja", "No se identificaron riesgos significativos", "Continuar con plan de lanzamiento definido"))
+            riesgos.append(("🟢 Baja", "No se identificaron riesgos significativos", "Continuar con plan de lanzamiento definido"))
         
         riesgo_df = pd.DataFrame(riesgos, columns=["Nivel", "Riesgo Identificado", "Mitigación Recomendada"])
         
-        def color_risk(val):
-            if val == "Crítica":
-                return 'color: #FF5E5E; font-weight: bold'
-            elif val == "Alta":
-                return 'color: #FFB347'
-            elif val == "Media":
-                return 'color: #FFD700'
-            else:
-                return 'color: #4ECCA3'
-        
-        # CORRECCIÓN: Usar styled.applymap en lugar de styled.map para compatibilidad
-        # O usar una alternativa más simple con st.markdown
         st.dataframe(
-            riesgo_df.style.map(color_risk, subset=['Nivel']), 
+            riesgo_df, 
             use_container_width=True, 
-            hide_index=True
+            hide_index=True,
+            column_config={
+                "Nivel": st.column_config.TextColumn("Nivel", width="small"),
+                "Riesgo Identificado": st.column_config.TextColumn("Riesgo Identificado", width="medium"),
+                "Mitigación Recomendada": st.column_config.TextColumn("Mitigación Recomendada", width="large")
+            }
         )
         
         st.markdown("---")
-        if st.button("📥 Exportar Reporte Completo (JSON)", use_container_width=True):
-            reporte_completo = {
-                "fecha_generacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "dictamen": res['recommendation'],
-                "metricas_clave": {
-                    "buyers_estimados": res['estimated_buyers'],
-                    "tasa_conversion": res['purchase_percentage'],
-                    "roi_estimado": res['estimated_roi'],
-                    "confianza_modelo": confidence_level
-                },
-                "elasticidad_precio": st.session_state.elasticidad_data if 'elasticidad_data' in st.session_state else [],
-                "segmentacion": st.session_state.segment_analysis if 'segment_analysis' in st.session_state else {},
-                "proyeccion_financiera": {
-                    "ingreso_mensual": ingresos_mensuales,
-                    "margen_mensual": margen_mensual,
-                    "inversion_inicial": inversion_inicial,
-                    "break_even_meses": break_even
-                },
-                "riesgos_identificados": riesgos
-            }
-            st.json(reporte_completo)
-            st.toast("Reporte exportado correctamente", icon="✅")
+        
+        col_export1, col_export2 = st.columns([1, 1])
+        with col_export1:
+            if st.button("📥 Exportar Reporte Completo (JSON)", use_container_width=True):
+                reporte_completo = {
+                    "fecha_generacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "dictamen": res['recommendation'],
+                    "metricas_clave": {
+                        "buyers_estimados": res['estimated_buyers'],
+                        "tasa_conversion": res['purchase_percentage'],
+                        "roi_estimado": res['estimated_roi'],
+                        "confianza_modelo": confidence_level
+                    },
+                    "elasticidad_precio": st.session_state.elasticidad_data if 'elasticidad_data' in st.session_state else [],
+                    "segmentacion": st.session_state.segment_analysis if 'segment_analysis' in st.session_state else {},
+                    "proyeccion_financiera": {
+                        "ingreso_mensual": ingresos_mensuales,
+                        "margen_mensual": margen_mensual,
+                        "inversion_inicial": inversion_inicial,
+                        "break_even_meses": break_even
+                    },
+                    "riesgos_identificados": riesgos
+                }
+                st.json(reporte_completo)
+                st.toast("Reporte exportado correctamente", icon="✅")
+        
+        with col_export2:
+            if st.session_state.elasticidad_data:
+                st.download_button(
+                    label="📊 Exportar Datos Elasticidad (CSV)",
+                    data=pd.DataFrame(st.session_state.elasticidad_data).to_csv(index=False).encode('utf-8'),
+                    file_name=f"elasticidad_precios_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
 
 
 def create_investment_analyzer():
