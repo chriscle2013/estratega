@@ -1,4 +1,4 @@
-# app.py - Versión 4.2 PRODUCTION ENGINE (FULL CODE & LOGIN FIXED)
+# app.py - Versión 4.3 PRODUCTION ENGINE (FULL CODE & LOGIN STRUCTURAL FIX)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -146,7 +146,7 @@ def apply_professional_ai_theme():
             font-size: 24px !important;
         }
 
-        /* Botones del Sistema */
+        /* Botones del Sistema (General) */
         .stButton>button {
             font-family: 'Orbitron', sans-serif !important;
             background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
@@ -487,58 +487,74 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
+        # ESTRATEGIA DEFINITIVA: Estructura unificada en un solo contenedor real usando flexbox y posiciones relativas
         st.markdown("""
             <style>
-            /* Inyección limpia de la caja contenedora del Login */
-            .login-card-container {
+            /* Contenedor principal de Login */
+            .login-wrapper {
                 background: #0d111a !important; 
-                border: 1px solid rgba(0, 210, 255, 0.2) !important; 
-                padding: 45px 35px !important; 
+                border: 1px solid rgba(0, 210, 255, 0.25) !important; 
+                padding: 40px 30px !important; 
                 border-radius: 20px !important; 
-                text-align: center !important;
                 box-shadow: 0 4px 35px rgba(0, 210, 255, 0.15) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                position: relative !important;
             }
-            /* Forzar el estilo premium sobre el botón nativo de login */
-            div.element-container:has(button:contains("INICIAR SESIÓN")) button {
+            
+            /* Contenedor interno del botón nativo de Streamlit */
+            .custom-btn-container {
                 width: 100% !important;
-                background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
-                padding: 14px 20px !important;
-                font-size: 14px !important;
                 margin-top: 15px !important;
             }
-            /* Asegurar que la imagen se renderice centrada */
-            [data-testid="stImage"] {
-                display: flex !important;
-                justify-content: center !important;
-                margin: 0 auto !important;
+
+            /* Forzamos al botón nativo que está adentro a verse exactamente como el diseño */
+            .custom-btn-container div.element-container button {
+                width: 100% !important;
+                background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 14px 20px !important;
+                font-family: 'Orbitron', sans-serif !important;
+                font-weight: 700 !important;
+                font-size: 13px !important;
+                letter-spacing: 1px !important;
+                box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2) !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .custom-btn-container div.element-container button:hover {
+                box-shadow: 0 0 25px rgba(0, 210, 255, 0.5) !important;
+                transform: translateY(-1px) !important;
             }
             </style>
         """, unsafe_allow_html=True)
 
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 1.6, 1])
+        col1, col2, col3 = st.columns([1, 1.5, 1])
         
         with col2:
-            # Abrimos el layout de la tarjeta corporativa
-            st.markdown('<div class="login-card-container">', unsafe_allow_html=True)
-            
-            # 1. El Logo se posiciona arriba de manera simétrica y con un tamaño ideal
-            st.image("logo_estratega.webp", width=100)
-            
-            # 2. Textos del Core Engine inyectados limpiamente
+            # Abrimos la tarjeta unificada en HTML
             st.markdown("""
-                <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin-top: 15px; margin-bottom: 5px;">ESTRATEGA IA</h1>
-                <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 25px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
+                <div class="login-wrapper">
+                    <img src="app/static/logo_estratega.webp" width="100" style="margin-bottom: 15px;" onerror="this.onerror=null; this.src='./logo_estratega.webp';">
+                    
+                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin-top: 5px; margin-bottom: 5px;">ESTRATEGA IA</h1>
+                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 20px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
+                </div>
             """, unsafe_allow_html=True)
             
-            # 3. El botón nativo queda perfectamente anidado DENTRO de la estructura de la tarjeta
+            # 3. El botón nativo de Streamlit, envuelto en su clase CSS personalizada para obligarlo a encajar perfectamente abajo
+            st.markdown('<div class="custom-btn-container">', unsafe_allow_html=True)
             if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
-                
-            # Cerramos la tarjeta de Login de manera segura
             st.markdown('</div>', unsafe_allow_html=True)
+            
     else:
         with st.sidebar:
             st.markdown("### 🌐 ENGINE ACCESS")
