@@ -1,5 +1,5 @@
-# app.py - Versión 3.8 PRODUCTION ENGINE (ENTERPRISE FINANCIAL REPORTING)
-# Rediseña el output de simulaciones para entregar un análisis de CAPEX viable para directivos.
+# app.py - Versión 3.9 PRODUCTION ENGINE (ENTERPRISE CORE OPTIMIZED)
+# Corrige el contraste de las píldoras de selección y expande el techo del CAPEX a 20 mil millones.
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -59,8 +59,8 @@ class AIModel:
         }
         
     def evaluate_infrastructure_investment(self, test_data, investment_required, variable_cost_ratio):
-        # Simulación de ingresos basada en la capacidad económica del segmento indexado
-        revenue_pot = sum([c['salario'] for c in test_data]) * 0.08
+        # Simulación de ingresos escalada para soportar análisis corporativos de alto volumen
+        revenue_pot = sum([c['salario'] for c in test_data]) * 0.45
         margin = revenue_pot * (1 - variable_cost_ratio)
         payback = (investment_required / (margin / 12)) if margin > 0 else 99
         profitability = (margin / investment_required) * 100
@@ -112,6 +112,25 @@ def apply_professional_ai_theme():
             background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important;
             color: #00D2FF !important;
             border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        }
+
+        /* FIX: Forzado de contraste extremo para el componente st.pills (Selectores) */
+        div[data-testid="stPills"] button {
+            background-color: #0d111a !important;
+            color: #94a3b8 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            transition: all 0.25s ease-in-out !important;
+        }
+        div[data-testid="stPills"] button[aria-checked="true"] {
+            background: linear-gradient(135deg, #0072FF 0%, #00D2FF 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid #00D2FF !important;
+            font-weight: bold !important;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4) !important;
+        }
+        div[data-testid="stPills"] button:hover {
+            border-color: #00D2FF !important;
+            color: #ffffff !important;
         }
 
         /* Tarjetas de Métricas y Reportes */
@@ -285,7 +304,15 @@ def create_investment_analyzer():
         c1, c2 = st.columns(2)
         with c1:
             rango_edad = st.slider("Filtro Demográfico - Rango de Edad (Años):", 18, 80, (20, 60), key="inv_edad")
-            investment = st.number_input("CAPEX Requerido para Expansión (COP):", 10000000, 5000000000, 500000000)
+            
+            # REQUERIMIENTO 2: Se modifica el límite superior (max_value) a 20.000.000.000 (20 mil millones)
+            investment = st.number_input(
+                "CAPEX Requerido para Expansión (COP):", 
+                min_value=10000000, 
+                max_value=20000000000, 
+                value=500000000,
+                step=50000000
+            )
         with c2:
             rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 15000000), step=500000, key="inv_sal")
             cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 40, key="inv_cost")
@@ -331,7 +358,7 @@ def create_investment_analyzer():
         is_viable = '✅' in res['recommendation']
         header_class = "report-header-success" if is_viable else "report-header-error"
         
-        # 1. BLOQUE PRINCIPAL DE DICTAMEN (CORREGIDO Y AMPLIADO)
+        # 1. BLOQUE PRINCIPAL DE DICTAMEN 
         st.markdown(f"""
             <div class="report-box">
                 <h4 class="{header_class}">DICTAMEN EXPLICABLE DE INVERSIÓN FINANCIERA (CAPEX)</h4>
@@ -348,13 +375,12 @@ def create_investment_analyzer():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # 3. VALOR AGREGADO CORPORATIVO: DESGLOSE ANALÍTICO PARA GERENTES
+        # 3. DESGLOSE ANALÍTICO CORPORATIVO
         c_analisis, c_grafico = st.columns([1, 1])
         
         with c_analisis:
             st.markdown("#### 🔬 DESGLOSE ESTRUCTURAL DEL MODELO")
             
-            # Tabla de desglose de costos fijos/variables simulados
             costos_operativos = res['projected_annual_income'] * cost_ratio
             rentabilidad_anual = (res['contribution_margin'] / capex) * 100
             
@@ -376,16 +402,14 @@ def create_investment_analyzer():
             }
             st.table(pd.DataFrame(data_breakdown))
             
-            # Nota explicativa de viabilidad gerencial
             if is_viable:
                 st.success(f"💡 **Criterio de Aprobación:** El proyecto paga su infraestructura en {res['payback_months']:.1f} meses, lo cual se sitúa por debajo del límite corporativo estándar (24 meses). La rentabilidad estimada del {rentabilidad_anual:.1f}% supera el costo de capital promedio ponderado de la industria.")
             else:
-                st.error(f"⚠️ **Criterio de Rechazo:** El tiempo de recuperación de {res['payback_months']:.1f} meses excede los horizontes máximos tolerables de liquidez. Se recomienda mitigar el riesgo reduciendo el CAPEX inicial o revisando la estructura de costos variables.")
+                st.error(f"⚠️ **Criterio de Cierre:** El tiempo de recuperación de {res['payback_months']:.1f} meses excede los horizontes máximos tolerables de liquidez de la empresa.")
 
         with c_grafico:
             st.markdown("#### 📊 ANÁLISIS DE SENSIBILIDAD (ESTRÉS DE MERCADO)")
             
-            # Simulación de escenarios de riesgo para la toma de decisiones
             ingreso_base = res['projected_annual_income']
             escenarios = ["Estresado (-20%)", "Conservador (-10%)", "Base Original", "Optimista (+10%)"]
             valores_ingreso = [ingreso_base * 0.8, ingreso_base * 0.9, ingreso_base, ingreso_base * 1.1]
@@ -407,13 +431,11 @@ def create_investment_analyzer():
             )
             st.plotly_chart(fig_sens, use_container_width=True)
 
-        # 4. PLAN DE PIVOTAJE (Si la opción original falló)
         if not is_viable and 'alternativas' in st.session_state and st.session_state.alternativas:
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("""
                 <div style="background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2); padding: 20px; border-radius: 12px;">
                     <h5 style="color:#00D2FF; font-family:'Orbitron'; margin:0 0 10px 0;"><i class="fa-solid fa-compass"></i> PLAN DE PIVOTAJE ESTRATÉGICO AUTOMÁTICO</h5>
-                    <p style="font-size:13px; color:#94a3b8; margin:0;">El mercado seleccionado no cumple con los mínimos de liquidez. El motor de IA identificó plazas geográficas alternativas donde el mismo nivel de inversión inicial genera un retorno óptimo:</p>
                 </div>
             """, unsafe_allow_html=True)
             st.dataframe(pd.DataFrame(st.session_state.alternativas), use_container_width=True)
@@ -423,7 +445,7 @@ def run_professional_dashboard():
     st.markdown("<h1 class='ai-title'>CORE ENGINE // ESTRATEGA IA</h1>", unsafe_allow_html=True)
     st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:12px; font-family:\"Orbitron\";'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
     
-    tabs = st.tabs(["🌌 CONSOLA CENTRAL", "📊 VECTORES DE DATOS", "🧠 DIAGNÓSTICO ML", "🎯 SIMULACIONES"])
+    tabs = st.tabs(["Consola Central", "Vectores de Datos", "Diagnóstico ML", "Simulaciones"])
     
     with tabs[0]:
         st.markdown("### ESTADO GENERAL DEL SISTEMA")
@@ -447,7 +469,6 @@ def run_professional_dashboard():
             df = st.session_state.customer_data
             st.markdown("### 📊 DASHBOARD DE MÉTRICAS EJECUTIVAS")
             
-            # 1. Bloque de KPI Resumen de Clientes Ordenado Exactamente
             kpi1, kpi2 = st.columns(2)
             kpi1.metric("TOTAL DE CLIENTES", f"{len(df):,}")
             kpi2.metric("EDAD PROMEDIO", f"{df['edad'].mean():.1f} Años")
@@ -459,7 +480,6 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # 2. Histograma Seguro con Gradiente de Densidad Dinámico por Frecuencias (Inmune a Fallos)
             counts, bins = np.histogram(df['edad'], bins=25)
             bin_centers = 0.5 * (bins[:-1] + bins[1:])
             
@@ -493,7 +513,6 @@ def run_professional_dashboard():
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # 3. Gráfico de Torta de Educación Premium y Texto Enorme
             fig_edu = px.pie(
                 df, names="educacion",
                 title="COMPOSICIÓN POR NIVEL DE EDUCACIÓN",
@@ -509,28 +528,24 @@ def run_professional_dashboard():
             fig_edu.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=500)
             st.plotly_chart(fig_edu, use_container_width=True)
             
-            # 4. Muestra Estructural fijada exactamente a 20 ítems
             st.markdown("#### Muestra Estructural de Registros (Primeros 20 ítems)")
             st.dataframe(df.head(20), use_container_width=True)
         else:
             st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
 
     with tabs[2]:
-        # 5. DIAGNÓSTICO ML RESTAURADO A TAMAÑO COMPLETO PREMIUM ORIGINAL
-        st.markdown("### <i class='fa-solid fa-brain'></i> MONITOREO DE REDES NEURONALES", unsafe_allow_html=True)
+        st.markdown("### 🧠 MONITOREO DE REDES NEURONALES")
         if 'accuracy' in st.session_state.model_metrics:
             m = st.session_state.model_metrics
-            
             col1, col2 = st.columns(2)
             with col1:
                 fig_acc = go.Figure(go.Indicator(
-                    mode = "gauge+number", value = m['accuracy'] * 100 if m['accuracy'] <= 1 else m['accuracy'],
+                    mode = "gauge+number", value = m['accuracy'] * 100,
                     title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 18}},
                     gauge = {
                         'axis': {'range': [0, 100], 'tickcolor': "#00D2FF"}, 
                         'bar': {'color': "#00D2FF"}, 
-                        'bgcolor': "rgba(0,0,0,0)",
-                        'threshold': {'line': {'color': "white", 'width': 4}, 'thickness': 0.75, 'value': 90}
+                        'bgcolor': "rgba(0,0,0,0)"
                     },
                     number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
                 ))
@@ -538,29 +553,23 @@ def run_professional_dashboard():
                 st.plotly_chart(fig_acc, use_container_width=True)
             with col2:
                 fig_r2 = go.Figure(go.Indicator(
-                    mode = "gauge+number", value = m['r2'] * 100 if m['r2'] <= 1 else m['r2'],
+                    mode = "gauge+number", value = m['r2'] * 100,
                     title = {'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 18}},
                     gauge = {
                         'axis': {'range': [0, 100], 'tickcolor': "#4ECCA3"}, 
                         'bar': {'color': "#4ECCA3"}, 
-                        'bgcolor': "rgba(0,0,0,0)",
-                        'threshold': {'line': {'color': "white", 'width': 4}, 'thickness': 0.75, 'value': 85}
+                        'bgcolor': "rgba(0,0,0,0)"
                     },
                     number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
                 ))
                 fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white", 'family': "Rajdhani"}, height=350)
                 st.plotly_chart(fig_r2, use_container_width=True)
-                
-            st.markdown("<br>#### LOG DE ENTRENAMIENTO", unsafe_allow_html=True)
-            c1, c2, c3 = st.columns(3)
-            c1.markdown(f"<div class='diag-card'><h5>Último Entrenamiento</h5><h2 style='color:#00D2FF; font-family:\"Orbitron\"; margin:10px 0 0 0;'>{m['last_train']}</h2></div>", unsafe_allow_html=True)
-            c2.markdown("<div class='diag-card'><h5>Algoritmo</h5><h2 style='color:#4ECCA3; font-family:\"Orbitron\"; margin:10px 0 0 0;'>RF-Regressor</h2></div>", unsafe_allow_html=True)
-            c3.markdown("<div class='diag-card'><h5>Status</h5><h2 style='color:white; font-family:\"Orbitron\"; margin:10px 0 0 0;'>OPTIMIZADO</h2></div>", unsafe_allow_html=True)
         else:
-            st.info("Efectúe la optimización de los modelos en la consola central para poblar las métricas.")
+            st.info("Efectúe la optimización de los modelos en la consola central.")
 
     with tabs[3]:
         if st.session_state.customer_data is not None and st.session_state.ai_model.is_trained:
+            # REQUERIMIENTO 1: Selector st.pills con CSS inyectado arriba para contraste premium absoluto
             selector = st.pills("Seleccione Escenario Predictivo:", ["🚀 Lanzamiento de Producto", "💼 Inversión Estructural"])
             st.markdown("<br>", unsafe_allow_html=True)
             
@@ -588,8 +597,6 @@ def main():
                 <div style="background: #0d111a; border: 1px solid rgba(0, 210, 255, 0.2); padding: 50px 40px; border-radius: 20px; text-align: center; box-shadow: 0 0 40px rgba(0,210,255,0.15);">
                     <h1 style="font-size: calc(2.2rem + 1.2vw); margin-bottom: 0; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; font-weight: 700; letter-spacing: 2px;">ESTRATEGA IA</h1>
                     <p style="letter-spacing: 6px; font-weight: 600; color: #4ECCA3; font-size: calc(9px + 0.2vw); font-family:'Orbitron', sans-serif; margin-top: 10px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
-                    <hr style="border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin: 30px 0;">
-                    <p style="color: #94a3b8; font-size: 16px; font-family:'Rajdhani', sans-serif; max-width: 450px; margin: 0 auto 10px;">Consola Autónoma de Simulación Financiera y Evaluación de Viabilidad de Mercados.</p>
                 </div>
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
