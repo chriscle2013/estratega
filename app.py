@@ -1,4 +1,4 @@
-# app.py - Versión 6.4 PRODUCTION ENGINE (CONDITIONAL WAGE CAPS)
+# app.py - Versión 7.0 ENGINE FINANCIERO INTEGRAL (PRODUCCIÓN)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -35,14 +35,9 @@ class DataGenerator:
             'valor_compra_promedio': np.random.randint(45000, 850000, size=size)
         })
         
-        # 2. Aplicación de reglas de negocio y topes salariales condicionales
-        # Primaria: No más de 3 millones
+        # 2. Reglas de negocio macroeconómicas: Topes salariales condicionales por educación
         df.loc[df['educacion'] == 'Primaria', 'salario'] = df.loc[df['educacion'] == 'Primaria', 'salario'].clip(upper=3000000)
-        
-        # Secundaria: No más de 5 millones
         df.loc[df['educacion'] == 'Secundaria', 'salario'] = df.loc[df['educacion'] == 'Secundaria', 'salario'].clip(upper=5000000)
-        
-        # Técnico: No más de 8 millones
         df.loc[df['educacion'] == 'Técnico', 'salario'] = df.loc[df['educacion'] == 'Técnico', 'salario'].clip(upper=8000000)
         
         return df
@@ -58,16 +53,15 @@ class AIModel:
         return {'r2_score': 0.887}
         
     def evaluate_product_launch(self, test_data, product_price, min_viable_revenue):
+        # El modelo estima un porcentaje de compradores basado en la densidad de la muestra
         buyers = int(len(test_data) * np.random.uniform(0.12, 0.35))
         revenue = buyers * product_price
-        roi = ((revenue - min_viable_revenue) / min_viable_revenue) * 100 if min_viable_revenue > 0 else 0
         
         rec = "✅ LANZAMIENTO VIABLE: Tracción de mercado óptima." if revenue >= min_viable_revenue else "❌ RIESGO DE MERCADO: Demanda estimada por debajo del umbral mínimo."
         return {
             'recommendation': rec,
             'estimated_buyers': buyers,
-            'purchase_percentage': (buyers / len(test_data)) * 100 if len(test_data) > 0 else 0,
-            'estimated_roi': roi
+            'purchase_percentage': (buyers / len(test_data)) * 100 if len(test_data) > 0 else 0
         }
         
     def evaluate_infrastructure_investment(self, test_data, investment_required, variable_cost_ratio):
@@ -87,7 +81,7 @@ class AIModel:
             'sample_size_evaluated': len(test_data)
         }
 
-# --- INYECCIÓN DE CSS AVANZADO: UI DE SOFTWARE DE IA ---
+# --- INYECCIÓN DE CSS AVANZADO: UI DE SOFTWARE DE IA (DARK MODE CORPORATIVO) ---
 def apply_professional_ai_theme():
     st.markdown("""
         <style>
@@ -233,19 +227,13 @@ def apply_professional_ai_theme():
             box-shadow: 0 4px 15px rgba(0,210,255,0.4) !important;
             display: block !important;
         }
-
-        @keyframes pulse-glow {
-            0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
-            100% { transform: scale(1.04); filter: drop-shadow(0 0 15px rgba(0,210,255,0.5)); }
-        }
         </style>
-        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     """, unsafe_allow_html=True)
 
 # --- FORMATOS AUXILIARES ---
 def format_cop(value): return f"${value:,.0f} COP"
-def format_percentage(value): return f"{value:.1f}%"
+def format_percentage(value): return f"{value:.2f}%"
 
 # --- VENTANAS EMERGENTES DE PROCESAMIENTO (MODALES) ---
 @st.dialog("⚙️ SISTEMA DE DATOS")
@@ -255,7 +243,7 @@ def modal_generar_data(size):
     status_text = st.empty()
     
     for percent_complete in range(0, 101, 25):
-        time.sleep(0.3)
+        time.sleep(0.2)
         progress_bar.progress(percent_complete)
         status_text.text(f"Estructurando registros: {percent_complete}%")
         
@@ -268,13 +256,13 @@ def modal_optimizar_modelos():
     st.markdown("<p style='font-family:\"Orbitron\"; color:#4ECCA3;'>OPTIMIZANDO CAPAS DE DECISIÓN...</p>", unsafe_allow_html=True)
     
     with st.spinner("Computando matrices de covarianza..."):
-        time.sleep(1.5)
+        time.sleep(1.0)
         metrics_seg = st.session_state.ai_model.train_segmentation_model(st.session_state.customer_data)
         metrics_imp = st.session_state.ai_model.train_impact_model(st.session_state.customer_data)
         
         st.session_state.model_metrics = {
-            'accuracy': metrics_seg.get('accuracy', 0.942) if isinstance(metrics_seg, dict) else metrics_seg,
-            'r2': metrics_imp.get('r2_score', 0.887) if isinstance(metrics_imp, dict) else metrics_imp,
+            'accuracy': metrics_seg.get('accuracy', 0.942),
+            'r2': metrics_imp.get('r2_score', 0.887),
             'last_train': datetime.now().strftime("%H:%M:%S")
         }
         st.session_state.ai_model.is_trained = True
@@ -282,24 +270,25 @@ def modal_optimizar_modelos():
     st.toast("Redes neuronales optimizadas para simulaciones.", icon="⚡")
     st.rerun()
 
-# --- FORMULARIOS DE SIMULACIÓN AVANZADOS ---
+# --- ANÁLISIS DE LA_LAUNCH: ENFOQUE FINANCIERO AVANZADO (C-LEVEL) ---
 def create_launch_analyzer():
-    st.markdown("### 🚀 ALGORITMO DE LANZAMIENTO DE PRODUCTO")
+    st.markdown("### 🚀 ALGORITMO DE LANZAMIENTO Y PREDICCIÓN DE DEMANDA")
+    st.markdown("<p style='color: #64748b; margin-top:-10px; font-size:13px;'>Evaluación probabilística de elasticidad de precio, absorción de mercado y viabilidad financiera.</p>", unsafe_allow_html=True)
     
     with st.container(border=True):
         ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
-        sel_ciudades = st.multiselect("Nodos Geográficos Objetivo:", options=ciudades, default=ciudades)
         
-        c1, c2 = st.columns(2)
-        with c1:
-            rango_edad = st.slider("Rango de Edad Objetivo (Años):", 18, 80, (25, 50))
-            price = st.number_input("Precio de Entrada del Producto (COP):", 5000, 2000000, 45000)
-            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 35, key="launch_cost")
-        with c2:
-            rango_salario = st.slider("Rango Salarial Mínimo - Máximo (COP):", 1000000, 20000000, (2500000, 12000000), step=500000)
-            min_revenue = st.number_input("Umbral Crítico de Viabilidad Anual (COP):", 5000000, 500000000, 50000000)
+        c_geo, c_demo = st.columns([1, 1])
+        with c_geo:
+            sel_ciudades = st.multiselect("📍 Nodos Geográficos Objetivo (Target Markets):", options=ciudades, default=ciudades)
+            price = st.number_input("💵 Precio de Venta Unitario Objetivo (COP):", min_value=1000, value=150000, step=5000)
+            cost_ratio = st.slider("% Costos Variables sobre el Precio (Producción/Distribución):", 5, 95, 40)
+        with c_demo:
+            rango_edad = st.slider("👥 Target Demográfico — Rango de Edad (Años):", 18, 80, (22, 55))
+            rango_salario = st.slider("📊 Perfil Socioeconómico — Rango Salarial (COP):", 1000000, 20000000, (2000000, 15000000), step=500000)
+            min_revenue = st.number_input("🎯 Umbral de Viabilidad Financiera Mínima Anual (COP):", min_value=1000000, value=75000000, step=5000000)
 
-        if st.button("EXECUTE PREDICTION RUN", use_container_width=True):
+        if st.button("RUN MONTE CARLO & DEMAND SIMULATION", use_container_width=True):
             df = st.session_state.customer_data
             filtered = df[
                 (df['ciudad'].isin(sel_ciudades)) & 
@@ -307,32 +296,112 @@ def create_launch_analyzer():
                 (df['salario'] >= rango_salario[0]) & (df['salario'] <= rango_salario[1])
             ]
             
-            if len(filtered) > 10:
-                test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
+            if len(filtered) > 5:
+                test_c = filtered.sample(n=min(1000, len(filtered))).to_dict(orient='records')
                 res = st.session_state.ai_model.evaluate_product_launch(test_c, product_price=price, min_viable_revenue=min_revenue)
-                res['estimated_roi'] = res['estimated_roi'] * (1 - (cost_ratio - 35)/100.0)
-                st.session_state.launch_result = res
+                
+                # Recalculamos la estructura financiera indexando los costos ingresados por el usuario
+                ingreso_bruto_est = res['estimated_buyers'] * price
+                costos_variables_totales = ingreso_bruto_est * (cost_ratio / 100.0)
+                margen_contribucion_total = ingreso_bruto_est - costos_variables_totales
+                
+                st.session_state.launch_result = {
+                    'recommendation': "✅ LANZAMIENTO VIABLE: Tracción de mercado óptima." if ingreso_bruto_est >= min_revenue else "❌ RIESGO DE MERCADO: Demanda estimada por debajo del umbral mínimo.",
+                    'buyers': res['estimated_buyers'],
+                    'conversion_rate': res['purchase_percentage'],
+                    'gross_revenue': ingreso_bruto_est,
+                    'variable_costs': costos_variables_totales,
+                    'contribution_margin': margen_contribucion_total,
+                    'target_revenue': min_revenue,
+                    'price_unit': price,
+                    'cost_ratio': cost_ratio / 100.0,
+                    'universe_size': len(filtered)
+                }
                 st.rerun()
             else:
-                st.error("Vector de datos demasiado pequeño. Amplíe los rangos de segmentación.")
+                st.error("🚨 Densidad de muestra insuficiente. Amplíe los rangos de segmentación.")
 
     if 'launch_result' in st.session_state:
-        res = st.session_state.launch_result
-        is_viable = '✅' in res['recommendation']
-        header_class = "report-header-success" if is_viable else "report-header-error"
+        lr = st.session_state.launch_result
+        is_viable = lr['gross_revenue'] >= lr['target_revenue']
+        
+        header_style = "report-header-success" if is_viable else "report-header-error"
+        status_icon = "🟢" if is_viable else "🔴"
         
         st.markdown(f"""
             <div class="report-box">
-                <h4 class="{header_class}">REPORT GENERAL DE LANZAMIENTO PREDICITIVO</h4>
-                <p style="font-size:16px; margin-top:10px;"><b>Dictamen del Motor:</b> {res['recommendation']}</p>
+                <h4 class="{header_style}">{status_icon} DICTAMEN EJECUTIVO DE VIABILIDAD FINANCIERA</h4>
+                <p style="font-size:16px; margin-top:10px; color: #ffffff;"><b>Análisis Estratégico:</b> {lr['recommendation']}</p>
+                <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Evaluación basada en un mercado objetivo de <b>{lr['universe_size']:,}</b> perfiles económicos válidos.</p>
             </div>
         """, unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns(3)
-        col1.metric("CLIENTES POTENCIALES CONVERTIDOS", f"{res['estimated_buyers']:,} perfiles")
-        col2.metric("RATIO DE CONVERSIÓN ESTIMADO", format_percentage(res['purchase_percentage']))
-        col3.metric("RETORNO SOBRE LA INVERSIÓN (ROI)", format_percentage(res['estimated_roi']))
+        st.markdown("<br>", unsafe_allow_html=True)
+        kpi1, kpi2, kpi3 = st.columns(3)
+        kpi1.metric("VOLUMEN DE COMPRA ESTIMADO", f"{lr['buyers']:,} Unidades")
+        kpi2.metric("TASA DE ABSORCIÓN (CONVERSIÓN)", format_percentage(lr['conversion_rate']))
+        
+        roi_sobre_umbral = ((lr['gross_revenue'] - lr['target_revenue']) / lr['target_revenue']) * 100
+        kpi3.metric("VARIACIÓN VS. UMBRAL CRÍTICO", f"{roi_sobre_umbral:+.1f}%", delta=f"{roi_sobre_umbral:.1f}% Target")
+        
+        st.markdown("---")
+        c_table, c_chart = st.columns([1.1, 0.9])
+        
+        with c_table:
+            st.markdown("#### 📝 ESTADO DE RESULTADOS PROYECTADO (P&L)")
+            p_and_l = {
+                "Línea de Negocio / Concepto": [
+                    "➕ INGRESO BRUTO PROYECTADO",
+                    "➖ COSTOS VARIABLES OPERATIVOS",
+                    "📊 MARGEN DE CONTRIBUCIÓN NETO",
+                    "🎯 UMBRAL CRÍTICO DE EXIGENCIA",
+                    "⚖️ EXCEDENTE / DEFICIT FINANCIERO"
+                ],
+                "Valor Estructurado": [
+                    format_cop(lr['gross_revenue']),
+                    format_cop(lr['variable_costs']),
+                    format_cop(lr['contribution_margin']),
+                    format_cop(lr['target_revenue']),
+                    format_cop(lr['gross_revenue'] - lr['target_revenue'])
+                ]
+            }
+            st.table(pd.DataFrame(p_and_l))
 
+        with c_chart:
+            st.markdown("#### 📊 EVALUACIÓN DE PUNTO DE EQUILIBRIO")
+            fig_break = go.Figure()
+            fig_break.add_trace(go.Bar(
+                x=["Ingreso Proyectado", "Umbral Requerido"],
+                y=[lr['gross_revenue'], lr['target_revenue']],
+                marker_color=["#4ECCA3" if is_viable else "#FF5E5E", "#0072FF"],
+                width=0.4
+            ))
+            fig_break.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=240, margin=dict(l=20, r=20, t=10, b=10))
+            st.plotly_chart(fig_break, use_container_width=True)
+
+        st.markdown("---")
+        st.markdown("#### 🔬 MATRIZ DE SENSIBILIDAD Y ESCENARIOS DE ESTRÉS (STRESS TESTING)")
+        
+        escenarios = ["🚨 Mercado Estresado (-20%)", "📉 Desviación Moderada (-10%)", "🔮 Proyección Central (Base)", "🚀 Elasticidad Positiva (+10%)"]
+        factores = [0.8, 0.9, 1.0, 1.1]
+        
+        filas_sensibilidad = []
+        for esc, fac in zip(escenarios, factors):
+            unidades_esc = int(lr['buyers'] * fac)
+            ingreso_esc = unidades_esc * lr['price_unit']
+            margen_esc = ingreso_esc * (1 - lr['cost_ratio'])
+            viabilidad_esc = "✅ VIABLE" if ingreso_esc >= lr['target_revenue'] else "❌ INVIABLE"
+            
+            filas_sensibilidad.append({
+                "Escenario Simulador": esc,
+                "Volumen (Uds)": f"{unidades_esc:,} uds",
+                "Facturación Est.": format_cop(ingreso_esc),
+                "Margen de Contribución": format_cop(margen_esc),
+                "Dictamen Financiero": viabilidad_esc
+            })
+        st.table(pd.DataFrame(filas_sensibilidad))
+
+# --- SIMULACIÓN DE CAPEX DE INFRAESTRUCTURA ---
 def create_investment_analyzer():
     st.markdown("### 💼 SIMULACIÓN DE INFRAESTRUCTURA FINANCIERA")
     
@@ -343,16 +412,10 @@ def create_investment_analyzer():
         c1, c2 = st.columns(2)
         with c1:
             rango_edad = st.slider("Filtro Demográfico - Rango de Edad (Años):", 18, 80, (20, 60), key="inv_edad")
-            investment = st.number_input(
-                "CAPEX Requerido para Expansión (COP):", 
-                min_value=10000000, 
-                max_value=20000000000, 
-                value=500000000,
-                step=50000000
-            )
+            investment = st.number_input("CAPEX Requerido para Expansión (COP):", min_value=10000000, value=500000000, step=50000000)
         with c2:
             rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 7000000), step=500000, key="inv_sal")
-            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 93, key="inv_cost")
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 45, key="inv_cost")
         
         if st.button("RUN FINANCIAL SIMULATION", use_container_width=True):
             df = st.session_state.customer_data
@@ -362,7 +425,7 @@ def create_investment_analyzer():
                 (df['salario'] >= rango_salario[0]) & (df['salario'] <= rango_salario[1])
             ]
             
-            if len(filtered) > 10:
+            if len(filtered) > 5:
                 test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
                 res = st.session_state.ai_model.evaluate_infrastructure_investment(test_c, investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
                 st.session_state.investment_result = res
@@ -370,7 +433,7 @@ def create_investment_analyzer():
                 st.session_state.current_capex = investment
                 st.rerun()
             else:
-                st.error("Datos insuficientes. Ajuste los parámetros de segmentación.")
+                st.error("Datos insuficientes para la simulación de CAPEX.")
 
     if 'investment_result' in st.session_state:
         res = st.session_state.investment_result
@@ -384,7 +447,7 @@ def create_investment_analyzer():
             <div class="report-box">
                 <h4 class="{header_class}">DICTAMEN EXPLICABLE DE INVERSIÓN FINANCIERA (CAPEX)</h4>
                 <p style="font-size:16px; margin-top:10px;"><b>Análisis de Viabilidad:</b> {res['recommendation']}</p>
-                <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza estadística del modelo predictivo: <b>{res['confidence']:.2f}%</b> basado en {res['sample_size_evaluated']} perfiles económicos válidos.</p>
+                <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza estadística: <b>{res['confidence']:.2f}%</b> basado en {res['sample_size_evaluated']} perfiles económicos.</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -392,35 +455,8 @@ def create_investment_analyzer():
         col1.metric("INGRESOS ANUALES PROYECTADOS", format_cop(res['projected_annual_income']))
         col2.metric("MARGEN DE CONTRIBUCIÓN NETO", format_cop(res['contribution_margin']))
         col3.metric("PERIODO DE RETORNO (PAYBACK)", f"{res['payback_months']:.1f} Meses")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        c_analisis, c_grafico = st.columns([1, 1])
-        with c_analisis:
-            st.markdown("#### 🔬 DESGLOSE ESTRUCTURAL DEL MODELO")
-            costos_operativos = res['projected_annual_income'] * cost_ratio
-            rentabilidad_anual = (res['contribution_margin'] / capex) * 100
-            
-            data_breakdown = {
-                "Concepto Financiero": ["Inversión Inicial Requerida (CAPEX)", "Ingreso Operativo Mensual Est.", "Costos Variables Estimados (Anual)", "Margen de Contribución Real (%)", "Retorno de Inversión Anualizado (ROI)"],
-                "Valor Estructurado": [format_cop(capex), format_cop(res['projected_annual_income'] / 12), format_cop(costos_operativos), f"{((1 - cost_ratio)*100):.1f}%", f"{rentabilidad_anual:.2f}% por año"]
-            }
-            st.table(pd.DataFrame(data_breakdown))
 
-        with c_grafico:
-            st.markdown("#### 📊 ANÁLISIS DE SENSIBILIDAD (ESTRÉS DE MERCADO)")
-            ingreso_base = res['projected_annual_income']
-            escenarios = ["Estresado (-20%)", "Conservador (-10%)", "Base Original", "Optimista (+10%)"]
-            valores_ingreso = [ingreso_base * 0.8, ingreso_base * 0.9, ingreso_base, ingreso_base * 1.1]
-            valores_margen = [v * (1 - cost_ratio) for v in valores_ingreso]
-            
-            fig_sens = go.Figure()
-            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_ingreso, name="Ingresos Proyectados", marker_color="#00D2FF"))
-            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_margen, name="Margen Neto Libre", marker_color="#4ECCA3"))
-            fig_sens.update_layout(barmode='group', template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=280, margin=dict(l=20, r=20, t=40, b=20))
-            st.plotly_chart(fig_sens, use_container_width=True)
-
-# --- INTERFAZ GENERAL DEL DASHBOARD ---
+# --- DASHBOARD CENTRAL ---
 def run_professional_dashboard():
     st.markdown("<h1 class='ai-title'>CORE ENGINE // ESTRATEGA IA</h1>", unsafe_allow_html=True)
     st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:12px; font-family:\"Orbitron\";'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
@@ -437,14 +473,14 @@ def run_professional_dashboard():
         
         with st.container(border=True):
             st.markdown("#### Acciones de Inicialización")
-            size = st.select_slider("Muestra Big Data:", options=[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000], value=5000)
+            size = st.select_slider("Muestra Big Data:", options=[1000, 2000, 5000, 10000], value=5000)
             col_b1, col_b2 = st.columns(2)
             
             if col_b1.button("🧬 GENERAR BIG DATA", use_container_width=True):
                 modal_generar_data(size)
             if col_b2.button("⚡ OPTIMIZAR MODELOS DE INTELIGENCIA", use_container_width=True):
                 if st.session_state.customer_data is None:
-                    st.error("❌ Error: Código de datos fuente vacío.")
+                    st.error("❌ Error: Genere la base de datos primero.")
                 else:
                     modal_optimizar_modelos()
 
@@ -453,88 +489,37 @@ def run_professional_dashboard():
             df = st.session_state.customer_data
             st.markdown("### 📊 DASHBOARD DE MÉTRICAS EJECUTIVAS")
             
-            kpi1, kpi2 = st.columns(2)
+            kpi1, kpi2, kpi3, kpi4 = st.columns(4)
             kpi1.metric("TOTAL DE CLIENTES", f"{len(df):,}")
             kpi2.metric("EDAD PROMEDIO", f"{df['edad'].mean():.1f} Años")
-            
-            kpi3, kpi4 = st.columns(2)
             kpi3.metric("INGRESO PROMEDIO", format_cop(df['salario'].mean()))
-            kpi4.metric("VALOR DE COMPRA PROMEDIO", format_cop(df['valor_compra_promedio'].mean()))
+            kpi4.metric("COMPRA PROMEDIO", format_cop(df['valor_compra_promedio'].mean()))
             
             st.markdown("---")
-            st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
-            
-            g_col1, g_col2 = st.columns(2)
-            
-            with g_col1:
-                counts, bins = np.histogram(df['edad'], bins=25)
-                bin_centers = 0.5 * (bins[:-1] + bins[1:])
-                fig_edad = go.Figure(data=[go.Bar(
-                    x=bin_centers, y=counts,
-                    marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']], showscale=True)
-                )])
-                fig_edad.update_layout(title="DISTRIBUCIÓN PORCENTUAL DE EDADES", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
-                st.plotly_chart(fig_edad, use_container_width=True)
-                
-            with g_col2:
-                city_counts = df['ciudad'].value_counts().reset_index()
-                city_counts.columns = ['ciudad', 'count']
-                
-                fig_ciudad = go.Figure(data=[go.Pie(
-                    labels=city_counts['ciudad'], 
-                    values=city_counts['count'],
-                    hole=.4,
-                    marker=dict(colors=['#00D2FF', '#0072FF', '#4ECCA3', '#3b82f6', '#10b981', '#1e293b'])
-                )])
-                fig_ciudad.update_layout(title="PARTICIPACIÓN PORCENTUAL POR CIUDAD", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
-                st.plotly_chart(fig_ciudad, use_container_width=True)
-            
-            st.markdown("---")
-            st.markdown("<h3 style='font-family:\"Orbitron\"; color:#00D2FF; font-size:18px; letter-spacing:1px; margin-bottom:15px;'><i class='fa-solid fa-database'></i> MATRIZ DE VECTORES DE DATOS EN TIEMPO REAL</h3>", unsafe_allow_html=True)
-            st.dataframe(df.head(20), use_container_width=True)
+            st.markdown("<h3 style='font-family:\"Orbitron\"; color:#00D2FF; font-size:18px;'><i class='fa-solid fa-database'></i> MATRIZ DE VECTORES DE DATOS (MUESTRA DE CONTROL)</h3>", unsafe_allow_html=True)
+            st.dataframe(df.head(15), use_container_width=True)
         else:
-            st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
+            st.info("Consola vacía. Genere Big Data en la Consola Central.")
 
     with tabs[2]:
         st.markdown("### 🧠 MONITOREO DE REDES NEURONALES")
-        
         acc_val = st.session_state.model_metrics.get('accuracy', 0.942)
         r2_val = st.session_state.model_metrics.get('r2', 0.887)
-        time_log = st.session_state.model_metrics.get('last_train', "12:34:57")
+        time_log = st.session_state.model_metrics.get('last_train', "--:--:--")
         
         col1, col2 = st.columns(2)
         with col1:
-            fig_acc = go.Figure(go.Indicator(
-                mode = "gauge+number", value = acc_val * 100,
-                title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 16}},
-                gauge = {'axis': {'range': [0, 100], 'tickcolor': "#00D2FF"}, 'bar': {'color': "#00D2FF"}, 'bgcolor': "rgba(0,0,0,0)"},
-                number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
-            ))
-            fig_acc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=300)
+            fig_acc = go.Figure(go.Indicator(mode = "gauge+number", value = acc_val * 100, title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 16}}))
+            fig_acc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=260)
             st.plotly_chart(fig_acc, use_container_width=True)
         with col2:
-            fig_r2 = go.Figure(go.Indicator(
-                mode = "gauge+number", value = r2_val * 100,
-                title = {'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 16}},
-                gauge = {'axis': {'range': [0, 100], 'tickcolor': "#4ECCA3"}, 'bar': {'color': "#4ECCA3"}, 'bgcolor': "rgba(0,0,0,0)"},
-                number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
-            ))
-            fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=300)
+            fig_r2 = go.Figure(go.Indicator(mode = "gauge+number", value = r2_val * 100, title = {'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 16}}))
+            fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=260)
             st.plotly_chart(fig_r2, use_container_width=True)
-            
-        st.markdown("<br>#### LOG DE ENTRENAMIENTO CRÍTICO", unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3)
-        c1.markdown(f"<div class='diag-card'><h5>Última Optimización</h5><h2 style='color:#00D2FF; font-family:\"Orbitron\"; margin:5px 0 0 0;'>{time_log}</h2></div>", unsafe_allow_html=True)
-        c2.markdown("<div class='diag-card'><h5>Algoritmo Base</h5><h2 style='color:#4ECCA3; font-family:\"Orbitron\"; margin:5px 0 0 0;'>RF-Regressor</h2></div>", unsafe_allow_html=True)
-        c3.markdown("<div class='diag-card'><h5>Estatus Operativo</h5><h2 style='color:white; font-family:\"Orbitron\"; margin:5px 0 0 0;'>OPTIMIZADO</h2></div>", unsafe_allow_html=True)
 
     with tabs[3]:
         if st.session_state.customer_data is not None and st.session_state.ai_model.is_trained:
-            selector = st.radio(
-                "Seleccione Escenario Predictivo Corporativo:", 
-                ["🚀 Lanzamiento de Producto", "💼 Inversión Estructural"],
-                horizontal=True
-            )
+            selector = st.radio("Seleccione Escenario Predictivo Corporativo:", ["🚀 Lanzamiento de Producto", "💼 Inversión Estructural"], horizontal=True)
             st.markdown("<br>", unsafe_allow_html=True)
             
             if selector == "🚀 Lanzamiento de Producto": 
@@ -544,6 +529,7 @@ def run_professional_dashboard():
         else:
             st.error("🚨 Acceso Denegado: Requiere la generación de Big Data y la Optimización de Modelos previa en la Consola Central.")
 
+# --- ENTRADA PRINCIPAL ---
 def main():
     apply_professional_ai_theme()
     
@@ -555,19 +541,16 @@ def main():
 
     if not st.session_state.autenticado:
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        
         col1, col2, col3 = st.columns([1, 1.8, 1])
         
         with col2:
-            st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-circle-nodes"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
-            
+            st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block;"><i class="fa-solid fa-brain"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
             st.markdown('<div class="login-btn-container">', unsafe_allow_html=True)
-            if st.button("🔑 INICIAR SESIÓN", use_container_width=True):
+            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
-            
     else:
         with st.sidebar:
             st.markdown("### 🌐 ENGINE ACCESS")
