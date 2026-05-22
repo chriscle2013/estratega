@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 # ==========================================
-# MOTOR LOGÍCO INTEGRADO (AI & DATA)
+# MOTOR LÓGICO INTEGRADO (AI & DATA)
 # ==========================================
 class DataGenerator:
     def __init__(self):
@@ -141,6 +141,7 @@ def apply_professional_ai_theme():
         /* --- ESTILIZACIÓN DE LA PANTALLA DE LOGIN --- */
         .login-frame-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 60px 20px;
@@ -154,7 +155,7 @@ def apply_professional_ai_theme():
             border: 2px solid #00D2FF;
             box-shadow: 0 0 35px rgba(0, 210, 255, 0.2), inset 0 0 20px rgba(0, 210, 255, 0.05);
             border-radius: 16px;
-            padding: 60px 40px 40px;
+            padding: 50px 40px;
             width: 100%;
             max-width: 550px;
             text-align: center;
@@ -162,16 +163,16 @@ def apply_professional_ai_theme():
 
         /* Icono de Brújula de IA en la parte superior */
         .login-icon-box {
-            font-size: 50px;
+            font-size: 60px;
             color: #00D2FF;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             animation: pulse 3s infinite alternate;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+            text-shadow: 0 0 25px rgba(0, 210, 255, 0.7);
         }
 
         .login-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 700;
             color: #00D2FF;
             text-transform: uppercase;
@@ -186,7 +187,7 @@ def apply_professional_ai_theme():
             color: #4ECCA3;
             text-transform: uppercase;
             letter-spacing: 5px;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
         }
 
         /* Forzar diseño del botón de Login */
@@ -200,6 +201,7 @@ def apply_professional_ai_theme():
             padding: 16px 20px !important;
             width: 100% !important;
             box-shadow: 0 0 20px rgba(67, 100, 247, 0.4) !important;
+            margin-top: 30px !important;
         }
 
         div.login-btn-container button:hover {
@@ -346,17 +348,15 @@ def run_professional_dashboard():
     with tabs[1]:
         if st.session_state.customer_data is not None:
             df = st.session_state.customer_data
-            
-            st.markdown("#### DISTRIBUCIÓN PORCENTUAL DE EDADES (GRADIENTE DE DENSIDAD)")
+            st.markdown("#### DISTRIBUCIÓN PORCENTUAL DE EDADES")
             counts, bins = np.histogram(df['edad'], bins=10)
             bin_centers = 0.5 * (bins[:-1] + bins[1:])
             fig_edad = go.Figure(data=[go.Bar(
                 x=bin_centers, y=counts,
                 marker=dict(color=counts, colorscale=[[0, '#0052D4'], [0.5, '#00D2FF'], [1, '#4ECCA3']])
             )])
-            fig_edad.update_layout(template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=300, margin=dict(l=20, r=20, t=20, b=20))
+            fig_edad.update_layout(template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=300)
             st.plotly_chart(fig_edad, use_container_width=True)
-            
             st.dataframe(df.head(10), use_container_width=True)
         else:
             st.info("Vectores vacíos. Inicie en la Consola Central.")
@@ -404,23 +404,23 @@ def main():
     if 'model_metrics' not in st.session_state: st.session_state.model_metrics = {}
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
-    # Renderizado seguro de la UI de login
+    # Renderizado de la UI de login
     if not st.session_state.autenticado:
         st.markdown("<div class='login-frame-container'>", unsafe_allow_html=True)
         
-        # Bloque de diseño puro HTML con icono integrado de Font Awesome (Brújula + Redes)
+        # Bloque de diseño HTML del marco principal con icono de brújula e ingeniería integrada
         st.markdown("""
             <div class='login-frame'>
                 <div class='login-icon-box'>
-                    <i class='fa-solid fa-compass-drafting fa-spin-hover'></i>
+                    <i class='fa-solid fa-compass-drafting'></i>
                 </div>
                 <div class='login-title'>ESTRATEGA IA</div>
                 <div class='login-subtitle'>PREDICCIÓN · ESTRATEGIA · ÉXITO</div>
             </div>
         """, unsafe_allow_html=True)
         
-        # El botón se coloca justo abajo, controlado mediante una clase contenedora para el CSS
-        st.markdown("<div class='login-btn-container' style='max-width:550px; margin: -25px auto 0 auto;'>", unsafe_allow_html=True)
+        # Contenedor para el botón de login nativo estilizado por CSS
+        st.markdown("<div class='login-btn-container' style='width:100%; max-width:550px; margin: -10px auto 0 auto;'>", unsafe_allow_html=True)
         if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
             st.session_state.autenticado = True
             st.session_state.usuario_email = "directorio@estratega.ia"
