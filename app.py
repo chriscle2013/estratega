@@ -1,4 +1,4 @@
-# app.py - Versión 7.0 PRODUCTION ENGINE (Advanced Launch Analytics)
+# app.py - Versión 7.1 PRODUCTION ENGINE (Advanced Launch Analytics - Fixed)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -600,7 +600,13 @@ def create_launch_analyzer():
             else:
                 return 'color: #4ECCA3'
         
-        st.dataframe(riesgo_df.style.applymap(color_risk, subset=['Nivel']), use_container_width=True, hide_index=True)
+        # CORRECCIÓN: Usar styled.applymap en lugar de styled.map para compatibilidad
+        # O usar una alternativa más simple con st.markdown
+        st.dataframe(
+            riesgo_df.style.map(color_risk, subset=['Nivel']), 
+            use_container_width=True, 
+            hide_index=True
+        )
         
         st.markdown("---")
         if st.button("📥 Exportar Reporte Completo (JSON)", use_container_width=True):
