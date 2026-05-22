@@ -1,5 +1,5 @@
-# app.py - Versión 3.6 PRODUCTION ENGINE (STABLE RUN)
-# Soluciona de raíz el TypeError en el histograma aplicando color nativo por trazo.
+# app.py - Versión 3.7 PRODUCTION ENGINE (STABLE GRADIENT)
+# Corrige la visualización del histograma usando un gradiente dinámico real por densidad.
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -386,15 +386,36 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # 2. Histograma Nativo Seguro (Asignación Directa de Color para evitar TypeError)
-            fig_edad = px.histogram(
-                df, x="edad", nbins=25,
+            # 2. Histograma Reconstruido con Gradiente de Densidad Dinámico por Frecuencias (Inmune a Fallos)
+            counts, bins = np.histogram(df['edad'], bins=25)
+            bin_centers = 0.5 * (bins[:-1] + bins[1:])
+            
+            fig_edad = go.Figure(data=[go.Bar(
+                x=bin_centers,
+                y=counts,
+                marker=dict(
+                    color=counts,
+                    colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']],
+                    showscale=True,
+                    colorbar=dict(
+                        title="Densidad",
+                        title_font=dict(family="Orbitron", size=11, color="#64748b"),
+                        tickfont=dict(family="Rajdhani", color="#64748b")
+                    )
+                ),
+                hovertemplate="<b>Rango de Edad:</b> %{x:.1f} años<br><b>Frecuencia:</b> %{y}<extra></extra>"
+            )])
+            
+            fig_edad.update_layout(
                 title="DISTRIBUCIÓN PORCENTUAL DE EDADES (GRADIENTE DE DENSIDAD)",
-                labels={'edad': 'Edad (Años)', 'count': 'Frecuencia'},
-                template="plotly_dark"
+                xaxis=dict(title='Edad (Años)', gridcolor='rgba(255,255,255,0.05)'),
+                yaxis=dict(title='Frecuencia', gridcolor='rgba(255,255,255,0.05)'),
+                template="plotly_dark",
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font_family="Rajdhani",
+                height=420
             )
-            fig_edad.update_traces(marker_color='#00D2FF', marker_line_color='#0072FF', marker_line_width=1)
-            fig_edad.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=400)
             st.plotly_chart(fig_edad, use_container_width=True)
             
             st.markdown("<br>", unsafe_allow_html=True)
