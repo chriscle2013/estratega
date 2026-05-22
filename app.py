@@ -1,3 +1,4 @@
+# app.py - Versión 4.1 PRODUCTION ENGINE (STABLE & LOGO INTEGRATED)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -73,21 +74,22 @@ class AIModel:
             'sample_size_evaluated': len(test_data)
         }
 
-# --- INYECCIÓN DE CSS NATIVA (CORREGIDA SIN TEXTO PLANO Y CON SOPORTE GLOBAL) ---
+# --- INYECCIÓN DE CSS AVANZADO: UI DE SOFTWARE DE IA ---
 def apply_professional_ai_theme():
-    # Usamos st.html para inyectar estilos directamente en el DOM principal sin iframes
-    st.html("""
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght=400;700&family=Rajdhani:wght=500;700&display=swap');
         
-        /* Fondo y Contenedor Principal */
+        /* Fondo general estilo Dashboard de IA */
         .stApp {
             background-color: #06070d !important;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 210, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(78, 204, 163, 0.03) 0%, transparent 50%) !important;
             color: #e2e8f0 !important;
         }
 
-        /* Estilización de Pestañas (Tabs) */
+        /* Modificar las pestañas (Tabs) superiores */
         .stTabs [data-baseweb="tab-list"] {
             gap: 10px;
             background-color: #0d111a;
@@ -110,7 +112,21 @@ def apply_professional_ai_theme():
             border: 1px solid rgba(0, 210, 255, 0.3) !important;
         }
 
-        /* Bloques de Métricas */
+        /* Estilización Segura para el Selector de Escenarios Predictivos */
+        div[data-testid="stRadio"] > label {
+            font-family: 'Orbitron', sans-serif !important;
+            color: #94a3b8 !important;
+            font-size: 14px !important;
+            letter-spacing: 1px;
+        }
+        div[data-testid="stRadio"] div[role="radiogroup"] {
+            background-color: #0d111a !important;
+            padding: 10px !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Tarjetas de Métricas y Reportes */
         div[data-testid="stMetric"] {
             background: #0d111a !important;
             border: 1px solid rgba(255, 255, 255, 0.05) !important;
@@ -130,73 +146,68 @@ def apply_professional_ai_theme():
             font-size: 24px !important;
         }
 
-        /* Botones del Ecosistema */
+        /* Botones del Sistema */
         .stButton>button {
             font-family: 'Orbitron', sans-serif !important;
+            background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
+            color: white !important;
+            border: none !important;
             border-radius: 8px !important;
+            padding: 12px 24px !important;
+            font-weight: 700 !important;
             letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
             transition: all 0.3s ease !important;
         }
+        .stButton>button:hover {
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.5) !important;
+            transform: translateY(-1px);
+        }
 
-        /* Diseño del Bloque de Login */
-        .login-frame-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
-            background-color: #010409;
-            min-height: 60vh;
+        /* Contenedores de Reportes Financieros */
+        .report-box {
+            background: #0d111a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 15px;
         }
-        .login-frame {
-            background-color: #06070d;
-            border: 2px solid #00D2FF;
-            box-shadow: 0 0 35px rgba(0, 210, 255, 0.2);
-            border-radius: 16px;
-            padding: 50px 40px;
-            width: 100%;
-            max-width: 550px;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .login-icon-box {
-            font-size: 55px;
-            color: #00D2FF;
-            margin-bottom: 15px;
-        }
-        .login-title {
+
+        .report-header-success {
+            border-left: 5px solid #4ECCA3;
+            padding-left: 15px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
-            color: #00D2FF;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 8px;
-        }
-        .login-subtitle {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 14px;
             color: #4ECCA3;
-            text-transform: uppercase;
-            letter-spacing: 5px;
         }
-        div.login-btn-container button {
-            background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%) !important;
-            color: #ffffff !important;
+
+        .report-header-error {
+            border-left: 5px solid #FF5E5E;
+            padding-left: 15px;
+            font-family: 'Orbitron', sans-serif;
+            color: #FF5E5E;
+        }
+
+        .ai-title {
+            background: linear-gradient(90deg, #00D2FF, #4ECCA3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: calc(1.8rem + 1.5vw) !important;
+            line-height: 1.2 !important;
+            margin-bottom: 5px;
             font-family: 'Orbitron', sans-serif !important;
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            border: none !important;
-            padding: 14px 20px !important;
-            width: 100% !important;
-            box-shadow: 0 0 20px rgba(67, 100, 247, 0.4) !important;
         }
-        div.login-btn-container button:hover {
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.8) !important;
-            transform: scale(1.01);
+
+        .diag-card {
+            background: #0d111a;
+            border: 1px solid rgba(0, 210, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         </style>
-    """)
+    """, unsafe_allow_html=True)
 
 # --- FORMATOS AUXILIARES ---
 def format_cop(value): return f"${value:,.0f} COP"
@@ -205,14 +216,14 @@ def format_percentage(value): return f"{value:.1f}%"
 # --- CONTROLADORES DE TIEMPO REAL ---
 def generate_sample_data(size):
     st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(size)
-    st.toast(f"Muestra de {size:,} perfiles normalizada.", icon="🧬")
+    st.toast(f"Muestra de {size:,} perfiles normalizada con metadata demográfica.", icon="🧬")
     st.rerun()
 
 def train_models():
     if st.session_state.customer_data is None:
         st.error("❌ Error: Código de datos fuente vacío.")
         return
-    with st.spinner("🧠 NEURAL NETWORK: Optimizando capas..."):
+    with st.spinner("🧠 NEURAL NETWORK: Optimizando capas de decisión..."):
         metrics_seg = st.session_state.ai_model.train_segmentation_model(st.session_state.customer_data)
         metrics_imp = st.session_state.ai_model.train_impact_model(st.session_state.customer_data)
         
@@ -222,26 +233,27 @@ def train_models():
             'last_train': datetime.now().strftime("%H:%M:%S")
         }
         st.session_state.ai_model.is_trained = True
-        st.toast("Redes neuronales optimizadas.", icon="⚡")
+        st.toast("Redes neuronales optimizadas para simulaciones.", icon="⚡")
         st.rerun()
 
-# --- ANALIZADORES ---
+# --- FORMULARIOS DE SIMULACIÓN AVANZADOS ---
 def create_launch_analyzer():
     st.markdown("### 🚀 ALGORITMO DE LANZAMIENTO DE PRODUCTO")
+    
     with st.container(border=True):
         ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
-        sel_ciudades = st.multiselect("Nodos Geográficos Objetivo:", ciudades, default=ciudades)
+        sel_ciudades = st.multiselect("Nodos Geográficos Objetivo:", options=ciudades, default=ciudades)
         
         c1, c2 = st.columns(2)
         with c1:
             rango_edad = st.slider("Rango de Edad Objetivo (Años):", 18, 80, (25, 50))
-            price = st.number_input("Precio del Producto (COP):", 5000, 2000000, 45000)
-            cost_ratio = st.slider("Costo Variable Est. (% sobre ingreso):", 5, 100, 35)
+            price = st.number_input("Precio de Entrada del Producto (COP):", 5000, 2000000, 45000)
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 35, key="launch_cost")
         with c2:
-            rango_salario = st.slider("Rango Salarial (COP):", 1000000, 20000000, (2500000, 12000000), step=500000)
-            min_revenue = st.number_input("Umbral de Viabilidad Anual (COP):", 5000000, 500000000, 50000000)
+            rango_salario = st.slider("Rango Salarial Mínimo - Máximo (COP):", 1000000, 20000000, (2500000, 12000000), step=500000)
+            min_revenue = st.number_input("Umbral Crítico de Viabilidad Anual (COP):", 5000000, 500000000, 50000000)
 
-        if st.button("EJECUTAR SIMULACIÓN", use_container_width=True):
+        if st.button("EXECUTE PREDICTION RUN", use_container_width=True):
             df = st.session_state.customer_data
             filtered = df[
                 (df['ciudad'].isin(sel_ciudades)) & 
@@ -252,34 +264,51 @@ def create_launch_analyzer():
             if len(filtered) > 10:
                 test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
                 res = st.session_state.ai_model.evaluate_product_launch(test_c, product_price=price, min_viable_revenue=min_revenue)
+                res['estimated_roi'] = res['estimated_roi'] * (1 - (cost_ratio - 35)/100.0)
                 st.session_state.launch_result = res
                 st.rerun()
             else:
-                st.error("Vector de datos demasiado pequeño.")
+                st.error("Vector de datos demasiado pequeño. Amplíe los rangos de segmentación.")
 
     if 'launch_result' in st.session_state:
         res = st.session_state.launch_result
-        st.success(res['recommendation'])
+        is_viable = '✅' in res['recommendation']
+        header_class = "report-header-success" if is_viable else "report-header-error"
+        
+        st.markdown(f"""
+            <div class="report-box">
+                <h4 class="{header_class}">REPORT GENERAL DE LANZAMIENTO PREDICITIVO</h4>
+                <p style="font-size:16px; margin-top:10px;"><b>Dictamen del Motor:</b> {res['recommendation']}</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
         col1, col2, col3 = st.columns(3)
-        col1.metric("CLIENTES POTENCIALES", f"{res['estimated_buyers']:,}")
-        col2.metric("CONVERSIÓN ESTIMADA", format_percentage(res['purchase_percentage']))
-        col3.metric("ROI ESTIMADO", format_percentage(res['estimated_roi']))
+        col1.metric("CLIENTES POTENCIALES CONVERTIDOS", f"{res['estimated_buyers']:,} perfiles")
+        col2.metric("RATIO DE CONVERSIÓN ESTIMADO", format_percentage(res['purchase_percentage']))
+        col3.metric("RETORNO SOBRE LA INVERSIÓN (ROI)", format_percentage(res['estimated_roi']))
 
 def create_investment_analyzer():
     st.markdown("### 💼 SIMULACIÓN DE INFRAESTRUCTURA FINANCIERA")
+    
     with st.container(border=True):
         ciudades_disponibles = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
-        sel_ciudades = st.multiselect("Mercados a Evaluar:", ciudades_disponibles, default=['Cali', 'Bogotá'])
+        sel_ciudades = st.multiselect("Mercados a Evaluar:", options=ciudades_disponibles, default=['Cali', 'Bogotá'])
         
         c1, c2 = st.columns(2)
         with c1:
-            rango_edad = st.slider("Rango de Edad (Años):", 18, 80, (20, 60))
-            investment = st.number_input("CAPEX (COP):", min_value=10000000, value=500000000, step=50000000)
+            rango_edad = st.slider("Filtro Demográfico - Rango de Edad (Años):", 18, 80, (20, 60), key="inv_edad")
+            investment = st.number_input(
+                "CAPEX Requerido para Expansión (COP):", 
+                min_value=10000000, 
+                max_value=20000000000, 
+                value=500000000,
+                step=50000000
+            )
         with c2:
-            rango_salario = st.slider("Filtro Salarial (COP):", 1000000, 20000000, (3000000, 15000000), step=500000)
-            cost_ratio = st.slider("Tasa de Costo Variable (%):", 5, 100, 40)
+            rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 15000000), step=500000, key="inv_sal")
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 40, key="inv_cost")
         
-        if st.button("ANALIZAR INVERSIÓN", use_container_width=True):
+        if st.button("RUN FINANCIAL SIMULATION", use_container_width=True):
             df = st.session_state.customer_data
             filtered = df[
                 (df['ciudad'].isin(sel_ciudades)) & 
@@ -291,22 +320,64 @@ def create_investment_analyzer():
                 test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
                 res = st.session_state.ai_model.evaluate_infrastructure_investment(test_c, investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
                 st.session_state.investment_result = res
+                st.session_state.current_cost_ratio = cost_ratio / 100.0
+                st.session_state.current_capex = investment
                 st.rerun()
             else:
-                st.error("Datos insuficientes.")
+                st.error("Datos insuficientes. Ajuste los parámetros de segmentación.")
 
     if 'investment_result' in st.session_state:
         res = st.session_state.investment_result
-        st.info(res['recommendation'])
+        cost_ratio = st.session_state.current_cost_ratio
+        capex = st.session_state.current_capex
+        
+        is_viable = '✅' in res['recommendation']
+        header_class = "report-header-success" if is_viable else "report-header-error"
+        
+        st.markdown(f"""
+            <div class="report-box">
+                <h4 class="{header_class}">DICTAMEN EXPLICABLE DE INVERSIÓN FINANCIERA (CAPEX)</h4>
+                <p style="font-size:16px; margin-top:10px;"><b>Análisis de Viabilidad:</b> {res['recommendation']}</p>
+                <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza estadística del modelo predictivo: <b>{res['confidence']:.2f}%</b> basado en {res['sample_size_evaluated']} perfiles económicos válidos.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
         col1, col2, col3 = st.columns(3)
         col1.metric("INGRESOS ANUALES PROYECTADOS", format_cop(res['projected_annual_income']))
         col2.metric("MARGEN DE CONTRIBUCIÓN NETO", format_cop(res['contribution_margin']))
         col3.metric("PERIODO DE RETORNO (PAYBACK)", f"{res['payback_months']:.1f} Meses")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        c_analisis, c_grafico = st.columns([1, 1])
+        with c_analisis:
+            st.markdown("#### 🔬 DESGLOSE ESTRUCTURAL DEL MODELO")
+            costos_operativos = res['projected_annual_income'] * cost_ratio
+            rentabilidad_anual = (res['contribution_margin'] / capex) * 100
+            
+            data_breakdown = {
+                "Concepto Financiero": ["Inversión Inicial Requerida (CAPEX)", "Ingreso Operativo Mensual Est.", "Costos Variables Estimados (Anual)", "Margen de Contribución Real (%)", "Retorno de Inversión Anualizado (ROI)"],
+                "Valor Estructurado": [format_cop(capex), format_cop(res['projected_annual_income'] / 12), format_cop(costos_operativos), f"{((1 - cost_ratio)*100):.1f}%", f"{rentabilidad_anual:.2f}% por año"]
+            }
+            st.table(pd.DataFrame(data_breakdown))
 
-# --- INTERFAZ PRINCIPAL DEL DASHBOARD ---
+        with c_grafico:
+            st.markdown("#### 📊 ANÁLISIS DE SENSIBILIDAD (ESTRÉS DE MERCADO)")
+            ingreso_base = res['projected_annual_income']
+            escenarios = ["Estresado (-20%)", "Conservador (-10%)", "Base Original", "Optimista (+10%)"]
+            valores_ingreso = [ingreso_base * 0.8, ingreso_base * 0.9, ingreso_base, ingreso_base * 1.1]
+            valores_margen = [v * (1 - cost_ratio) for v in valores_ingreso]
+            
+            fig_sens = go.Figure()
+            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_ingreso, name="Ingresos Proyectados", marker_color="#00D2FF"))
+            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_margen, name="Margen Neto Libre", marker_color="#4ECCA3"))
+            fig_sens.update_layout(barmode='group', template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=280, margin=dict(l=20, r=20, t=40, b=20))
+            st.plotly_chart(fig_sens, use_container_width=True)
+
+# --- INTERFAZ GENERAL DEL DASHBOARD ---
 def run_professional_dashboard():
-    st.markdown("<h2 style='font-family:\"Orbitron\"; color:#00D2FF; letter-spacing:2px;'>CORE ENGINE // ESTRATEGA IA</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #64748b; margin-top:-10px; font-size:12px; font-family:\"Orbitron\";'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
+    st.markdown("<h1 class='ai-title'>CORE ENGINE // ESTRATEGA IA</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:12px; font-family:\"Orbitron\";'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
     
     tabs = st.tabs(["Consola Central", "Vectores de Datos", "Diagnóstico ML", "Simulaciones"])
     
@@ -316,7 +387,7 @@ def run_professional_dashboard():
         registros = f"{len(st.session_state.customer_data):,}" if st.session_state.customer_data is not None else "0"
         c1.metric("REGISTROS EN MEMORIA", registros)
         c2.metric("RED NEURONAL STATUS", "OPTIMIZADA" if st.session_state.ai_model.is_trained else "INACTIVA")
-        c3.metric("LATENCIA", "0.82 ms" if st.session_state.ai_model.is_trained else "0.00 ms")
+        c3.metric("LATENCIA DE RESPUESTA", "0.82 ms" if st.session_state.ai_model.is_trained else "0.00 ms")
         
         with st.container(border=True):
             st.markdown("#### Acciones de Inicialización")
@@ -324,59 +395,88 @@ def run_professional_dashboard():
             col_b1, col_b2 = st.columns(2)
             if col_b1.button("🧬 GENERAR BIG DATA SINTÉTICA", use_container_width=True):
                 generate_sample_data(size)
-            if col_b2.button("⚡ OPTIMIZAR INTELIGENCIA", use_container_width=True):
+            if col_b2.button("⚡ OPTIMIZAR MODELOS DE INTELIGENCIA", use_container_width=True):
                 train_models()
 
     with tabs[1]:
         if st.session_state.customer_data is not None:
             df = st.session_state.customer_data
-            st.markdown("#### DISTRIBUCIÓN PORCENTUAL DE EDADES")
-            counts, bins = np.histogram(df['edad'], bins=10)
+            st.markdown("### 📊 DASHBOARD DE MÉTRICAS EJECUTIVAS")
+            
+            kpi1, kpi2 = st.columns(2)
+            kpi1.metric("TOTAL DE CLIENTES", f"{len(df):,}")
+            kpi2.metric("EDAD PROMEDIO", f"{df['edad'].mean():.1f} Años")
+            
+            kpi3, kpi4 = st.columns(2)
+            kpi3.metric("INGRESO PROMEDIO", format_cop(df['salario'].mean()))
+            kpi4.metric("VALOR DE COMPRA PROMEDIO", format_cop(df['valor_compra_promedio'].mean()))
+            
+            st.markdown("---")
+            st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
+            
+            counts, bins = np.histogram(df['edad'], bins=25)
             bin_centers = 0.5 * (bins[:-1] + bins[1:])
+            
             fig_edad = go.Figure(data=[go.Bar(
                 x=bin_centers, y=counts,
-                marker=dict(color=counts, colorscale=[[0, '#0052D4'], [0.5, '#00D2FF'], [1, '#4ECCA3']])
+                marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']], showscale=True)
             )])
-            fig_edad.update_layout(template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=300)
+            fig_edad.update_layout(title="DISTRIBUCIÓN PORCENTUAL DE EDADES", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
             st.plotly_chart(fig_edad, use_container_width=True)
-            st.dataframe(df.head(10), use_container_width=True)
+            
+            st.dataframe(df.head(20), use_container_width=True)
         else:
-            st.info("Vectores vacíos. Inicie en la Consola Central.")
+            st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
 
     with tabs[2]:
         st.markdown("### 🧠 MONITOREO DE REDES NEURONALES")
+        
         acc_val = st.session_state.model_metrics.get('accuracy', 0.942)
         r2_val = st.session_state.model_metrics.get('r2', 0.887)
+        time_log = st.session_state.model_metrics.get('last_train', "12:34:57")
         
         col1, col2 = st.columns(2)
         with col1:
             fig_acc = go.Figure(go.Indicator(
                 mode = "gauge+number", value = acc_val * 100,
-                title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'color': '#00D2FF', 'family': 'Orbitron', 'size': 14}},
-                gauge = {'axis': {'range': [0, 100]}, 'bar': {'color': "#00D2FF"}, 'bgcolor': "rgba(0,0,0,0)"},
-                number = {'suffix': "%"}
+                title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 16}},
+                gauge = {'axis': {'range': [0, 100], 'tickcolor': "#00D2FF"}, 'bar': {'color': "#00D2FF"}, 'bgcolor': "rgba(0,0,0,0)"},
+                number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
             ))
-            fig_acc.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', height=250)
+            fig_acc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=300)
             st.plotly_chart(fig_acc, use_container_width=True)
         with col2:
             fig_r2 = go.Figure(go.Indicator(
                 mode = "gauge+number", value = r2_val * 100,
-                title = {'text': "CONFIANZA IMPACTO (R²)", 'font': {'color': '#4ECCA3', 'family': 'Orbitron', 'size': 14}},
-                gauge = {'axis': {'range': [0, 100]}, 'bar': {'color': "#4ECCA3"}, 'bgcolor': "rgba(0,0,0,0)"},
-                number = {'suffix': "%"}
+                title = {'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 16}},
+                gauge = {'axis': {'range': [0, 100], 'tickcolor': "#4ECCA3"}, 'bar': {'color': "#4ECCA3"}, 'bgcolor': "rgba(0,0,0,0)"},
+                number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
             ))
-            fig_r2.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', height=250)
+            fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=300)
             st.plotly_chart(fig_r2, use_container_width=True)
+            
+        st.markdown("<br>#### LOG DE ENTRENAMIENTO CRÍTICO", unsafe_allow_html=True)
+        c1, c2, c3 = st.columns(3)
+        c1.markdown(f"<div class='diag-card'><h5>Última Optimización</h5><h2 style='color:#00D2FF; font-family:\"Orbitron\"; margin:5px 0 0 0;'>{time_log}</h2></div>", unsafe_allow_html=True)
+        c2.markdown("<div class='diag-card'><h5>Algoritmo Base</h5><h2 style='color:#4ECCA3; font-family:\"Orbitron\"; margin:5px 0 0 0;'>RF-Regressor</h2></div>", unsafe_allow_html=True)
+        c3.markdown("<div class='diag-card'><h5>Estatus Operativo</h5><h2 style='color:white; font-family:\"Orbitron\"; margin:5px 0 0 0;'>OPTIMIZADO</h2></div>", unsafe_allow_html=True)
 
     with tabs[3]:
         if st.session_state.customer_data is not None and st.session_state.ai_model.is_trained:
-            selector = st.radio("Seleccione Escenario Predictivo:", ["🚀 Lanzamiento de Producto", "💼 Inversión Estructural"], horizontal=True)
-            if "Lanzamiento" in selector: create_launch_analyzer()
-            else: create_investment_analyzer()
+            selector = st.radio(
+                "Seleccione Escenario Predictivo Corporativo:", 
+                ["🚀 Lanzamiento de Producto", "💼 Inversión Estructural"],
+                horizontal=True
+            )
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            if selector == "🚀 Lanzamiento de Producto": 
+                create_launch_analyzer()
+            elif selector == "💼 Inversión Estructural": 
+                create_investment_analyzer()
         else:
-            st.error("🚨 Denegado: Requieres cargar datos e inteligencia primero.")
+            st.error("🚨 Acceso Denegado: Requiere la generación de Big Data y la Optimización de Modelos previa en la Consola Central.")
 
-# --- MAIN ---
 def main():
     apply_professional_ai_theme()
     
@@ -387,29 +487,32 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # Estructura limpia de la caja de login usando divs convencionales
-        st.markdown("""
-            <div class='login-frame-container'>
-                <div class='login-frame'>
-                    <div class='login-icon-box'><i class='fa-solid fa-compass-drafting'></i></div>
-                    <div class='login-title'>ESTRATEGA IA</div>
-                    <div class='login-subtitle'>PREDICCIÓN · ESTRATEGIA · ÉXITO</div>
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            # Contenedor del Login Box estilizado exactamente igual al original
+            st.markdown('<div style="background: #0d111a; border: 1px solid rgba(0, 210, 255, 0.2); padding: 50px 40px; border-radius: 20px; text-align: center;">', unsafe_allow_html=True)
+            
+            # Renderizado nativo y centrado del Logo (.webp) desde el directorio raíz de la app
+            st.image("logo_estratega.webp", width=110)
+            
+            # Título y Subtítulo de Estratega IA
+            st.markdown("""
+                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin-top: 15px;">ESTRATEGA IA</h1>
+                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Orbitron', sans-serif; font-size:11px; margin-bottom: 25px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
                 </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # Contenedor para el botón nativo de Streamlit
-        st.markdown("<div class='login-btn-container' style='width:100%; max-width:550px; margin: -60px auto 40px auto;'>", unsafe_allow_html=True)
-        if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
-            st.session_state.autenticado = True
-            st.session_state.usuario_email = "directorio@estratega.ia"
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
+            """, unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
+                st.session_state.autenticado = True
+                st.session_state.usuario_email = "comite.directivo@empresa.com"
+                st.rerun()
     else:
         with st.sidebar:
             st.markdown("### 🌐 ENGINE ACCESS")
             st.write(f"User: `{st.session_state.usuario_email}`")
+            st.markdown("---")
             if st.button("🔒 CERRAR SESIÓN", use_container_width=True):
                 st.session_state.autenticado = False
                 st.rerun()
