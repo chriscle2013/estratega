@@ -1,4 +1,4 @@
-# app.py - Versión 7.3 PRODUCTION ENGINE (Advanced Launch Analytics - Fixed)
+# app.py - Versión 7.4 PRODUCTION ENGINE (Advanced Launch Analytics - Full Fixed)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -533,11 +533,21 @@ def create_launch_analyzer():
                     <hr style="margin:15px 0; border-color:#1e293b;">
                     
                     <p style="color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;">📊 MÉTRICAS CLAVE</p>
-                    <table style="width:100%; font-size:13px;">
-                        <tr><td style="color:#94a3b8;">Ingreso Máximo:</td><td style="text-align:right; color:#4ECCA3; font-weight:bold;">{format_cop(revenue_optimo)}</td></tr>
-                        <tr><td style="color:#94a3b8;">Demanda Óptima:</td><td style="text-align:right; color:#00D2FF; font-weight:bold;">{demanda_optima:,.0f} und</td></tr>
-                        <tr><td style="color:#94a3b8;">Elasticidad Precio:</td><td style="text-align:right; color:#FFB347; font-weight:bold;">{elasticidad_arco:.2f}</td></tr>
-                    </table>
+                    
+                    <div style="width:100%; font-size:13px; margin-bottom:15px;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b;">
+                            <span style="color:#94a3b8;">Ingreso Máximo:</span>
+                            <span style="color:#4ECCA3; font-weight:bold;">{format_cop(revenue_optimo)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b;">
+                            <span style="color:#94a3b8;">Demanda Óptima:</span>
+                            <span style="color:#00D2FF; font-weight:bold;">{demanda_optima:,.0f} und</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span style="color:#94a3b8;">Elasticidad Precio:</span>
+                            <span style="color:#FFB347; font-weight:bold;">{elasticidad_arco:.2f}</span>
+                        </div>
+                    </div>
                     
                     <hr style="margin:15px 0; border-color:#1e293b;">
                     
@@ -634,7 +644,6 @@ def create_launch_analyzer():
         else:
             col_p4.metric("Punto de Equilibrio", "> 36 meses", help="No se alcanza en el horizonte proyectado")
         
-        # Crear lista de textos para las barras
         textos_barras = [format_cop(val) for val in flujo_mensual]
         
         fig_proy = go.Figure()
