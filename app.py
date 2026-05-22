@@ -1,5 +1,5 @@
-# app.py - Versión 2.5 INTERFAZ IA PROFESIONAL (DARK PREMIUM)
-# Transforma por completo el diseño de Streamlit a una suite tecnológica avanzada.
+# app.py - Versión 2.6 INTERFAZ IA PROFESIONAL (EDICIÓN CORREGIDA)
+# Soluciona: Título responsive para móviles + Error de paleta de colores de Plotly
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -16,7 +16,7 @@ from ai_model import AIModel
 st.set_page_config(
     page_title="ESTRATEGA IA — Core Engine",
     page_icon="🧠",
-    layout="wide", # Cambiado a ancho para parecer un software de monitoreo
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
@@ -84,7 +84,7 @@ def apply_professional_ai_theme():
         div[data-testid="stMetric"] [data-testid="stMetricValue"] {
             font-family: 'Orbitron', sans-serif !important;
             color: #ffffff !important;
-            font-size: 28px !important;
+            font-size: 24px !important;
         }
 
         /* Cajas colapsables e Inputs */
@@ -112,7 +112,7 @@ def apply_professional_ai_theme():
             transform: translateY(-1px);
         }
 
-        /* Títulos estilo Cyber / Consola */
+        /* Títulos adaptables para celular y PC */
         h1, h2, h3 {
             font-family: 'Orbitron', sans-serif !important;
             letter-spacing: 1px;
@@ -122,6 +122,9 @@ def apply_professional_ai_theme():
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 700;
+            font-size: calc(1.8rem + 1.5vw) !important; /* Adaptable a pantallas chicas */
+            line-height: 1.2 !important;
+            margin-bottom: 5px;
         }
         
         /* Barra lateral (Sidebar) */
@@ -231,7 +234,7 @@ def create_investment_analyzer():
 def run_professional_dashboard():
     # Encabezado estilo Centro de Control
     st.markdown("<h1 class='ai-title'>CORE ENGINE // ESTRATEGA IA</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #64748b; margin-top:-15px;'>MÓDULO DE INTELIGENCIA PREDICTIVA PARA RETAIL</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:13px; font-family:\"Orbitron\";'>MÓDULO DE INTELIGENCIA PREDICTIVA PARA RETAIL</p>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
     tab1, tab2, tab3, tab4 = st.tabs([
@@ -263,16 +266,20 @@ def run_professional_dashboard():
             st.markdown("### DATA LOGGING (Últimos Registros Mapeados)")
             st.dataframe(st.session_state.customer_data.head(15), use_container_width=True)
             
-            # Gráfica estilizada para entornos oscuros
+            # Gráfica corregida con paleta cibernética robusta y compatible
             st.markdown("### ANÁLISIS GEOGRÁFICO DE CLIENTES")
             fig = px.histogram(
                 st.session_state.customer_data, 
                 x="ciudad", 
                 color="ciudad",
                 template="plotly_dark",
-                color_discrete_sequence=px.colors.radial.Neon
+                color_discrete_sequence=px.colors.sequential.Agsunset
             )
-            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+            fig.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)', 
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(family="Rajdhani, sans-serif")
+            )
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
@@ -292,7 +299,7 @@ def run_professional_dashboard():
         else:
             st.error("🚨 Acceso Denegado: Requiere carga de Datos y Entrenamiento de Modelos previo.")
 
-# --- MANEJO DE ACCESO Y PANTALLA INICIAL (PANTALLA COMPLETA DE BIENVENIDA) ---
+# --- MANEJO DE ACCESO Y PANTALLA INICIAL ---
 def main():
     apply_professional_ai_theme()
     
@@ -304,17 +311,16 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # Pantalla de Login de Software de IA Avanzado
         st.markdown("<br><br><br>", unsafe_allow_html=True)
         col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         
         with col_l2:
             st.markdown("""
                 <div style="background: #0d111a; border: 1px solid rgba(0, 210, 255, 0.2); padding: 45px; border-radius: 20px; text-align: center; box-shadow: 0 0 40px rgba(0,210,255,0.1);">
-                    <h1 style="font-size: 3rem; margin-bottom: 0; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ESTRATEGA IA</h1>
-                    <p style="letter-spacing: 5px; font-weight: 400; color: #4ECCA3; font-size: 13px;">PLATAFORMA PREDICITIVA DE NEGOCIOS</p>
+                    <h1 style="font-size: calc(2rem + 1vw); margin-bottom: 0; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron';">ESTRATEGA IA</h1>
+                    <p style="letter-spacing: 5px; font-weight: 400; color: #4ECCA3; font-size: 11px; font-family:'Orbitron';">PLATAFORMA PREDICITIVA DE NEGOCIOS</p>
                     <hr style="border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin: 30px 0;">
-                    <p style="color: #94a3b8; font-size: 16px;">Consola Autónoma de Simulación Financiera y Evaluación de Viabilidad de Mercados.</p>
+                    <p style="color: #94a3b8; font-size: 15px; font-family:'Rajdhani';">Consola Autónoma de Simulación Financiera y Evaluación de Viabilidad de Mercados.</p>
                 </div>
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
@@ -323,7 +329,6 @@ def main():
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
     else:
-        # Menú Lateral estilo Panel Técnico
         with st.sidebar:
             st.markdown("### 🌐 ENGINE ACCESS")
             st.markdown(f"User: `{st.session_state.usuario_email}`")
