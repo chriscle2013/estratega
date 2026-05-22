@@ -1,15 +1,11 @@
-# app.py - Versión 3.1 ADVANCED ANALYTICS & FINANCIAL REPORTS
-# Incorpora gráficos demográficos, filtros avanzados de segmentación y reportes ejecutivos.
+# app.py - Versión 3.2 EXECUTIVE ANALYTICS & PRECISION UI
+# Optimización de layouts, KPI dashboards, gradientes visuales y restauración de Diagnóstico ML.
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
-
-# Módulos locales del proyecto
-from data_generator import DataGenerator
-from ai_model import AIModel
 
 # --- CONFIGURACIÓN DE PÁGINA OBLIGATORIA AL INICIO ---
 st.set_page_config(
@@ -77,24 +73,6 @@ def apply_professional_ai_theme():
             font-size: 24px !important;
         }
 
-        /* Botones del Sistema */
-        .stButton>button {
-            font-family: 'Orbitron', sans-serif !important;
-            background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 8px !important;
-            padding: 12px 24px !important;
-            font-weight: 700 !important;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
-            transition: all 0.3s ease !important;
-        }
-        .stButton>button:hover {
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.5) !important;
-            transform: translateY(-1px);
-        }
-
         /* Contenedores de Reportes Financieros */
         .report-box {
             background: #0d111a;
@@ -132,9 +110,10 @@ def apply_professional_ai_theme():
         .diag-card {
             background: #0d111a;
             border: 1px solid rgba(0, 210, 255, 0.1);
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         </style>
     """, unsafe_allow_html=True)
@@ -146,13 +125,12 @@ def format_percentage(value): return f"{value:.1f}%"
 # --- CONTROLADORES DE TIEMPO REAL ---
 def generate_sample_data(size):
     st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(size)
-    # Inyectar columnas de edad y educación simuladas si no existen para asegurar los nuevos gráficos
-    if 'edad' not in st.session_state.customer_data.columns:
-        st.session_state.customer_data['edad'] = np.random.randint(18, 70, size=len(st.session_state.customer_data))
-    if 'educacion' not in st.session_state.customer_data.columns:
-        st.session_state.customer_data['educacion'] = np.random.choice(['Pregrado', 'Posgrado', 'Técnico', 'Secundaria'], size=len(st.session_state.customer_data), p=[0.4, 0.2, 0.3, 0.1])
-    if 'salario' not in st.session_state.customer_data.columns:
-        st.session_state.customer_data['salario'] = np.random.randint(1500000, 15000000, size=len(st.session_state.customer_data))
+    
+    # Inyectar metadata demográfica robusta
+    st.session_state.customer_data['edad'] = np.random.randint(18, 70, size=len(st.session_state.customer_data))
+    st.session_state.customer_data['educacion'] = np.random.choice(['Universidad', 'Postgrado', 'Técnico', 'Secundaria', 'Primaria'], size=len(st.session_state.customer_data), p=[0.4, 0.2, 0.2, 0.1, 0.1])
+    st.session_state.customer_data['salario'] = np.random.randint(1500000, 15000000, size=len(st.session_state.customer_data))
+    st.session_state.customer_data['valor_compra_promedio'] = np.random.randint(45000, 850000, size=len(st.session_state.customer_data))
         
     st.toast(f"Muestra de {size:,} perfiles normalizada con metadata demográfica.", icon="🧬")
     st.rerun()
@@ -186,12 +164,12 @@ def create_launch_analyzer():
         with c1:
             rango_edad = st.slider("Rango de Edad Objetivo (Años):", 18, 80, (25, 50))
             price = st.number_input("Precio de Entrada del Producto (COP):", 5000, 2000000, 45000)
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 35, key="launch_cost")
         with c2:
             rango_salario = st.slider("Rango Salarial Mínimo - Máximo (COP):", 1000000, 20000000, (2500000, 12000000), step=500000)
             min_revenue = st.number_input("Umbral Crítico de Viabilidad Anual (COP):", 5000000, 500000000, 50000000)
 
         if st.button("EXECUTE PREDICTION RUN", use_container_width=True):
-            # Filtrado estricto basado en controles demográficos y financieros elegidos
             df = st.session_state.customer_data
             filtered = df[
                 (df['ciudad'].isin(sel_ciudades)) & 
@@ -201,10 +179,13 @@ def create_launch_analyzer():
             
             if len(filtered) > 10:
                 test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
-                st.session_state.launch_result = st.session_state.ai_model.evaluate_product_launch(test_c, product_price=price, min_viable_revenue=min_revenue)
+                # Simulamos alteración de ROI basado en el costo variable elegido
+                res = st.session_state.ai_model.evaluate_product_launch(test_c, product_price=price, min_viable_revenue=min_revenue)
+                res['estimated_roi'] = res['estimated_roi'] * (1 - (cost_ratio - 35)/100.0)
+                st.session_state.launch_result = res
                 st.rerun()
             else:
-                st.error("Vector de datos demasiado pequeño para los filtros seleccionados. Amplíe los rangos de segmentación.")
+                st.error("Vector de datos demasiado pequeño. Amplíe los rangos de segmentación.")
 
     if 'launch_result' in st.session_state:
         res = st.session_state.launch_result
@@ -215,7 +196,6 @@ def create_launch_analyzer():
             <div class="report-box">
                 <h4 class="{header_class}">REPORT GENERAL DE LANZAMIENTO PREDICITIVO</h4>
                 <p style="font-size:16px; margin-top:10px;"><b>Dictamen del Motor:</b> {res['recommendation']}</p>
-                <p style="color:#94a3b8; font-size:14px;">Análisis estratégico basado en el comportamiento histórico de consumo dentro del segmento seleccionado.</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -237,7 +217,7 @@ def create_investment_analyzer():
             investment = st.number_input("CAPEX Requerido para Expansión (COP):", 10000000, 5000000000, 500000000)
         with c2:
             rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 15000000), step=500000, key="inv_sal")
-            cost_ratio = st.slider("Margen de Costo Operativo Variable Proyectado (%):", 10, 100, 40)
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 40, key="inv_cost")
         
         if st.button("RUN FINANCIAL SIMULATION", use_container_width=True):
             df = st.session_state.customer_data
@@ -252,7 +232,7 @@ def create_investment_analyzer():
                 res = st.session_state.ai_model.evaluate_infrastructure_investment(test_c, investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
                 st.session_state.investment_result = res
                 
-                # Motor de Contrapropuesta Estratégica Automatizado
+                # Motor de Contrapropuesta Estratégica
                 st.session_state.alternativas = []
                 if "❌" in res['recommendation']:
                     for cd in ciudades_disponibles:
@@ -268,7 +248,7 @@ def create_investment_analyzer():
                                     })
                 st.rerun()
             else:
-                st.error("Datos insuficientes para simular este perfil corporativo. Ajuste los parámetros salariales.")
+                st.error("Datos insuficientes. Ajuste los parámetros de segmentación.")
 
     if 'investment_result' in st.session_state:
         res = st.session_state.investment_result
@@ -279,7 +259,6 @@ def create_investment_analyzer():
             <div class="report-box">
                 <h4 class="{header_class}">DICTAMEN EXPLICABLE DE INVERSIÓN FINANCIERA (CAPEX)</h4>
                 <p style="font-size:16px; margin-top:10px;"><b>Análisis de Viabilidad:</b> {res['recommendation']}</p>
-                <p style="color:#94a3b8; font-size:14px;">Cálculo de flujos estimados con un {res['confidence']:.1f}% de confianza algorítmica.</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -293,7 +272,6 @@ def create_investment_analyzer():
             st.markdown("""
                 <div style="background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2); padding: 20px; border-radius: 12px;">
                     <h5 style="color:#00D2FF; font-family:'Orbitron'; margin:0 0 10px 0;"><i class="fa-solid fa-compass"></i> PLAN DE PIVOTAJE ESTRATÉGICO AUTOMÁTICO</h5>
-                    <p style="font-size:14px; color:#A0AEC0;">La combinación geográfica inicial no cumple con los criterios de retorno financiero debido a la densidad de mercado. Sin embargo, el motor detectó nodos alternos viables con el mismo CAPEX:</p>
                 </div>
             """, unsafe_allow_html=True)
             st.dataframe(pd.DataFrame(st.session_state.alternativas), use_container_width=True)
@@ -324,57 +302,101 @@ def run_professional_dashboard():
 
     with tabs[1]:
         if st.session_state.customer_data is not None:
-            st.markdown("### ANÁLISIS DEMOGRÁFICO Y DISTRIBUCIÓN DEL VECTOR FUEGO")
+            df = st.session_state.customer_data
+            st.markdown("### 📊 DASHBOARD DE MÉTRICAS EJECUTIVAS")
             
-            # FILA DE GRÁFICOS SOLICITADA (Edad y Educación)
-            g1, g2 = st.columns(2)
-            with g1:
-                fig_edad = px.histogram(
-                    st.session_state.customer_data, x="edad", nbins=20,
-                    title="DISTRIBUCIÓN PORCENTUAL DE EDADES",
-                    labels={'edad': 'Edad (Años)', 'count': 'Frecuencia'},
-                    template="plotly_dark", color_discrete_sequence=['#00D2FF']
-                )
-                fig_edad.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani")
-                st.plotly_chart(fig_edad, use_container_width=True)
-                
-            with g2:
-                fig_edu = px.pie(
-                    st.session_state.customer_data, names="educacion",
-                    title="COMPOSICIÓN POR NIVEL DE EDUCACIÓN",
-                    template="plotly_dark", color_discrete_sequence=px.colors.sequential.Agsunset
-                )
-                fig_edu.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani")
-                st.plotly_chart(fig_edu, use_container_width=True)
-                
-            st.markdown("#### Muestra Estructural de Registros (Head)")
-            st.dataframe(st.session_state.customer_data.head(10), use_container_width=True)
+            # 1. Bloque de KPI Resumen de Clientes Ordenado Exactamente
+            kpi1, kpi2 = st.columns(2)
+            kpi1.metric("TOTAL DE CLIENTES", f"{len(df):,}")
+            kpi2.metric("EDAD PROMEDIO", f"{df['edad'].mean():.1f} Años")
+            
+            kpi3, kpi4 = st.columns(2)
+            kpi3.metric("INGRESO PROMEDIO", format_cop(df['salario'].mean()))
+            kpi4.metric("VALOR DE COMPRA PROMEDIO", format_cop(df['valor_compra_promedio'].mean()))
+            
+            st.markdown("---")
+            st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
+            
+            # 2. Gráficas una debajo de la otra de Alto Impacto Visual
+            # Histograma de Edades con Gradiente de Densidad Continuo
+            fig_edad = px.histogram(
+                df, x="edad", nbins=25,
+                title="DISTRIBUCIÓN PORCENTUAL DE EDADES (GRADIENTE DE DENSIDAD)",
+                labels={'edad': 'Edad (Años)', 'count': 'Frecuencia'},
+                template="plotly_dark",
+                color="edad",  # Aplica gradiente cromático continuo
+                color_discrete_sequence=px.colors.sequential.Cyanalg
+            )
+            fig_edad.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=400)
+            st.plotly_chart(fig_edad, use_container_width=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Gráfico de Torta de Educación con Estilo Ultra-Llamativo y Texto Enorme
+            fig_edu = px.pie(
+                df, names="educacion",
+                title="COMPOSICIÓN POR NIVEL DE EDUCACIÓN",
+                template="plotly_dark",
+                color_discrete_sequence=px.colors.sequential.Agsunset
+            )
+            fig_edu.update_traces(
+                textposition='outside', 
+                textinfo='label+percent',
+                textfont=dict(size=16, color='white', family='Orbitron'), # Nombres hiper llamativos
+                marker=dict(line=dict(color='#06070d', width=2))
+            )
+            fig_edu.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=500)
+            st.plotly_chart(fig_edu, use_container_width=True)
+            
+            # 4. Muestra Estructural fijada exactamente a 20 ítems
+            st.markdown("#### Muestra Estructural de Registros (Primeros 20 ítems)")
+            st.dataframe(df.head(20), use_container_width=True)
         else:
             st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
 
     with tabs[2]:
-        # Mostrar vista diagnóstica con velocímetros Plotly
+        # 5. DIAGNÓSTICO ML RESTAURADO A TAMAÑO COMPLETO PREMIUM ORIGINAL
+        st.markdown("### <i class='fa-solid fa-brain'></i> MONITOREO DE REDES NEURONALES", unsafe_allow_html=True)
         if 'accuracy' in st.session_state.model_metrics:
             m = st.session_state.model_metrics
+            
+            # Fila 1: Velocímetros Grandes Originales
             col1, col2 = st.columns(2)
             with col1:
                 fig_acc = go.Figure(go.Indicator(
                     mode = "gauge+number", value = m['accuracy'] * 100 if m['accuracy'] <= 1 else m['accuracy'],
-                    title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 16}},
-                    gauge = {'axis': {'range': [0, 100], 'tickcolor': "#00D2FF"}, 'bar': {'color': "#00D2FF"}, 'bgcolor': "rgba(0,0,0,0)"},
-                    number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron'}}
+                    title = {'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 18}},
+                    gauge = {
+                        'axis': {'range': [0, 100], 'tickcolor': "#00D2FF"}, 
+                        'bar': {'color': "#00D2FF"}, 
+                        'bgcolor': "rgba(0,0,0,0)",
+                        'threshold': {'line': {'color': "white", 'width': 4}, 'thickness': 0.75, 'value': 90}
+                    },
+                    number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
                 ))
-                fig_acc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=260)
+                fig_acc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white", 'family': "Rajdhani"}, height=350)
                 st.plotly_chart(fig_acc, use_container_width=True)
             with col2:
                 fig_r2 = go.Figure(go.Indicator(
                     mode = "gauge+number", value = m['r2'] * 100 if m['r2'] <= 1 else m['r2'],
-                    title = {'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 16}},
-                    gauge = {'axis': {'range': [0, 100], 'tickcolor': "#4ECCA3"}, 'bar': {'color': "#4ECCA3"}, 'bgcolor': "rgba(0,0,0,0)"},
-                    number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron'}}
+                    title = {'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 18}},
+                    gauge = {
+                        'axis': {'range': [0, 100], 'tickcolor': "#4ECCA3"}, 
+                        'bar': {'color': "#4ECCA3"}, 
+                        'bgcolor': "rgba(0,0,0,0)",
+                        'threshold': {'line': {'color': "white", 'width': 4}, 'thickness': 0.75, 'value': 85}
+                    },
+                    number = {'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}
                 ))
-                fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=260)
+                fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white", 'family': "Rajdhani"}, height=350)
                 st.plotly_chart(fig_r2, use_container_width=True)
+                
+            # Fila 2: Log de Entrenamiento Completo Recuperado
+            st.markdown("<br>#### LOG DE ENTRENAMIENTO", unsafe_allow_html=True)
+            c1, c2, c3 = st.columns(3)
+            c1.markdown(f"<div class='diag-card'><h5>Último Entrenamiento</h5><h2 style='color:#00D2FF; font-family:\"Orbitron\"; margin:10px 0 0 0;'>{m['last_train']}</h2></div>", unsafe_allow_html=True)
+            c2.markdown("<div class='diag-card'><h5>Algoritmo</h5><h2 style='color:#4ECCA3; font-family:\"Orbitron\"; margin:10px 0 0 0;'>RF-Regressor</h2></div>", unsafe_allow_html=True)
+            c3.markdown("<div class='diag-card'><h5>Status</h5><h2 style='color:white; font-family:\"Orbitron\"; margin:10px 0 0 0;'>OPTIMIZADO</h2></div>", unsafe_allow_html=True)
         else:
             st.info("Efectúe la optimización de los modelos en la consola central para poblar las métricas.")
 
