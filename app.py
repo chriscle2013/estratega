@@ -1,8 +1,9 @@
-# app.py - Versión 6.1 PRODUCTION ENGINE (FULL CODE & FIXED UI)
+# app.py - Versión 6.2 PRODUCTION ENGINE (FULL CODE & FIXED UI)
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import time
 from datetime import datetime
 
 # --- CONFIGURACIÓN DE PÁGINA OBLIGATORIA AL INICIO ---
@@ -86,6 +87,13 @@ def apply_professional_ai_theme():
                 radial-gradient(circle at 10% 20%, rgba(0, 210, 255, 0.03) 0%, transparent 50%),
                 radial-gradient(circle at 90% 80%, rgba(78, 204, 163, 0.03) 0%, transparent 50%) !important;
             color: #e2e8f0 !important;
+        }
+
+        /* Estilos para Modales / Diálogos */
+        div[data-testid="stDialog"] div[role="dialog"] {
+            background-color: #0d111a !important;
+            border: 1px solid rgba(0, 210, 255, 0.2) !important;
+            border-radius: 16px !important;
         }
 
         /* Modificar las pestañas (Tabs) superiores */
@@ -238,17 +246,29 @@ def apply_professional_ai_theme():
 def format_cop(value): return f"${value:,.0f} COP"
 def format_percentage(value): return f"{value:.1f}%"
 
-# --- CONTROLADORES DE TIEMPO REAL ---
-def generate_sample_data(size):
+# --- VENTANAS EMERGENTES DE PROCESAMIENTO (MODALES) ---
+@st.dialog("⚙️ SISTEMA DE DATOS")
+def modal_generar_data(size):
+    st.markdown("<p style='font-family:\"Orbitron\"; color:#00D2FF;'>SINTETIZANDO BIG DATA...</p>", unsafe_allow_html=True)
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    # Simulación visual de procesamiento de vectores
+    for percent_complete in range(0, 101, 25):
+        time.sleep(0.3)
+        progress_bar.progress(percent_complete)
+        status_text.text(f"Estructurando registros: {percent_complete}%")
+        
     st.session_state.customer_data = st.session_state.data_generator.generate_synthetic_data(size)
     st.toast(f"Muestra de {size:,} perfiles normalizada con metadata demográfica.", icon="🧬")
     st.rerun()
 
-def train_models():
-    if st.session_state.customer_data is None:
-        st.error("❌ Error: Código de datos fuente vacío.")
-        return
-    with st.spinner("🧠 NEURAL NETWORK: Optimizando capas de decisión..."):
+@st.dialog("🧠 PROCESAMIENTO NEURAL")
+def modal_optimizar_modelos():
+    st.markdown("<p style='font-family:\"Orbitron\"; color:#4ECCA3;'>OPTIMIZANDO CAPAS DE DECISIÓN...</p>", unsafe_allow_html=True)
+    
+    with st.spinner("Computando matrices de covarianza..."):
+        time.sleep(1.5) # Tiempo estético para apreciar el modal de IA
         metrics_seg = st.session_state.ai_model.train_segmentation_model(st.session_state.customer_data)
         metrics_imp = st.session_state.ai_model.train_impact_model(st.session_state.customer_data)
         
@@ -258,8 +278,9 @@ def train_models():
             'last_train': datetime.now().strftime("%H:%M:%S")
         }
         st.session_state.ai_model.is_trained = True
-        st.toast("Redes neuronales optimizadas para simulaciones.", icon="⚡")
-        st.rerun()
+        
+    st.toast("Redes neuronales optimizadas para simulaciones.", icon="⚡")
+    st.rerun()
 
 # --- FORMULARIOS DE SIMULACIÓN AVANZADOS ---
 def create_launch_analyzer():
@@ -418,10 +439,15 @@ def run_professional_dashboard():
             st.markdown("#### Acciones de Inicialización")
             size = st.select_slider("Muestra Big Data:", options=[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000], value=5000)
             col_b1, col_b2 = st.columns(2)
+            
+            # Lanzamiento de los modales emergentes
             if col_b1.button("🧬 GENERAR BIG DATA", use_container_width=True):
-                generate_sample_data(size)
+                modal_generar_data(size)
             if col_b2.button("⚡ OPTIMIZAR MODELOS DE INTELIGENCIA", use_container_width=True):
-                train_models()
+                if st.session_state.customer_data is None:
+                    st.error("❌ Error: Código de datos fuente vacío.")
+                else:
+                    modal_optimizar_modelos()
 
     with tabs[1]:
         if st.session_state.customer_data is not None:
@@ -517,10 +543,8 @@ def main():
         col1, col2, col3 = st.columns([1, 1.8, 1])
         
         with col2:
-            # TARJETA VISUAL DE LOGIN
             st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-circle-nodes"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
             
-            # CONTENEDOR CSS EXCLUSIVO PARA ENCAPSULAR EL ANCHO DEL BOTÓN NATIVO DE STREAMLIT
             st.markdown('<div class="login-btn-container">', unsafe_allow_html=True)
             if st.button("🔑 INICIAR SESIÓN", use_container_width=True):
                 st.session_state.autenticado = True
