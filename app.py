@@ -1,4 +1,4 @@
-# app.py - Versión 8.2 PRODUCTION ENGINE (Inputs con fondo oscuro)
+# app.py - Versión 7.8 PRODUCTION ENGINE (Investment Analyzer Mejorado)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -83,7 +83,7 @@ class AIModel:
         }
 
 
-# --- INYECCIÓN DE CSS MEJORADO (Con fondos oscuros para inputs) ---
+# --- INYECCIÓN DE CSS SIMPLIFICADO ---
 def apply_professional_ai_theme():
     st.markdown("""
     <style>
@@ -91,130 +91,19 @@ def apply_professional_ai_theme():
     
     .stApp {
         background-color: #06070d !important;
-        color: rgba(255, 255, 255, 0.54) !important;
+        color: #e2e8f0 !important;
     }
     
-    /* Textos generales */
-    .stApp, .stMarkdown, p, span, div, label, .stTextInput, .stNumberInput, .stSelectbox, .stSlider {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Headers */
-    h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
-        color: #ffffff !important;
-    }
-    
-    /* Títulos de tabs */
-    .stTabs [data-baseweb="tab"] {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        color: #00D2FF !important;
-    }
-    
-    /* Métricas */
-    div[data-testid="stMetric"] [data-testid="stMetricLabel"] {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-        color: #ffffff !important;
-    }
-    
-    /* Botones */
     .stButton>button {
         font-family: 'Orbitron', sans-serif !important;
         background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
-        color: #ffffff !important;
+        color: white !important;
         border: none !important;
         border-radius: 8px !important;
         padding: 12px 24px !important;
         font-weight: 700 !important;
     }
     
-    /* Checkbox */
-    .stCheckbox label span {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Radio buttons */
-    div[data-testid="stRadio"] > label {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Captions y textos pequeños */
-    .stCaption, caption, .stAlert, .stInfo, .stWarning, .stError {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Dataframes */
-    .stDataFrame, .dataframe, .stTable {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    .stDataFrame thead th, .stTable thead th {
-        color: #ffffff !important;
-    }
-    
-    /* ========== CORRECCIÓN DE INPUTS (FONDO OSCURO) ========== */
-    /* Number Input */
-    .stNumberInput input, .stTextInput input {
-        background-color: #1a1f2e !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(0, 210, 255, 0.3) !important;
-        border-radius: 8px !important;
-    }
-    
-    .stNumberInput input:focus, .stTextInput input:focus {
-        border-color: #00D2FF !important;
-        box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2) !important;
-    }
-    
-    /* Selectbox */
-    .stSelectbox div[data-baseweb="select"] > div {
-        background-color: #1a1f2e !important;
-        border: 1px solid rgba(0, 210, 255, 0.3) !important;
-        border-radius: 8px !important;
-    }
-    
-    .stSelectbox div[data-baseweb="select"] span {
-        color: #ffffff !important;
-    }
-    
-    /* Slider */
-    .stSlider div[data-baseweb="slider"] div[role="slider"] {
-        background-color: #00D2FF !important;
-    }
-    
-    /* Multiselect */
-    .stMultiSelect div[data-baseweb="select"] > div {
-        background-color: #1a1f2e !important;
-        border: 1px solid rgba(0, 210, 255, 0.3) !important;
-        border-radius: 8px !important;
-    }
-    
-    .stMultiSelect div[data-baseweb="select"] span {
-        color: #ffffff !important;
-    }
-    
-    /* Option menu (dropdown) */
-    div[data-baseweb="popover"] div[role="listbox"] {
-        background-color: #1a1f2e !important;
-        border: 1px solid rgba(0, 210, 255, 0.3) !important;
-    }
-    
-    div[data-baseweb="popover"] div[role="option"] {
-        color: #ffffff !important;
-    }
-    
-    div[data-baseweb="popover"] div[role="option"]:hover {
-        background-color: rgba(0, 210, 255, 0.2) !important;
-    }
-    
-    /* ========== FIN CORRECCIÓN INPUTS ========== */
-    
-    /* Report boxes */
     .report-box {
         background: #0d111a;
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -253,42 +142,16 @@ def apply_professional_ai_theme():
         border-radius: 12px;
     }
     
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important;
+        color: #00D2FF !important;
+    }
+    
     div[data-testid="stMetric"] {
         background: #0d111a !important;
         border-left: 4px solid #00D2FF !important;
         border-radius: 12px !important;
         padding: 20px !important;
-    }
-    
-    /* Sidebar */
-    .css-1d391kg, .stSidebar, .stSidebar .stMarkdown {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Expander */
-    .streamlit-expanderHeader {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Tabs contenido */
-    .stTabPanel {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Código y JSON */
-    .stJson, pre, code {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Toast y notificaciones */
-    .stToast {
-        color: rgba(255, 255, 255, 0.54) !important;
-    }
-    
-    /* Containers con borde */
-    .stContainer {
-        background-color: #0d111a;
-        border-radius: 12px;
     }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -452,7 +315,7 @@ def create_launch_analyzer():
         <div class="report-box">
             <h4 class="{header_class}">REPORTE EJECUTIVO DE LANZAMIENTO</h4>
             <p style="font-size:16px; margin-top:10px;"><b>Dictamen del Motor:</b> {res['recommendation']}</p>
-            <p style="font-size:13px; color:rgba(255,255,255,0.54); margin-top:-5px;">Confianza del modelo: <b>{confidence_level:.1f}%</b> (basado en {sample_size:,} perfiles válidos)</p>
+            <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza del modelo: <b>{confidence_level:.1f}%</b> (basado en {sample_size:,} perfiles válidos)</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -530,14 +393,14 @@ def create_launch_analyzer():
                 ))
                 
                 fig_elasticidad.update_layout(
-                    title=dict(text="Curva de Demanda vs Ingresos Totales", font=dict(size=14, color='#ffffff')),
-                    xaxis=dict(title="Precio del Producto (COP)", tickformat=',.0f', titlefont_color='rgba(255,255,255,0.54)', tickfont_color='rgba(255,255,255,0.54)'),
-                    yaxis=dict(title="Unidades Demandadas", side='left', titlefont_color='rgba(255,255,255,0.54)', tickfont_color='rgba(255,255,255,0.54)'),
-                    yaxis2=dict(title="Ingresos Totales (COP)", tickformat=',.0f', side='right', overlaying='y', titlefont_color='rgba(255,255,255,0.54)', tickfont_color='rgba(255,255,255,0.54)'),
+                    title=dict(text="Curva de Demanda vs Ingresos Totales", font=dict(size=14)),
+                    xaxis=dict(title="Precio del Producto (COP)", tickformat=',.0f'),
+                    yaxis=dict(title="Unidades Demandadas", side='left'),
+                    yaxis2=dict(title="Ingresos Totales (COP)", tickformat=',.0f', side='right', overlaying='y'),
                     template="plotly_dark",
                     height=450,
                     hovermode='x unified',
-                    legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1, font=dict(color='rgba(255,255,255,0.54)'))
+                    legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
                 )
                 
                 st.plotly_chart(fig_elasticidad, use_container_width=True)
@@ -599,16 +462,14 @@ def create_launch_analyzer():
                         marker_color=seg_df['Intención de Compra'],
                         marker_colorscale=[[0, '#0072FF'], [1, '#4ECCA3']],
                         text=seg_df['Intención de Compra'].apply(lambda x: f"{x:.1f}%"),
-                        textposition='outside',
-                        textfont=dict(size=12, color='white')
+                        textposition='outside'
                     )
                 ])
                 fig_seg.update_layout(
                     title="Intención de Compra por Segmento",
                     yaxis_title="Intención de Compra (%)",
                     template="plotly_dark",
-                    height=400,
-                    font=dict(color='rgba(255,255,255,0.54)')
+                    height=400
                 )
                 st.plotly_chart(fig_seg, use_container_width=True)
             
@@ -656,13 +517,13 @@ def create_launch_analyzer():
             opacity=0.7,
             text=textos_barras,
             textposition='outside',
-            textfont=dict(size=9, color='#ffffff')
+            textfont=dict(size=9)
         ))
         fig_proy.add_trace(go.Scatter(
             x=meses,
             y=flujo_acumulado,
             name="Flujo Acumulado",
-            line=dict(color='#4ECCA3', width=3),
+            line=dict(color="#4ECCA3", width=3),
             fill='tozeroy',
             fillcolor='rgba(78,204,163,0.1)',
             yaxis="y2"
@@ -677,19 +538,16 @@ def create_launch_analyzer():
             title="Flujo de Caja Proyectado",
             xaxis_title="Mes",
             yaxis_title="Flujo Mensual (COP)",
-            yaxis=dict(tickformat=',.0f', titlefont_color='rgba(255,255,255,0.54)', tickfont_color='rgba(255,255,255,0.54)'),
+            yaxis=dict(tickformat=',.0f'),
             yaxis2=dict(
                 title="Flujo Acumulado (COP)",
                 tickformat=',.0f',
                 overlaying='y',
-                side='right',
-                titlefont_color='rgba(255,255,255,0.54)',
-                tickfont_color='rgba(255,255,255,0.54)'
+                side='right'
             ),
             template="plotly_dark",
             height=450,
-            hovermode='x unified',
-            font=dict(color='rgba(255,255,255,0.54)')
+            hovermode='x unified'
         )
         st.plotly_chart(fig_proy, use_container_width=True)
         
@@ -808,22 +666,27 @@ def create_investment_analyzer():
                     variable_cost_ratio=cost_ratio/100.0
                 )
                 
+                # Calcular métricas adicionales
                 ingreso_mensual = res['projected_annual_income'] / 12
                 costo_variable_mensual = ingreso_mensual * (cost_ratio / 100.0)
                 flujo_neto_mensual = ingreso_mensual - costo_variable_mensual - costo_fijo_mensual
                 
+                # Proyección de flujo de caja
                 meses = np.arange(1, meses_proyeccion + 1)
                 flujo_mensual = np.full(len(meses), flujo_neto_mensual)
                 flujo_acumulado = np.cumsum(flujo_mensual)
                 flujo_con_inversion = flujo_acumulado - investment
                 
+                # Punto de equilibrio en meses
                 break_even_meses = np.where(flujo_acumulado >= investment)[0]
                 break_even = break_even_meses[0] + 1 if len(break_even_meses) > 0 else None
                 
-                tasa_descuento = 0.12
+                # Calcular VAN y TIR simplificados
+                tasa_descuento = 0.12  # 12% anual (costo de capital estándar)
                 van = np.sum(flujo_mensual / (1 + tasa_descuento/12) ** meses) - investment
                 
-                roe = (res['profitability_percentage'])
+                # Métricas de rentabilidad
+                roe = (res['profitability_percentage'])  # Return on Equity
                 margen_neto = (flujo_neto_mensual / ingreso_mensual * 100) if ingreso_mensual > 0 else 0
                 
                 st.session_state.investment_result = res
@@ -857,203 +720,210 @@ def create_investment_analyzer():
         is_viable = '✅' in res['recommendation']
         header_class = "report-header-success" if is_viable else "report-header-error"
         
+        # Calcular nivel de confianza mejorado
         confidence_level = res['confidence']
         
         st.markdown(f"""
         <div class="report-box">
             <h4 class="{header_class}">REPORTE EJECUTIVO DE INVERSIÓN ESTRUCTURAL</h4>
             <p style="font-size:16px; margin-top:10px;"><b>Dictamen del Motor:</b> {res['recommendation']}</p>
-            <p style="font-size:13px; color:rgba(255,255,255,0.54); margin-top:-5px;">Confianza del modelo predictivo: <b>{confidence_level:.1f}%</b> | Basado en {res['sample_size_evaluated']:,} perfiles económicos válidos</p>
+            <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza del modelo predictivo: <b>{confidence_level:.1f}%</b> | Basado en {res['sample_size_evaluated']:,} perfiles económicos válidos</p>
         </div>
         """, unsafe_allow_html=True)
         
+        # KPIs principales
         col1, col2, col3, col4 = st.columns(4)
-        col1.metric("INVERSIÓN TOTAL (CAPEX)", format_cop(capex))
-        col2.metric("INGRESOS ANUALES", format_cop(res['projected_annual_income']))
-        col3.metric("MARGEN DE CONTRIBUCIÓN", format_cop(res['contribution_margin']))
-        col4.metric("PERIODO DE RETORNO", f"{res['payback_months']:.1f} meses" if res['payback_months'] < 99 else "> 8 años")
+        col1.metric("INVERSIÓN TOTAL (CAPEX)", format_cop(capex), help="Capital requerido para la expansión")
+        col2.metric("INGRESOS ANUALES PROYECTADOS", format_cop(res['projected_annual_income']), help="Estimación de ingresos anuales")
+        col3.metric("MARGEN DE CONTRIBUCIÓN", format_cop(res['contribution_margin']), help="Ingresos - Costos variables")
+        col4.metric("PERIODO DE RETORNO", f"{res['payback_months']:.1f} meses" if res['payback_months'] < 99 else "> 8 años", 
+                    delta="Objetivo < 24 meses" if res['payback_months'] <= 24 else "Fuera de rango")
         
         st.markdown("---")
         
+        # ========== SECCIÓN 1: MÉTRICAS CLAVE DE RENTABILIDAD ==========
         st.markdown("### 📊 Análisis de Rentabilidad")
         
         col_r1, col_r2, col_r3, col_r4 = st.columns(4)
         with col_r1:
-            st.metric("ROE (Retorno sobre Inversión)", format_percentage(extra['roe']))
+            st.metric("ROE (Retorno sobre Inversión)", format_percentage(extra['roe']), 
+                     delta="Mínimo 15%" if extra['roe'] >= 15 else "Por debajo del mínimo")
         with col_r2:
-            st.metric("VAN (Valor Actual Neto)", format_cop(extra['van']))
+            st.metric("VAN (Valor Actual Neto)", format_cop(extra['van']),
+                     delta="Positivo" if extra['van'] > 0 else "Negativo")
         with col_r3:
-            st.metric("Margen Neto Mensual", format_percentage(extra['margen_neto']))
+            st.metric("Margen Neto Mensual", format_percentage(extra['margen_neto']),
+                     delta="Objetivo > 15%" if extra['margen_neto'] >= 15 else "Margen ajustado")
         with col_r4:
             if extra['break_even']:
-                st.metric("Punto de Equilibrio", f"{extra['break_even']} meses")
+                st.metric("Punto de Equilibrio", f"{extra['break_even']} meses",
+                         delta=f"vs {extra['meses_proyeccion']} meses")
             else:
-                st.metric("Punto de Equilibrio", "No alcanzado")
+                st.metric("Punto de Equilibrio", "No alcanzado", delta="En el horizonte proyectado")
         
         st.markdown("---")
         
+        # ========== SECCIÓN 2: FLUJO DE CAJA PROYECTADO ==========
         st.markdown("### 💰 Flujo de Caja Proyectado")
-        st.caption(f"Proyección a {extra['meses_proyeccion']} meses | La línea muestra el flujo neto de efectivo mes a mes")
+        st.caption(f"Proyección a {extra['meses_proyeccion']} meses | Tasa de costo variable: {cost_ratio * 100:.1f}% | Costos fijos: {format_cop(extra['costo_fijo_mensual'])}/mes")
+        
+        textos_barras = [format_cop(val) for val in extra['flujo_mensual']]
         
         fig_flujo = go.Figure()
         
+        # Barras de flujo mensual
+        fig_flujo.add_trace(go.Bar(
+            x=np.arange(1, extra['meses_proyeccion'] + 1),
+            y=extra['flujo_mensual'],
+            name='Flujo de Caja Mensual',
+            marker_color='#00D2FF',
+            opacity=0.7,
+            text=textos_barras,
+            textposition='outside',
+            textfont=dict(size=9)
+        ))
+        
+        # Línea de flujo acumulado
+        fig_flujo.add_trace(go.Scatter(
+            x=np.arange(1, extra['meses_proyeccion'] + 1),
+            y=extra['flujo_acumulado'],
+            name='Flujo Acumulado (pre-inversión)',
+            line=dict(color='#4ECCA3', width=3),
+            yaxis='y2'
+        ))
+        
+        # Línea de flujo neto (con inversión descontada)
         fig_flujo.add_trace(go.Scatter(
             x=np.arange(1, extra['meses_proyeccion'] + 1),
             y=extra['flujo_con_inversion'],
-            mode='lines+markers',
-            name='💰 Flujo de Caja Neto (después de inversión)',
-            line=dict(color='#00D2FF', width=4),
-            marker=dict(size=8, color='#00D2FF', symbol='circle'),
-            fill='tozeroy',
-            fillcolor='rgba(0, 210, 255, 0.15)',
-            yaxis='y1'
+            name='Flujo Neto (post-inversión)',
+            line=dict(color='#FFB347', width=3, dash='dot'),
+            yaxis='y2'
         ))
         
-        fig_flujo.add_hline(y=0, line_dash="dash", line_color="#4ECCA3", opacity=0.8, line_width=2,
-                           annotation_text="🔹 Punto de equilibrio",
-                           annotation_position="bottom right",
-                           annotation_font_size=10)
+        # Línea de cero
+        fig_flujo.add_hline(y=0, line_dash="dash", line_color="#FF5E5E", opacity=0.7, line_width=2)
         
+        # Línea de inversión inicial
+        fig_flujo.add_hline(y=-capex, line_dash="dash", line_color="#FF6B6B", opacity=0.5, line_width=1.5,
+                            annotation_text=f"Inversión: {format_cop(capex)}", annotation_position="bottom right")
+        
+        # Punto de equilibrio
         if extra['break_even']:
-            valor_break_even = extra['flujo_con_inversion'][extra['break_even'] - 1] if extra['break_even'] <= len(extra['flujo_con_inversion']) else 0
-            fig_flujo.add_trace(go.Scatter(
-                x=[extra['break_even']],
-                y=[valor_break_even],
-                mode='markers',
-                name=f'⚡ Break-even (mes {extra["break_even"]})',
-                marker=dict(size=18, color='#FFB347', symbol='star', line=dict(width=2, color='white'))
-            ))
+            fig_flujo.add_vline(x=extra['break_even'], line_dash="dash", line_color="#FFB347", opacity=0.9, line_width=2,
+                               annotation_text=f"⚡ Break-even mes {extra['break_even']}",
+                               annotation_position="top")
         
         fig_flujo.update_layout(
-            title=dict(
-                text="<b>Recuperación de la Inversión en el Tiempo</b>",
-                font=dict(size=16, color='#ffffff'),
-                x=0.05
-            ),
-            xaxis=dict(
-                title=dict(text="<b>Meses desde la inversión</b>", font=dict(size=12, color='rgba(255,255,255,0.54)')),
-                tickmode='linear',
-                dtick=6,
-                gridcolor='rgba(255,255,255,0.1)',
-                tickfont=dict(color='rgba(255,255,255,0.54)')
-            ),
-            yaxis=dict(
-                title=dict(text="<b>Flujo de Caja Neto (COP)</b>", font=dict(size=12, color='rgba(255,255,255,0.54)')),
+            title="Evolución del Flujo de Caja",
+            xaxis_title="Mes",
+            yaxis_title="Flujo Mensual (COP)",
+            yaxis=dict(tickformat=',.0f'),
+            yaxis2=dict(
+                title="Flujo Acumulado (COP)",
                 tickformat=',.0f',
-                gridcolor='rgba(255,255,255,0.1)',
-                zeroline=False,
-                tickfont=dict(color='rgba(255,255,255,0.54)')
+                overlaying='y',
+                side='right'
             ),
             template="plotly_dark",
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
             height=450,
             hovermode='x unified',
-            legend=dict(
-                orientation='h',
-                yanchor='bottom',
-                y=1.02,
-                xanchor='left',
-                x=0,
-                bgcolor='rgba(13,17,26,0.9)',
-                bordercolor='rgba(255,255,255,0.1)',
-                borderwidth=1,
-                font=dict(size=11, color='rgba(255,255,255,0.54)')
-            )
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
         )
-        
         st.plotly_chart(fig_flujo, use_container_width=True)
-        
-        with st.container(border=True):
-            col_exp1, col_exp2, col_exp3 = st.columns(3)
-            with col_exp1:
-                st.markdown("**📖 ¿Cómo leer esta gráfica?**")
-                st.caption("La línea azul muestra el dinero acumulado mes a mes después de restar la inversión inicial. Cuando cruza hacia arriba de cero, significa que ya recuperaste tu inversión.")
-            with col_exp2:
-                if extra['break_even']:
-                    st.markdown("**✅ Situación actual**")
-                    st.caption(f"Recuperas tu inversión en el **mes {extra['break_even']}** ({extra['break_even']//12} años y {extra['break_even']%12} meses).")
-                else:
-                    st.markdown("**⚠️ Situación actual**")
-                    st.caption("No se alcanza a recuperar la inversión en el horizonte proyectado. Revisa los supuestos.")
-            with col_exp3:
-                st.markdown("**💡 Recomendación**")
-                if extra['break_even'] and extra['break_even'] <= 24:
-                    st.caption("✅ Excelente proyecto. El retorno es rápido y el riesgo es bajo.")
-                elif extra['break_even'] and extra['break_even'] <= 36:
-                    st.caption("⚠️ Proyecto aceptable. El retorno es moderado, monitorear de cerca.")
-                else:
-                    st.caption("❌ Proyecto con alto riesgo. Considera reducir costos o reevaluar la inversión.")
         
         st.markdown("---")
         
-        st.markdown("### 📈 Análisis de Sensibilidad")
-        st.caption("Cómo cambia el punto de equilibrio ante diferentes escenarios de ingresos")
+        # ========== SECCIÓN 3: ANÁLISIS DE SENSIBILIDAD ==========
+        st.markdown("### 📈 Análisis de Sensibilidad (Estrés de Mercado)")
+        st.caption("Cómo varían los indicadores clave ante cambios en los ingresos proyectados")
         
         ingreso_base = res['projected_annual_income']
-        escenarios = ["Optimista\n+20%", "Optimista\n+10%", "Base\n0%", "Conservador\n-10%", "Estresado\n-20%"]
+        escenarios = ["Optimista\n+20%", "Optimista\n+10%", "Base", "Conservador\n-10%", "Estresado\n-20%"]
         factores = [1.2, 1.1, 1.0, 0.9, 0.8]
         
-        break_even_escenarios = []
         van_escenarios = []
+        payback_escenarios = []
+        roi_escenarios = []
         
         for factor in factores:
             ingreso_ajustado = ingreso_base * factor
             margen_ajustado = ingreso_ajustado * (1 - cost_ratio)
             flujo_mensual_ajustado = (margen_ajustado / 12) - extra['costo_fijo_mensual']
             flujo_acumulado_ajustado = np.cumsum(np.full(extra['meses_proyeccion'], flujo_mensual_ajustado))
-            payback_ajustado = np.where(flujo_acumulado_ajustado >= capex)[0]
-            payback_meses = payback_ajustado[0] + 1 if len(payback_ajustado) > 0 else None
             van_ajustado = np.sum(np.full(extra['meses_proyeccion'], flujo_mensual_ajustado) / (1 + extra['tasa_descuento']/12) ** np.arange(1, extra['meses_proyeccion'] + 1)) - capex
+            payback_ajustado = np.where(flujo_acumulado_ajustado >= capex)[0]
+            payback_meses = payback_ajustado[0] + 1 if len(payback_ajustado) > 0 else extra['meses_proyeccion'] + 12
+            roi_ajustado = ((margen_ajustado / capex) * 100) if capex > 0 else 0
             
-            break_even_escenarios.append(payback_meses)
             van_escenarios.append(van_ajustado)
+            payback_escenarios.append(payback_meses)
+            roi_escenarios.append(roi_ajustado)
         
         col_s1, col_s2 = st.columns([1.5, 1])
         
         with col_s1:
             fig_sens = go.Figure()
             
+            # Barras para VAN
             fig_sens.add_trace(go.Bar(
                 x=escenarios,
                 y=van_escenarios,
-                name='VAN (Valor Actual Neto)',
+                name='VAN (COP)',
                 marker_color='#00D2FF',
+                yaxis='y',
                 text=[format_cop(v) for v in van_escenarios],
                 textposition='outside',
-                textfont=dict(size=10, color='#ffffff')
+                textfont=dict(size=10)
             ))
             
+            # Línea para Payback
+            fig_sens.add_trace(go.Scatter(
+                x=escenarios,
+                y=payback_escenarios,
+                name='Payback (meses)',
+                mode='lines+markers',
+                line=dict(color='#FFB347', width=3),
+                marker=dict(size=10, color='#FFB347'),
+                yaxis='y2'
+            ))
+            
+            # Línea objetivo de payback
+            fig_sens.add_hline(y=24, line_dash="dash", line_color="#4ECCA3", opacity=0.7, 
+                               annotation_text="Payback objetivo (24 meses)", annotation_position="bottom right")
+            
             fig_sens.update_layout(
-                title="VAN por Escenario",
+                title="Análisis de Sensibilidad por Escenario",
                 xaxis_title="Escenario",
                 yaxis_title="VAN (COP)",
-                yaxis=dict(tickformat=',.0f', titlefont_color='rgba(255,255,255,0.54)', tickfont_color='rgba(255,255,255,0.54)'),
-                xaxis=dict(titlefont_color='rgba(255,255,255,0.54)', tickfont_color='rgba(255,255,255,0.54)'),
+                yaxis=dict(tickformat=',.0f'),
+                yaxis2=dict(
+                    title="Payback (meses)",
+                    overlaying='y',
+                    side='right',
+                    tickformat='d'
+                ),
                 template="plotly_dark",
-                height=350,
-                showlegend=False,
-                font=dict(color='rgba(255,255,255,0.54)')
+                height=400,
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
             )
             st.plotly_chart(fig_sens, use_container_width=True)
         
         with col_s2:
             with st.container(border=True):
-                st.markdown("**📊 Punto de Equilibrio por Escenario**")
+                st.markdown("**📊 TABLA DE SENSIBILIDAD**")
                 
                 sens_df = pd.DataFrame({
-                    "Escenario": ["+20%", "+10%", "Base", "-10%", "-20%"],
-                    "Recupera inversión en:": [
-                        f"{be} meses" if be else "No recupera" 
-                        for be in break_even_escenarios
-                    ]
+                    "Escenario": escenarios,
+                    "VAN (COP)": [format_cop(v) for v in van_escenarios],
+                    "Payback (meses)": [f"{p:.0f}" for p in payback_escenarios],
+                    "ROI (%)": [f"{r:.1f}%" for r in roi_escenarios]
                 })
                 st.dataframe(sens_df, use_container_width=True, hide_index=True)
-                
-                st.caption("Si el punto de equilibrio supera los 36 meses, el proyecto se considera de alto riesgo.")
         
         st.markdown("---")
         
+        # ========== SECCIÓN 4: DESGLOSE ESTRUCTURAL ==========
         st.markdown("### 🔬 Desglose Estructural del Modelo")
         
         col_d1, col_d2 = st.columns(2)
@@ -1088,8 +958,10 @@ def create_investment_analyzer():
             with st.container(border=True):
                 st.markdown("**📈 INDICADORES DE VIABILIDAD**")
                 
+                # Evaluación de cada indicador
                 indicators = []
                 
+                # Payback
                 if res['payback_months'] <= 24:
                     indicators.append(("✅", "Payback", f"{res['payback_months']:.1f} meses", "Excelente"))
                 elif res['payback_months'] <= 36:
@@ -1097,11 +969,13 @@ def create_investment_analyzer():
                 else:
                     indicators.append(("❌", "Payback", f"{res['payback_months']:.1f} meses", "Crítico"))
                 
+                # VAN
                 if extra['van'] > 0:
                     indicators.append(("✅", "VAN", format_cop(extra['van']), "Positivo"))
                 else:
                     indicators.append(("❌", "VAN", format_cop(extra['van']), "Negativo"))
                 
+                # ROE
                 if extra['roe'] >= 20:
                     indicators.append(("✅", "ROE", format_percentage(extra['roe']), "Excelente"))
                 elif extra['roe'] >= 15:
@@ -1109,6 +983,7 @@ def create_investment_analyzer():
                 else:
                     indicators.append(("❌", "ROE", format_percentage(extra['roe']), "Bajo"))
                 
+                # Margen Neto
                 if extra['margen_neto'] >= 20:
                     indicators.append(("✅", "Margen Neto", format_percentage(extra['margen_neto']), "Excelente"))
                 elif extra['margen_neto'] >= 10:
@@ -1121,23 +996,32 @@ def create_investment_analyzer():
         
         st.markdown("---")
         
+        # ========== SECCIÓN 5: RIESGOS Y MITIGACIONES ==========
         st.markdown("### ⚠️ Análisis de Riesgos y Mitigaciones")
         
         riesgos = []
         
+        # Riesgo de payback
         if res['payback_months'] > 36:
             riesgos.append(("🔴 Crítica", "Payback superior a 36 meses", "Reevaluar la inversión o buscar financiamiento con mejores condiciones"))
         elif res['payback_months'] > 24:
             riesgos.append(("🟡 Media", "Payback entre 24-36 meses", "Monitorear de cerca el flujo de caja en los primeros 2 años"))
         
+        # Riesgo de VAN negativo
         if extra['van'] < 0:
             riesgos.append(("🔴 Crítica", "VAN negativo", "La inversión no genera valor. Revisar supuestos de ingresos o reducir costos"))
         
+        # Riesgo de margen bajo
         if extra['margen_neto'] < 10:
             riesgos.append(("🟡 Media", "Margen neto bajo (<10%)", "Optimizar estructura de costos o aumentar precios"))
         
+        # Riesgo de muestra pequeña
         if res['sample_size_evaluated'] < 200:
             riesgos.append(("🟠 Alta", "Muestra pequeña para inferencia robusta", "Ampliar dataset o realizar estudio cualitativo complementario"))
+        
+        # Riesgo de confianza baja
+        if confidence_level < 85:
+            riesgos.append(("🟠 Alta", "Confianza del modelo baja (<85%)", "Generar más datos o ajustar parámetros de segmentación"))
         
         if not riesgos:
             riesgos.append(("🟢 Baja", "No se identificaron riesgos significativos", "Proceder con la ejecución del plan de inversión"))
@@ -1147,6 +1031,7 @@ def create_investment_analyzer():
         
         st.markdown("---")
         
+        # ========== SECCIÓN 6: EXPORTACIÓN ==========
         col_export1, col_export2 = st.columns([1, 1])
         
         with col_export1:
@@ -1166,10 +1051,20 @@ def create_investment_analyzer():
                         "margen_neto": extra['margen_neto'],
                         "break_even": extra['break_even']
                     },
+                    "parametros_entrada": {
+                        "ciudades": sel_ciudades,
+                        "rango_edad": rango_edad,
+                        "rango_salario": rango_salario,
+                        "capex": investment,
+                        "costo_variable_pct": cost_ratio * 100,
+                        "costo_fijo_mensual": costo_fijo_mensual,
+                        "meses_proyeccion": meses_proyeccion
+                    },
                     "analisis_sensibilidad": {
-                        "escenarios": ["+20%", "+10%", "Base", "-10%", "-20%"],
+                        "escenarios": escenarios,
                         "van": van_escenarios,
-                        "break_even_meses": break_even_escenarios
+                        "payback": payback_escenarios,
+                        "roi": roi_escenarios
                     },
                     "riesgos_identificados": riesgos
                 }
@@ -1177,9 +1072,12 @@ def create_investment_analyzer():
                 st.toast("Reporte exportado correctamente", icon="✅")
         
         with col_export2:
+            # Crear CSV con datos de proyección
             export_df = pd.DataFrame({
                 "Mes": range(1, extra['meses_proyeccion'] + 1),
-                "Flujo_de_Caja_Neto_COP": extra['flujo_con_inversion']
+                "Flujo_Mensual_COP": extra['flujo_mensual'],
+                "Flujo_Acumulado_Pre_Inversion_COP": extra['flujo_acumulado'],
+                "Flujo_Neto_Post_Inversion_COP": extra['flujo_con_inversion']
             })
             st.download_button(
                 label="📊 Exportar Datos de Flujo de Caja (CSV)",
@@ -1193,7 +1091,7 @@ def create_investment_analyzer():
 # --- INTERFAZ GENERAL DEL DASHBOARD ---
 def run_professional_dashboard():
     st.markdown("<h1 class='ai-title'>CORE ENGINE // ESTRATEGA IA</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color: rgba(255,255,255,0.54); margin-top:-5px; font-size:12px; font-family:Orbitron;'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:12px; font-family:Orbitron;'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
     
     tabs = st.tabs(["Consola Central", "Vectores de Datos", "Diagnóstico ML", "Simulaciones"])
     
@@ -1235,13 +1133,13 @@ def run_professional_dashboard():
                 counts, bins = np.histogram(df['edad'], bins=25)
                 bin_centers = 0.5 * (bins[:-1] + bins[1:])
                 fig_edad = go.Figure(data=[go.Bar(x=bin_centers, y=counts, marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']]))])
-                fig_edad.update_layout(title="DISTRIBUCIÓN DE EDADES", template="plotly_dark", height=380, font=dict(color='rgba(255,255,255,0.54)'))
+                fig_edad.update_layout(title="DISTRIBUCIÓN DE EDADES", template="plotly_dark", height=380)
                 st.plotly_chart(fig_edad, use_container_width=True)
             with g_col2:
                 city_counts = df['ciudad'].value_counts().reset_index()
                 city_counts.columns = ['ciudad', 'count']
                 fig_ciudad = go.Figure(data=[go.Pie(labels=city_counts['ciudad'], values=city_counts['count'], hole=.4)])
-                fig_ciudad.update_layout(title="PARTICIPACIÓN POR CIUDAD", template="plotly_dark", height=380, font=dict(color='rgba(255,255,255,0.54)'))
+                fig_ciudad.update_layout(title="PARTICIPACIÓN POR CIUDAD", template="plotly_dark", height=380)
                 st.plotly_chart(fig_ciudad, use_container_width=True)
             
             st.markdown("---")
@@ -1258,12 +1156,12 @@ def run_professional_dashboard():
         
         col1, col2 = st.columns(2)
         with col1:
-            fig_acc = go.Figure(go.Indicator(mode="gauge+number", value=acc_val * 100, title={'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'color': 'rgba(255,255,255,0.54)'}}, gauge={'axis': {'range': [0, 100], 'tickcolor': 'rgba(255,255,255,0.54)'}, 'bar': {'color': "#00D2FF"}}, number={'suffix': "%", 'font': {'color': '#ffffff'}}))
-            fig_acc.update_layout(height=300, font=dict(color='rgba(255,255,255,0.54)'))
+            fig_acc = go.Figure(go.Indicator(mode="gauge+number", value=acc_val * 100, title={'text': "PRECISIÓN SEGMENTACIÓN"}, gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#00D2FF"}}, number={'suffix': "%"}))
+            fig_acc.update_layout(height=300)
             st.plotly_chart(fig_acc, use_container_width=True)
         with col2:
-            fig_r2 = go.Figure(go.Indicator(mode="gauge+number", value=r2_val * 100, title={'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'color': 'rgba(255,255,255,0.54)'}}, gauge={'axis': {'range': [0, 100], 'tickcolor': 'rgba(255,255,255,0.54)'}, 'bar': {'color': "#4ECCA3"}}, number={'suffix': "%", 'font': {'color': '#ffffff'}}))
-            fig_r2.update_layout(height=300, font=dict(color='rgba(255,255,255,0.54)'))
+            fig_r2 = go.Figure(go.Indicator(mode="gauge+number", value=r2_val * 100, title={'text': "CONFIANZA DE IMPACTO (R²)"}, gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#4ECCA3"}}, number={'suffix': "%"}))
+            fig_r2.update_layout(height=300)
             st.plotly_chart(fig_r2, use_container_width=True)
         
         st.markdown("#### LOG DE ENTRENAMIENTO")
