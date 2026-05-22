@@ -416,9 +416,9 @@ def run_professional_dashboard():
         
         with st.container(border=True):
             st.markdown("#### Acciones de Inicialización")
-            size = st.select_slider("Muestra Big Data:", options=[1000, 5000, 10000, 25000], value=5000)
+            size = st.select_slider("Muestra Big Data:", options=[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000], value=5000)
             col_b1, col_b2 = st.columns(2)
-            if col_b1.button("🧬 GENERAR BIG DATA SINTÉTICA", use_container_width=True):
+            if col_b1.button("🧬 GENERAR BIG DATA", use_container_width=True):
                 generate_sample_data(size)
             if col_b2.button("⚡ OPTIMIZAR MODELOS DE INTELIGENCIA", use_container_width=True):
                 train_models()
@@ -521,7 +521,7 @@ def main():
             st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-circle-nodes"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
             
             # EL BOTÓN SE MANEJA COMO ACCIÓN NATIVA INTERNA DE STREAMLIT (EVITA NUEVAS VENTANAS Y REFUERZA COLOR BLANCO)
-            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
+            if st.button("🔑 INICIAR SESIÓN", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
