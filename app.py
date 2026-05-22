@@ -106,7 +106,7 @@ def apply_professional_ai_theme():
     
     .report-box {
         background: #0d111a;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(129, 128, 128, 0.1);
         border-radius: 12px;
         padding: 25px;
         margin-top: 15px;
@@ -803,12 +803,12 @@ def create_investment_analyzer():
                 title=dict(text="<b>Meses desde la inversión</b>", font=dict(size=12)),
                 tickmode='linear',
                 dtick=6,
-                gridcolor='rgba(255,255,255,0.1)'
+                gridcolor='rgba(104, 102, 102, 0.1)'
             ),
             yaxis=dict(
                 title=dict(text="<b>Flujo de Caja Neto (COP)</b>", font=dict(size=12)),
                 tickformat=',.0f',
-                gridcolor='rgba(255,255,255,0.1)',
+                gridcolor='rgba(104, 102, 102, 0.1)',
                 zeroline=False
             ),
             template="plotly_dark",
@@ -823,7 +823,7 @@ def create_investment_analyzer():
                 xanchor='left',
                 x=0,
                 bgcolor='rgba(13,17,26,0.9)',
-                bordercolor='rgba(255,255,255,0.1)',
+                bordercolor='rgba(104, 102, 102, 0.1)',
                 borderwidth=1,
                 font=dict(size=11)
             )
