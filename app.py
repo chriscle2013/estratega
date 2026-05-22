@@ -1,5 +1,5 @@
-# app.py - Versión 2.9 PREMIUM INTERFACE RESTORED
-# Restaura por completo la estética avanzada de la pantalla de inicio (Login)
+# app.py - Versión 3.0 SIMULATION ENGINE FULLY LOADED
+# Activa por completo las herramientas predictivas en la pestaña de simulaciones
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -95,6 +95,11 @@ def apply_professional_ai_theme():
             transform: translateY(-1px);
         }
 
+        /* Inputs y Selectores */
+        div[data-baseweb="select"] {
+            background-color: #0d111a !important;
+        }
+
         /* Títulos e Interfaz Interna */
         .ai-title {
             background: linear-gradient(90deg, #00D2FF, #4ECCA3);
@@ -116,6 +121,10 @@ def apply_professional_ai_theme():
         }
         </style>
     """, unsafe_allow_html=True)
+
+# --- FORMATOS COMPATIBLES ---
+def format_cop(value): return f"${value:,.0f} COP"
+def format_percentage(value): return f"{value:.1f}%"
 
 # --- FUNCIONES DE CONTROL CON SOPORTE REALTIME ---
 def generate_sample_data(size):
@@ -139,6 +148,89 @@ def train_models():
         st.session_state.ai_model.is_trained = True
         st.toast("Redes neuronales optimizadas.", icon="⚡")
         st.rerun()
+
+# --- ALGORITMOS DE LA PESTAÑA DE SIMULACIONES ---
+def create_launch_analyzer():
+    st.markdown("### 🚀 ALGORITMO DE LANZAMIENTO DE PRODUCTO")
+    max_c = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 1000
+    
+    with st.container(border=True):
+        ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
+        sel_ciudades = st.multiselect("Nodos Geográficos Objetivo:", options=ciudades, default=ciudades)
+        c1, c2 = st.columns(2)
+        with c1: n_cust = st.slider("Tamaño del Vector de Prueba:", 50, int(max_c), min(300, int(max_c)))
+        with c2: price = st.number_input("Precio de Entrada del Producto (COP):", 5000, 2000000, 25000)
+        
+        if st.button("EXECUTE PREDICTION RUN", use_container_width=True):
+            filtered = st.session_state.customer_data[st.session_state.customer_data['ciudad'].isin(sel_ciudades)]
+            if len(filtered) > 0:
+                test_c = filtered.sample(n=min(n_cust, len(filtered))).to_dict(orient='records')
+                st.session_state.launch_result = st.session_state.ai_model.evaluate_product_launch(test_c, product_price=price, min_viable_revenue=30000000)
+                st.rerun()
+            else:
+                st.error("No hay registros disponibles para las ciudades seleccionadas.")
+
+    if 'launch_result' in st.session_state:
+        res = st.session_state.launch_result
+        st.markdown("<br>", unsafe_allow_html=True)
+        if '✅' in res['recommendation']: st.success(f"🤖 **DICTAMEN IA:** {res['recommendation']}")
+        else: st.error(f"🤖 **DICTAMEN IA:** {res['recommendation']}")
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("CONVERSIÓN EST.", f"{res['estimated_buyers']:,} clientes")
+        col2.metric("RATIO DE COMPRA", format_percentage(res['purchase_percentage']))
+        col3.metric("ROI ESTIMADO", format_percentage(res['estimated_roi']))
+
+def create_investment_analyzer():
+    st.markdown("### 💼 SIMULACIÓN DE INFRAESTRUCTURA FINANCIERA")
+    
+    with st.container(border=True):
+        ciudades_disponibles = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
+        sel_ciudades = st.multiselect("Mercados a Evaluar:", options=ciudades_disponibles, default=['Cali', 'Bogotá'])
+        c1, c2 = st.columns(2)
+        with c1: investment = st.number_input("CAPEX Requerido (M COP):", 10, 50000, 10000) * 1000000
+        with c2: cost_ratio = st.slider("Margen de Costo Operativo Variable (%):", 10, 100, 35)
+        
+        if st.button("RUN FINANCIAL SIMULATION", use_container_width=True):
+            filtered = st.session_state.customer_data[st.session_state.customer_data['ciudad'].isin(sel_ciudades)]
+            if len(filtered) > 0:
+                test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
+                res = st.session_state.ai_model.evaluate_infrastructure_investment(test_c, investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
+                st.session_state.investment_result = res
+                
+                # Algoritmo de contrapropuesta automatizada
+                st.session_state.alternativas = []
+                if "❌" in res['recommendation']:
+                    for cd in ciudades_disponibles:
+                        if cd not in sel_ciudades:
+                            alt_data = st.session_state.customer_data[st.session_state.customer_data['ciudad'] == cd]
+                            if len(alt_data) > 50:
+                                alt_res = st.session_state.ai_model.evaluate_infrastructure_investment(alt_data.sample(n=min(300, len(alt_data))).to_dict(orient='records'), investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
+                                if "✅" in alt_res['recommendation']:
+                                    st.session_state.alternativas.append({
+                                        'Ciudad Sugerida': cd, 
+                                        'ROI Proyectado': f"{alt_res['profitability_percentage']:.1f}%", 
+                                        'Retorno (Meses)': f"{alt_res['payback_months']:.1f}"
+                                    })
+                st.rerun()
+            else:
+                st.error("No hay registros en memoria para los nodos geográficos seleccionados.")
+
+    if 'investment_result' in st.session_state:
+        res = st.session_state.investment_result
+        st.markdown("<br>", unsafe_allow_html=True)
+        if '✅' in res['recommendation']: 
+            st.success(f"⚡ **RECOMENDACIÓN:** {res['recommendation']} (Confianza del Modelo: {res['confidence']:.1f}%)")
+        else: 
+            st.error(f"🚨 **ALERTA DE RIESGO:** {res['recommendation']}")
+            if 'alternativas' in st.session_state and st.session_state.alternativas:
+                st.markdown("💡 **CONTRA-PROPUESTA GENERATIVA (IA):** Detectamos que los siguientes nodos geográficos sí absorben la inversión de forma rentable:")
+                st.dataframe(pd.DataFrame(st.session_state.alternativas), use_container_width=True)
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("INGRESOS ANUALES PROYEC.", format_cop(res['projected_annual_income']))
+        col2.metric("MARGEN DE CONTRIBUCIÓN", format_cop(res['contribution_margin']))
+        col3.metric("PAYBACK CRÍTICO", f"{res['payback_months']:.1f} Meses")
 
 # --- INTERFAZ DE DIAGNÓSTICO ML ---
 def show_ml_diagnostics():
@@ -214,10 +306,17 @@ def run_professional_dashboard():
         show_ml_diagnostics()
 
     with tabs[3]:
+        # CONEXIÓN COMPLETA DEL MOTOR DE SIMULACIONES
         if st.session_state.customer_data is not None and st.session_state.ai_model.is_trained:
-            st.info("🛠️ Módulo de Simulación Activo. Desarrollando vistas de algoritmos...")
+            selector = st.pills("Seleccione Escenario Predictivo:", ["🚀 Lanzamiento de Producto", "💼 Inversión Estructural"])
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            if selector == "🚀 Lanzamiento de Producto": 
+                create_launch_analyzer()
+            elif selector == "💼 Inversión Estructural": 
+                create_investment_analyzer()
         else:
-            st.error("🚨 Acceso Denegado: Requiere carga de Datos y Entrenamiento de Modelos previo.")
+            st.error("🚨 Acceso Denegado: Requiere la generación de Big Data y la Optimización de Modelos previa en la Consola Central.")
 
 def main():
     apply_professional_ai_theme()
@@ -228,7 +327,6 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # --- LOGIN ORIGINAL RESTAURADO Y POTENCIADO ---
         st.markdown("<br><br><br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
@@ -241,7 +339,6 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
-            # El botón ahora está integrado limpiamente debajo de la estructura premium
             if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
