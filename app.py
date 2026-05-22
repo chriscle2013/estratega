@@ -1,8 +1,7 @@
-# app.py - Versión 6.0 PRODUCTION ENGINE (FULL CODE & FIXED UI)
+# app.py - Versión 6.1 PRODUCTION ENGINE (FULL CODE & FIXED UI)
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 
@@ -202,9 +201,11 @@ def apply_professional_ai_theme():
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Estilos específicos inyectados para el Login (Fix de contraste) */
-        div.stButton > button:first-child {
+        /* AJUSTE INTEGRAL PARA EL BOTÓN DE INICIAR SESIÓN (Contenedor y proporciones) */
+        div.login-btn-container div.stButton > button:first-child {
+            max-width: 440px !important;
             width: 100% !important;
+            margin: 15px auto 0 auto !important;
             background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
             color: #ffffff !important;
             text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8) !important;
@@ -216,10 +217,9 @@ def apply_professional_ai_theme():
             font-size: 14px !important;
             letter-spacing: 1px !important;
             box-shadow: 0 4px 15px rgba(0,210,255,0.4) !important;
-            margin-top: -10px !important;
             display: block !important;
         }
-        div.stButton > button:first-child:hover {
+        div.login-btn-container div.stButton > button:first-child:hover {
             background: linear-gradient(135deg, #0072FF 0%, #00D2FF 100%) !important;
             box-shadow: 0 6px 20px rgba(0,210,255,0.6) !important;
             color: #ffffff !important;
@@ -517,14 +517,16 @@ def main():
         col1, col2, col3 = st.columns([1, 1.8, 1])
         
         with col2:
-            # BLOQUE VISUAL INDESTRUCTIBLE CON NUEVO ICONO DE RED DE NODOS IA (FONT-AWESOME)
+            # TARJETA VISUAL DE LOGIN
             st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-circle-nodes"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
             
-            # EL BOTÓN SE MANEJA COMO ACCIÓN NATIVA INTERNA DE STREAMLIT (EVITA NUEVAS VENTANAS Y REFUERZA COLOR BLANCO)
+            # CONTENEDOR CSS EXCLUSIVO PARA ENCAPSULAR EL ANCHO DEL BOTÓN NATIVO DE STREAMLIT
+            st.markdown('<div class="login-btn-container">', unsafe_allow_html=True)
             if st.button("🔑 INICIAR SESIÓN", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
             
     else:
         with st.sidebar:
