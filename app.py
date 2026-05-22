@@ -1,4 +1,4 @@
-# app.py - Versión 6.2 PRODUCTION ENGINE (FULL CODE & FIXED UI)
+# app.py - Versión 6.3 PRODUCTION ENGINE (UPDATED DATA VECTORS)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -80,7 +80,6 @@ def apply_professional_ai_theme():
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght=400;700&family=Rajdhani:wght=500;700&display=swap');
         
-        /* Fondo general estilo Dashboard de IA */
         .stApp {
             background-color: #06070d !important;
             background-image: 
@@ -89,14 +88,12 @@ def apply_professional_ai_theme():
             color: #e2e8f0 !important;
         }
 
-        /* Estilos para Modales / Diálogos */
         div[data-testid="stDialog"] div[role="dialog"] {
             background-color: #0d111a !important;
             border: 1px solid rgba(0, 210, 255, 0.2) !important;
             border-radius: 16px !important;
         }
 
-        /* Modificar las pestañas (Tabs) superiores */
         .stTabs [data-baseweb="tab-list"] {
             gap: 10px;
             background-color: #0d111a;
@@ -119,7 +116,6 @@ def apply_professional_ai_theme():
             border: 1px solid rgba(0, 210, 255, 0.3) !important;
         }
 
-        /* Estilización Segura para el Selector de Escenarios Predictivos */
         div[data-testid="stRadio"] > label {
             font-family: 'Orbitron', sans-serif !important;
             color: #94a3b8 !important;
@@ -133,7 +129,6 @@ def apply_professional_ai_theme():
             border: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
-        /* Tarjetas de Métricas y Reportes */
         div[data-testid="stMetric"] {
             background: #0d111a !important;
             border: 1px solid rgba(255, 255, 255, 0.05) !important;
@@ -153,7 +148,6 @@ def apply_professional_ai_theme():
             font-size: 24px !important;
         }
 
-        /* Botones generales de la aplicación */
         .stButton>button {
             font-family: 'Orbitron', sans-serif !important;
             background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
@@ -209,7 +203,6 @@ def apply_professional_ai_theme():
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* AJUSTE INTEGRAL PARA EL BOTÓN DE INICIAR SESIÓN (Contenedor y proporciones) */
         div.login-btn-container div.stButton > button:first-child {
             max-width: 440px !important;
             width: 100% !important;
@@ -226,11 +219,6 @@ def apply_professional_ai_theme():
             letter-spacing: 1px !important;
             box-shadow: 0 4px 15px rgba(0,210,255,0.4) !important;
             display: block !important;
-        }
-        div.login-btn-container div.stButton > button:first-child:hover {
-            background: linear-gradient(135deg, #0072FF 0%, #00D2FF 100%) !important;
-            box-shadow: 0 6px 20px rgba(0,210,255,0.6) !important;
-            color: #ffffff !important;
         }
 
         @keyframes pulse-glow {
@@ -253,7 +241,6 @@ def modal_generar_data(size):
     progress_bar = st.progress(0)
     status_text = st.empty()
     
-    # Simulación visual de procesamiento de vectores
     for percent_complete in range(0, 101, 25):
         time.sleep(0.3)
         progress_bar.progress(percent_complete)
@@ -268,7 +255,7 @@ def modal_optimizar_modelos():
     st.markdown("<p style='font-family:\"Orbitron\"; color:#4ECCA3;'>OPTIMIZANDO CAPAS DE DECISIÓN...</p>", unsafe_allow_html=True)
     
     with st.spinner("Computando matrices de covarianza..."):
-        time.sleep(1.5) # Tiempo estético para apreciar el modal de IA
+        time.sleep(1.5)
         metrics_seg = st.session_state.ai_model.train_segmentation_model(st.session_state.customer_data)
         metrics_imp = st.session_state.ai_model.train_impact_model(st.session_state.customer_data)
         
@@ -440,7 +427,6 @@ def run_professional_dashboard():
             size = st.select_slider("Muestra Big Data:", options=[1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000], value=5000)
             col_b1, col_b2 = st.columns(2)
             
-            # Lanzamiento de los modales emergentes
             if col_b1.button("🧬 GENERAR BIG DATA", use_container_width=True):
                 modal_generar_data(size)
             if col_b2.button("⚡ OPTIMIZAR MODELOS DE INTELIGENCIA", use_container_width=True):
@@ -465,16 +451,37 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            counts, bins = np.histogram(df['edad'], bins=25)
-            bin_centers = 0.5 * (bins[:-1] + bins[1:])
+            # Distribución 1: Histograma de Edades (Lado izquierdo)
+            # Distribución 2: Gráfica de Porcentaje por Ciudades (Lado derecho - ¡NUEVA SOLICITUD!)
+            g_col1, g_col2 = st.columns(2)
             
-            fig_edad = go.Figure(data=[go.Bar(
-                x=bin_centers, y=counts,
-                marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']], showscale=True)
-            )])
-            fig_edad.update_layout(title="DISTRIBUCIÓN PORCENTUAL DE EDADES", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
-            st.plotly_chart(fig_edad, use_container_width=True)
+            with g_col1:
+                counts, bins = np.histogram(df['edad'], bins=25)
+                bin_centers = 0.5 * (bins[:-1] + bins[1:])
+                fig_edad = go.Figure(data=[go.Bar(
+                    x=bin_centers, y=counts,
+                    marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']], showscale=True)
+                )])
+                fig_edad.update_layout(title="DISTRIBUCIÓN PORCENTUAL DE EDADES", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
+                st.plotly_chart(fig_edad, use_container_width=True)
+                
+            with g_col2:
+                # Procesar participación de ciudades
+                city_counts = df['ciudad'].value_counts().reset_index()
+                city_counts.columns = ['ciudad', 'count']
+                
+                fig_ciudad = go.Figure(data=[go.Pie(
+                    labels=city_counts['ciudad'], 
+                    values=city_counts['count'],
+                    hole=.4,
+                    marker=dict(colors=['#00D2FF', '#0072FF', '#4ECCA3', '#3b82f6', '#10b981', '#1e293b'])
+                )])
+                fig_ciudad.update_layout(title="PARTICIPACIÓN PORCENTUAL POR CIUDAD", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
+                st.plotly_chart(fig_ciudad, use_container_width=True)
             
+            st.markdown("---")
+            # --- TÍTULO ESTILIZADO DE DATOS (¡NUEVA SOLICITUD!) ---
+            st.markdown("<h3 style='font-family:\"Orbitron\"; color:#00D2FF; font-size:18px; letter-spacing:1px; margin-bottom:15px;'><i class='fa-solid fa-database'></i> MATRIZ DE VECTORES DE DATOS EN TIEMPO REAL</h3>", unsafe_allow_html=True)
             st.dataframe(df.head(20), use_container_width=True)
         else:
             st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
