@@ -1,4 +1,4 @@
-# app.py - Versión 7.6 PRODUCTION ENGINE (Sin HTML complejo)
+# app.py - Versión 7.7 PRODUCTION ENGINE (Totalmente Corregido)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -402,7 +402,6 @@ def create_launch_analyzer():
                 st.plotly_chart(fig_elasticidad, use_container_width=True)
             
             with col_e2:
-                # Usando componentes nativos de Streamlit en lugar de HTML personalizado
                 with st.container(border=True):
                     st.markdown("**🎯 PRECIO ÓPTIMO**")
                     st.markdown(f"<p style='font-size:32px; font-weight:700; color:#FFB347;'>{format_cop(precio_optimo)}</p>", unsafe_allow_html=True)
@@ -531,14 +530,21 @@ def create_launch_analyzer():
                                annotation_text=f"⚡ Break-even mes {break_even}",
                                annotation_position="top")
         
+        # CORRECCIÓN: Definir yaxis2 correctamente sin duplicar
         fig_proy.update_layout(
             title="Flujo de Caja Proyectado",
             xaxis_title="Mes",
             yaxis_title="Flujo Mensual (COP)",
-            yaxis2_title="Flujo Acumulado (COP)",
-            yaxis2=dict(overlaying='y', side='right'),
+            yaxis=dict(tickformat=',.0f'),
+            yaxis2=dict(
+                title="Flujo Acumulado (COP)",
+                tickformat=',.0f',
+                overlaying='y',
+                side='right'
+            ),
             template="plotly_dark",
-            height=450
+            height=450,
+            hovermode='x unified'
         )
         st.plotly_chart(fig_proy, use_container_width=True)
         
