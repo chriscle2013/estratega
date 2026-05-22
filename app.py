@@ -1,4 +1,4 @@
-# app.py - Versión 4.4 PRODUCTION ENGINE (FULL CODE & LOGIN RENDER FIXED)
+# app.py - Versión 4.5 PRODUCTION ENGINE (FULL CODE & LOGIN UI REBUILT)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -305,8 +305,8 @@ def create_investment_analyzer():
                 step=50000000
             )
         with c2:
-            rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 15000000), step=500000, key="inv_sal")
-            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 40, key="inv_cost")
+            rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 7000000), step=500000, key="inv_sal")
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 93, key="inv_cost")
         
         if st.button("RUN FINANCIAL SIMULATION", use_container_width=True):
             df = st.session_state.customer_data
@@ -487,32 +487,43 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # INYECCIÓN DE ESTILOS DEFINITIVA: Modificamos el contenedor nativo de la columna de Streamlit directamente
+        # 1. Inyección de CSS ultra-preciso para la tarjeta de Login sin romper el Layout de Streamlit
         st.markdown("""
             <style>
-            /* 1. Modificar el contenedor interno de la columna central de Streamlit para que sea la tarjeta de login */
-            div[data-testid="stVerticalBlock"] > div:has(.login-card-anchor) {
-                background: #0d111a !important; 
-                border: 1px solid rgba(0, 210, 255, 0.25) !important; 
-                padding: 45px 35px !important; 
-                border-radius: 20px !important; 
-                box-shadow: 0 4px 35px rgba(0, 210, 255, 0.15) !important;
+            /* Contenedor unificado para la tarjeta de login */
+            .login-box {
+                background: #0d111a !important;
+                border: 1px solid rgba(0, 210, 255, 0.25) !important;
+                padding: 40px 30px 20px 30px !important;
+                border-radius: 20px !important;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 210, 255, 0.1) !important;
                 text-align: center !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-            }
-            
-            /* 2. Forzar alineación y centrado del logo nativo de Streamlit */
-            div:has(.login-card-anchor) [data-testid="stImage"] {
-                display: flex !important;
-                justify-content: center !important;
-                margin: 0 auto 15px auto !important;
+                max-width: 450px;
+                margin: 0 auto !important;
             }
 
-            /* 3. Forzar el estilo del botón nativo de Streamlit para que encaje perfectamente en la base */
-            div:has(.login-card-anchor) div.element-container button {
+            /* Estilo para el icono web animado */
+            .login-icon-web {
+                font-size: 65px;
+                background: linear-gradient(135deg, #00D2FF, #4ECCA3);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 15px;
+                display: inline-block;
+                animation: pulse-glow 3s infinite alternate;
+            }
+
+            @keyframes pulse-glow {
+                0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
+                100% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(0,210,255,0.6)); }
+            }
+
+            /* Forzar el botón nativo de Streamlit para que calce perfecto abajo de la tarjeta */
+            div.element-container button[key="btn_login"] {
                 width: 100% !important;
+                max-width: 450px !important;
+                margin: 15px auto 0 auto !important;
+                display: block !important;
                 background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
                 color: white !important;
                 border: none !important;
@@ -522,34 +533,38 @@ def main():
                 font-weight: 700 !important;
                 font-size: 13px !important;
                 letter-spacing: 1px !important;
-                box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2) !important;
-                margin-top: 20px !important;
+                box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3) !important;
                 transition: all 0.3s ease !important;
             }
             
-            div:has(.login-card-anchor) div.element-container button:hover {
-                box-shadow: 0 0 25px rgba(0, 210, 255, 0.5) !important;
-                transform: translateY(-1px) !important;
+            div.element-container button[key="btn_login"]:hover {
+                box-shadow: 0 0 25px rgba(0, 210, 255, 0.6) !important;
+                transform: translateY(-2px) !important;
             }
             </style>
+            
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         """, unsafe_allow_html=True)
 
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 1.5, 1])
+        
+        # Estructura limpia usando columnas para centrar la tarjeta en la pantalla
+        col1, col2, col3 = st.columns([1, 1.8, 1])
         
         with col2:
-            # MARCADOR ANCLA: Permite al CSS identificar esta columna específica y aplicarle el diseño de tarjeta corporativa
-            st.markdown('<div class="login-card-anchor"></div>', unsafe_allow_html=True)
+            # 2. Todo el diseño visual unificado en un solo bloque HTML sin quiebres
+            st.markdown("""
+                <div class="login-box">
+                    <div class="login-icon-web"><i class="fa-solid fa-brain"></i></div>
+                    
+                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin: 5px 0; font-weight: 700;">ESTRATEGA IA</h1>
+                    
+                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 5px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
+                </div>
+            """, unsafe_allow_html=True)
             
-            # 1. El Logo se renderiza mediante el componente nativo de forma limpia
-            st.image("logo_estratega.webp", width=105)
-            
-            # 2. Los títulos en un bloque de Markdown plano SIN abrir ni cerrar divs manuales
-            st.markdown('<h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:\'Orbitron\', sans-serif; margin-top: 5px; margin-bottom: 5px; text-align: center;">ESTRATEGA IA</h1>', unsafe_allow_html=True)
-            st.markdown('<p style="letter-spacing: 4px; color: #4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 10px; text-align: center;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>', unsafe_allow_html=True)
-            
-            # 3. El botón nativo que ejecuta la lógica de sesión
-            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
+            # 3. El botón nativo de Streamlit se acopla abajo con un ID único para el CSS
+            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True, key="btn_login"):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
