@@ -5,6 +5,14 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 
+# --- CONFIGURACIÓN DE PÁGINA OBLIGATORIA AL INICIO ---
+st.set_page_config(
+    page_title="ESTRATEGA IA — Core Engine",
+    page_icon="🧠",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # ==========================================
 # MOTOR LÓGICO INTEGRADO (AI & DATA)
 # ==========================================
@@ -65,156 +73,11 @@ class AIModel:
             'sample_size_evaluated': len(test_data)
         }
 
-# --- CONFIGURACIÓN DE PÁGINA OBLIGATORIA AL INICIO ---
-st.set_page_config(
-    page_title="ESTRATEGA IA — Core Engine",
-    page_icon="🧠",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# --- INYECCIÓN DE CSS AVANZADO: UI DE SOFTWARE DE IA CON ESTILO DE LOGIN PREMIUM ---
+# --- INYECCIÓN DE CSS AVANZADO (CORREGIDO SIN TEXTO PLANO) ---
 def apply_professional_ai_theme():
-    # Importamos Font Awesome para los iconos y las fuentes premium de Google Fonts
-    st.markdown("""
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
-        
-        /* Fondo general estilo Dashboard de IA */
-        .stApp {
-            background-color: #06070d !important;
-            color: #e2e8f0 !important;
-        }
-
-        /* Modificar las pestañas (Tabs) superiores */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 10px;
-            background-color: #0d111a;
-            padding: 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .stTabs [data-baseweb="tab"] {
-            font-family: 'Orbitron', sans-serif !important;
-            height: 45px;
-            background-color: transparent;
-            border-radius: 8px;
-            color: #64748b !important;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .stTabs [aria-selected="true"] {
-            background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important;
-            color: #00D2FF !important;
-            border: 1px solid rgba(0, 210, 255, 0.3) !important;
-        }
-
-        /* Tarjetas de Métricas y Reportes */
-        div[data-testid="stMetric"] {
-            background: #0d111a !important;
-            border: 1px solid rgba(255, 255, 255, 0.05) !important;
-            border-left: 4px solid #00D2FF !important;
-            border-radius: 12px !important;
-            padding: 20px !important;
-        }
-        div[data-testid="stMetric"] [data-testid="stMetricLabel"] {
-            font-family: 'Rajdhani', sans-serif !important;
-            color: #94a3b8 !important;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-            font-family: 'Orbitron', sans-serif !important;
-            color: #ffffff !important;
-            font-size: 24px !important;
-        }
-
-        /* Botones generales del sistema */
-        .stButton>button {
-            font-family: 'Orbitron', sans-serif !important;
-            border-radius: 8px !important;
-            letter-spacing: 1px;
-            transition: all 0.3s ease !important;
-        }
-
-        /* --- ESTILIZACIÓN DE LA PANTALLA DE LOGIN --- */
-        .login-frame-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 60px 20px;
-            background-color: #010409;
-            min-height: 80vh;
-        }
-
-        .login-frame {
-            position: relative;
-            background-color: #06070d;
-            border: 2px solid #00D2FF;
-            box-shadow: 0 0 35px rgba(0, 210, 255, 0.2), inset 0 0 20px rgba(0, 210, 255, 0.05);
-            border-radius: 16px;
-            padding: 50px 40px;
-            width: 100%;
-            max-width: 550px;
-            text-align: center;
-        }
-
-        /* Icono de Brújula de IA en la parte superior */
-        .login-icon-box {
-            font-size: 60px;
-            color: #00D2FF;
-            margin-bottom: 25px;
-            animation: pulse 3s infinite alternate;
-            text-shadow: 0 0 25px rgba(0, 210, 255, 0.7);
-        }
-
-        .login-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 38px;
-            font-weight: 700;
-            color: #00D2FF;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
-        }
-
-        .login-subtitle {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 14px;
-            color: #4ECCA3;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            margin-bottom: 10px;
-        }
-
-        /* Forzar diseño del botón de Login */
-        div.login-btn-container button {
-            background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%) !important;
-            color: #ffffff !important;
-            font-family: 'Orbitron', sans-serif !important;
-            font-size: 15px !important;
-            font-weight: 600 !important;
-            border: none !important;
-            padding: 16px 20px !important;
-            width: 100% !important;
-            box-shadow: 0 0 20px rgba(67, 100, 247, 0.4) !important;
-            margin-top: 30px !important;
-        }
-
-        div.login-btn-container button:hover {
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.8) !important;
-            transform: scale(1.01);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            100% { transform: scale(1.05); opacity: 1; }
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    # Usamos un formato html plano y directo en una sola línea limpia para evitar fallos de renderizado
+    css_code = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');.stApp {background-color: #06070d !important; color: #e2e8f0 !important;}.stTabs [data-baseweb="tab-list"] {gap: 10px; background-color: #0d111a; padding: 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);}.stTabs [data-baseweb="tab"] {font-family: 'Orbitron', sans-serif !important; height: 45px; background-color: transparent; border-radius: 8px; color: #64748b !important; border: none; transition: all 0.3s ease;}.stTabs [aria-selected="true"] {background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important; color: #00D2FF !important; border: 1px solid rgba(0, 210, 255, 0.3) !important;}div[data-testid="stMetric"] {background: #0d111a !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; border-left: 4px solid #00D2FF !important; border-radius: 12px !important; padding: 20px !important;}div[data-testid="stMetric"] [data-testid="stMetricLabel"] {font-family: 'Rajdhani', sans-serif !important; color: #94a3b8 !important; text-transform: uppercase; letter-spacing: 1px;}div[data-testid="stMetric"] [data-testid="stMetricValue"] {font-family: 'Orbitron', sans-serif !important; color: #ffffff !important; font-size: 24px !important;}.stButton>button {font-family: 'Orbitron', sans-serif !important; border-radius: 8px !important; letter-spacing: 1px; transition: all 0.3s ease !important;}.login-frame-container {display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; background-color: #010409; min-height: 70vh;}.login-frame {background-color: #06070d; border: 2px solid #00D2FF; box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 50px 40px; width: 100%; max-width: 550px; text-align: center; margin-bottom: 20px;}.login-icon-box {font-size: 55px; color: #00D2FF; margin-bottom: 15px;}.login-title {font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 700; color: #00D2FF; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px;}.login-subtitle {font-family: 'Rajdhani', sans-serif; font-size: 14px; color: #4ECCA3; text-transform: uppercase; letter-spacing: 5px;}div.login-btn-container button {background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%) !important; color: #ffffff !important; font-family: 'Orbitron', sans-serif !important; font-size: 14px !important; font-weight: 600 !important; border: none !important; padding: 14px 20px !important; width: 100% !important; box-shadow: 0 0 20px rgba(67, 100, 247, 0.4) !important;}div.login-btn-container button:hover {box-shadow: 0 0 30px rgba(0, 210, 255, 0.8) !important; transform: scale(1.01);}</style>"""
+    st.components.v1.html(css_code, height=0, width=0)
 
 # --- FORMATOS AUXILIARES ---
 def format_cop(value): return f"${value:,.0f} COP"
@@ -394,7 +257,7 @@ def run_professional_dashboard():
         else:
             st.error("🚨 Denegado: Requieres cargar datos e inteligencia primero.")
 
-# --- FUNCIÓN MAIN CON LOGIN PREMIUM CORREGIDO ---
+# --- MAIN ---
 def main():
     apply_professional_ai_theme()
     
@@ -404,28 +267,25 @@ def main():
     if 'model_metrics' not in st.session_state: st.session_state.model_metrics = {}
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
-    # Renderizado de la UI de login
     if not st.session_state.autenticado:
-        st.markdown("<div class='login-frame-container'>", unsafe_allow_html=True)
-        
-        # Bloque de diseño HTML del marco principal con icono de brújula e ingeniería integrada
+        # Contenedor HTML del login aislado y seguro
         st.markdown("""
-            <div class='login-frame'>
-                <div class='login-icon-box'>
-                    <i class='fa-solid fa-compass-drafting'></i>
+            <div style='display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; min-height: 60vh;'>
+                <div style='background-color: #06070d; border: 2px solid #00D2FF; box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 50px 40px; width: 100%; max-width: 550px; text-align: center; margin-bottom: 25px;'>
+                    <div style='font-size: 55px; color: #00D2FF; margin-bottom: 15px;'><i class='fa-solid fa-compass-drafting'></i></div>
+                    <div style='font-family: "Orbitron", sans-serif; font-size: 36px; font-weight: 700; color: #00D2FF; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px;'>ESTRATEGA IA</div>
+                    <div style='font-family: "Rajdhani", sans-serif; font-size: 14px; color: #4ECCA3; text-transform: uppercase; letter-spacing: 5px;'>PREDICCIÓN · ESTRATEGIA · ÉXITO</div>
                 </div>
-                <div class='login-title'>ESTRATEGA IA</div>
-                <div class='login-subtitle'>PREDICCIÓN · ESTRATEGIA · ÉXITO</div>
             </div>
         """, unsafe_allow_html=True)
         
-        # Contenedor para el botón de login nativo estilizado por CSS
-        st.markdown("<div class='login-btn-container' style='width:100%; max-width:550px; margin: -10px auto 0 auto;'>", unsafe_allow_html=True)
+        # Botón de Login Nativo posicionado exactamente abajo
+        st.markdown("<div class='login-btn-container' style='width:100%; max-width:550px; margin: -100px auto 0 auto;'>", unsafe_allow_html=True)
         if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
             st.session_state.autenticado = True
             st.session_state.usuario_email = "directorio@estratega.ia"
             st.rerun()
-        st.markdown("</div></div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     else:
         with st.sidebar:
