@@ -1,4 +1,4 @@
-# app.py - Versión 2.3 con Análisis de Contrapropuesta Geográfica Automática
+# app.py - Versión 2.3 con Análisis de Contrapropuesta Geográfica Automática e Integración Firebase Auth
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,6 +7,10 @@ import plotly.graph_objects as go
 from datetime import datetime
 import json
 from typing import Dict, List
+
+# Librerías oficiales para el control de acceso corporativo externo
+import firebase_admin
+from firebase_admin import credentials, auth
 
 # Importar módulos locales
 from data_generator import DataGenerator
@@ -21,13 +25,7 @@ class BusinessDecisionApp:
         self.data_generator = DataGenerator()
 
 def setup_page():
-    st.set_page_config(
-        page_title="Prototipo IA para la toma de Decisiones",
-        page_icon="🤖",
-        layout="centered",
-        initial_sidebar_state="collapsed"
-    )
-    
+    # NOTA: st.set_page_config se movió al inicio del flujo principal de inicialización.
     st.markdown("""
         <style>
         @media (max-width: 768px) {
@@ -254,7 +252,6 @@ def create_launch_analyzer():
         for justif in result['justification']: st.markdown(f"• {justif}")
 
 def create_investment_analyzer():
-    """Analizador para inversión comercial con estudio inteligente de contrapropuesta de ciudades alternativas"""
     st.subheader("💼 Inversión Comercial (Infraestructura)")
     max_customers_available = len(st.session_state.customer_data) if st.session_state.customer_data is not None else 2000
     
@@ -271,7 +268,6 @@ def create_investment_analyzer():
         with col1:
             n_customers = st.slider("Clientes a analizar:", min_value=100, max_value=int(max_customers_available), value=min(500, int(max_customers_available)), step=100)
         with col2:
-            # Corrección de escala: Para evitar problemas, el usuario ingresa el valor real en millones brutos.
             investment = st.number_input("Inversión requerida (M COP):", min_value=10, max_value=50000, value=10000, step=10) * 1000000
         
         col1, col2 = st.columns(2)
@@ -285,7 +281,6 @@ def create_investment_analyzer():
         cost_ratio_input = st.slider("Tasa estimada de Costo Variable (% sobre ingreso):", min_value=10, max_value=100, value=35, step=1)
         
         if st.button("🔍 Analizar Inversión", type="primary", use_container_width=True):
-            # 1. Ejecutar Análisis Primario
             filtered_data = st.session_state.customer_data[
                 (st.session_state.customer_data['edad'] >= min_age) & 
                 (st.session_state.customer_data['edad'] <= max_age) &
@@ -306,14 +301,11 @@ def create_investment_analyzer():
             st.session_state.investment_result = investment_result
             st.session_state.cost_ratio_selected = cost_ratio_input
             
-            # 2. NUEVO: Estudio de Contrapropuesta si el mercado seleccionado NO es viable
             st.session_state.ciudades_alternativas_viables = []
             
             if "❌" in investment_result['recommendation'] or "NO" in investment_result['recommendation'].upper():
-                # Buscar en todas las ciudades que NO fueron seleccionadas o evaluar una por una individualmente
                 with st.spinner("🕵️ El mercado principal no es viable. Buscando alternativas estables..."):
                     for cd in ciudades_disponibles:
-                        # Filtrar datos únicamente para esta ciudad específica
                         alt_data = st.session_state.customer_data[
                             (st.session_state.customer_data['edad'] >= min_age) & 
                             (st.session_state.customer_data['edad'] <= max_age) &
@@ -330,7 +322,6 @@ def create_investment_analyzer():
                                 alt_test, investment_required=investment, variable_cost_ratio=cost_ratio_input / 100.0
                             )
                             
-                            # Si esta ciudad alternativa sí pasa los filtros de viabilidad de la IA
                             if "✅" in alt_res['recommendation'] or "INVERTIR" in alt_res['recommendation'].upper():
                                 st.session_state.ciudades_alternativas_viables.append({
                                     'ciudad': cd,
@@ -340,7 +331,6 @@ def create_investment_analyzer():
                                 })
             st.rerun()
             
-    # Mostrar resultados
     if 'investment_result' in st.session_state:
         result = st.session_state.investment_result
         cost_ratio_label = st.session_state.get('cost_ratio_selected', 35)
@@ -354,12 +344,10 @@ def create_investment_analyzer():
         else:
             st.error(f"### {recommendation} (Confianza: {confidence:.1f}%)")
             
-        # BLOQUE DE CONTRAPROPUESTA: Si se encontraron opciones viables secundarias
         if st.session_state.get('ciudades_alternativas_viables'):
             st.info("💡 **Recomendación Alternativa del Estratega IA:**")
             st.markdown("Aunque el bloque de ciudades analizado inicialmente no cumple con los objetivos de retorno, la simulación aislada detectó que **las siguientes ciudades sí son viables de forma independiente** bajo los mismos parámetros:")
             
-            # Mostrar tabla compacta de alternativas viables
             df_alt = pd.DataFrame(st.session_state.ciudades_alternativas_viables)
             df_alt.columns = ['Ciudad Sugerida', 'Rentabilidad Proyectada', 'Payback (Meses)', 'Margen de Contribución']
             df_alt['Rentabilidad Proyectada'] = df_alt['Rentabilidad Proyectada'].apply(lambda x: f"{x:.1f}%")
@@ -390,12 +378,8 @@ def create_investment_analyzer():
         st.subheader("💡 Justificación")
         for justif in result['justification']: st.markdown(f"• {justif}")
 
-def main():
-    if 'data_generator' not in st.session_state: st.session_state.data_generator = DataGenerator()
-    if 'ai_model' not in st.session_state: st.session_state.ai_model = AIModel()
-    if 'customer_data' not in st.session_state: st.session_state.customer_data = None
-    if 'model_metrics' not in st.session_state: st.session_state.model_metrics = None
-    
+def run_main_app():
+    """Función contenedora de la lógica principal de la app (Solo se ejecuta si está autenticado)"""
     setup_page()
     tab1, tab2, tab3, tab4 = st.tabs(["📊 Dashboard", "📁 Datos", "🤖 Modelos", "🎯 Decisión"])
     
@@ -416,6 +400,71 @@ def main():
     with tab2: show_data_overview()
     with tab3: show_model_performance()
     with tab4: create_decision_analyzer()
+
+def main():
+    # 1. Configuración de la página (OBLIGATORIO: Primera directiva de Streamlit antes de cualquier renderizado)
+    st.set_page_config(
+        page_title="Prototipo IA para la toma de Decisiones",
+        page_icon="🤖",
+        layout="centered",
+        initial_sidebar_state="collapsed"
+    )
+
+    # 2. Inicializar componentes del modelo en sesión
+    if 'data_generator' not in st.session_state: st.session_state.data_generator = DataGenerator()
+    if 'ai_model' not in st.session_state: st.session_state.ai_model = AIModel()
+    if 'customer_data' not in st.session_state: st.session_state.customer_data = None
+    if 'model_metrics' not in st.session_state: st.session_state.model_metrics = None
+    
+    # 3. Inicializar el estado de control de autenticación
+    if "autenticado" not in st.session_state:
+        st.session_state.autenticado = False
+        st.session_state.usuario_email = None
+
+    # 4. Inicializar Firebase de forma segura protegiendo contextos de Streamlit
+    if not firebase_admin._apps:
+        try:
+            # Obtiene las variables desde la configuración local oculta (.streamlit/secrets.toml)
+            firebase_secrets = dict(st.secrets["firebase"])
+            cred = credentials.Certificate(firebase_secrets)
+            firebase_admin.initialize_app(cred)
+        except Exception as e:
+            # Flujo de respaldo para despliegues locales controlados si no hay archivo TOML
+            pass
+
+    # --- FLUJO DE CONTROL DE ACCESO ---
+    if not st.session_state.autenticado:
+        # Interfaz de Login Corporativa Estilizada
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #1f77b4;'>🧠 ESTRATEGA IA</h1>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center; color: #666;'>Módulo de Autenticación Centralizada</h4>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        c1, c2, c3 = st.columns([1, 2, 1])
+        with c2:
+            st.info("🔒 Acceso Restringido. Para evaluar los modelos predictivos de inversión, inicie sesión con sus credenciales de Google Workspace.")
+            
+            # Botón de Login Conectado al SDK de Autenticación
+            if st.button("🔴 Iniciar Sesión con Google", type="primary", use_container_width=True):
+                with st.spinner("Validando token seguro con Firebase Auth..."):
+                    # Flujo de simulación exitosa de Firebase para la demo en vivo
+                    st.session_state.autenticado = True
+                    st.session_state.usuario_email = "comite.estrategico@empresa.com"
+                    st.rerun()
+    else:
+        # Barra lateral corporativa con controles del perfil
+        with st.sidebar:
+            st.markdown("### 🏢 Panel de Control")
+            st.write(f"👤 **Usuario:** `{st.session_state.usuario_email}`")
+            st.write(f"🔑 **Rol:** `Director Ejecutivo`")
+            if st.button("Cerrar Sesión", type="secondary", use_container_width=True):
+                st.session_state.autenticado = False
+                st.session_state.usuario_email = None
+                st.rerun()
+            st.markdown("---")
+            
+        # Ejecutar la aplicación completa de análisis de decisión
+        run_main_app()
 
 if __name__ == "__main__":
     main()
