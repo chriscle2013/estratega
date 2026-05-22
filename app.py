@@ -1,4 +1,4 @@
-# app.py - Versión 6.3 PRODUCTION ENGINE (UPDATED DATA VECTORS)
+# app.py - Versión 6.4 PRODUCTION ENGINE (CONDITIONAL WAGE CAPS)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -20,10 +20,12 @@ st.set_page_config(
 class DataGenerator:
     def __init__(self):
         pass
+        
     def generate_synthetic_data(self, size):
         ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
         educacion_opc = ['Universidad', 'Postgrado', 'Técnico', 'Secundaria', 'Primaria']
         
+        # 1. Generación base de los vectores de datos
         df = pd.DataFrame({
             'id': range(1, size + 1),
             'ciudad': np.random.choice(ciudades, size=size),
@@ -32,6 +34,17 @@ class DataGenerator:
             'salario': np.random.randint(1500000, 15000000, size=size),
             'valor_compra_promedio': np.random.randint(45000, 850000, size=size)
         })
+        
+        # 2. Aplicación de reglas de negocio y topes salariales condicionales
+        # Primaria: No más de 3 millones
+        df.loc[df['educacion'] == 'Primaria', 'salario'] = df.loc[df['educacion'] == 'Primaria', 'salario'].clip(upper=3000000)
+        
+        # Secundaria: No más de 5 millones
+        df.loc[df['educacion'] == 'Secundaria', 'salario'] = df.loc[df['educacion'] == 'Secundaria', 'salario'].clip(upper=5000000)
+        
+        # Técnico: No más de 8 millones
+        df.loc[df['educacion'] == 'Técnico', 'salario'] = df.loc[df['educacion'] == 'Técnico', 'salario'].clip(upper=8000000)
+        
         return df
 
 class AIModel:
@@ -451,8 +464,6 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # Distribución 1: Histograma de Edades (Lado izquierdo)
-            # Distribución 2: Gráfica de Porcentaje por Ciudades (Lado derecho - ¡NUEVA SOLICITUD!)
             g_col1, g_col2 = st.columns(2)
             
             with g_col1:
@@ -466,7 +477,6 @@ def run_professional_dashboard():
                 st.plotly_chart(fig_edad, use_container_width=True)
                 
             with g_col2:
-                # Procesar participación de ciudades
                 city_counts = df['ciudad'].value_counts().reset_index()
                 city_counts.columns = ['ciudad', 'count']
                 
@@ -480,7 +490,6 @@ def run_professional_dashboard():
                 st.plotly_chart(fig_ciudad, use_container_width=True)
             
             st.markdown("---")
-            # --- TÍTULO ESTILIZADO DE DATOS (¡NUEVA SOLICITUD!) ---
             st.markdown("<h3 style='font-family:\"Orbitron\"; color:#00D2FF; font-size:18px; letter-spacing:1px; margin-bottom:15px;'><i class='fa-solid fa-database'></i> MATRIZ DE VECTORES DE DATOS EN TIEMPO REAL</h3>", unsafe_allow_html=True)
             st.dataframe(df.head(20), use_container_width=True)
         else:
