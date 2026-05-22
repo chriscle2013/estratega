@@ -1,4 +1,4 @@
-# app.py - Versión 7.2 PRODUCTION ENGINE (Advanced Launch Analytics - Enhanced Charts)
+# app.py - Versión 7.3 PRODUCTION ENGINE (Advanced Launch Analytics - Fixed)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -634,6 +634,9 @@ def create_launch_analyzer():
         else:
             col_p4.metric("Punto de Equilibrio", "> 36 meses", help="No se alcanza en el horizonte proyectado")
         
+        # Crear lista de textos para las barras
+        textos_barras = [format_cop(val) for val in flujo_mensual]
+        
         fig_proy = go.Figure()
         fig_proy.add_trace(go.Bar(
             x=meses,
@@ -641,7 +644,7 @@ def create_launch_analyzer():
             name="Flujo Mensual",
             marker_color="#00D2FF",
             opacity=0.7,
-            text=flujo_mensual.apply(lambda x: format_cop(x)),
+            text=textos_barras,
             textposition='outside',
             textfont=dict(size=9)
         ))
