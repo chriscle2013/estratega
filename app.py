@@ -1,4 +1,4 @@
-# app.py - Versión 7.4 PRODUCTION ENGINE (Advanced Launch Analytics - Full Fixed)
+# app.py - Versión 7.5 PRODUCTION ENGINE (HTML completamente simplificado)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -233,6 +233,70 @@ def apply_professional_ai_theme():
         display: block !important;
     }
     
+    /* Estilos para el panel de métricas */
+    .metric-panel {
+        background: #0d111a;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 210, 255, 0.2);
+    }
+    .metric-title {
+        color: #00D2FF;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    .metric-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+        color: #FFB347;
+    }
+    .metric-label {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #1e293b;
+    }
+    .metric-row-last {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+    .metric-key {
+        color: #94a3b8;
+    }
+    .metric-value-green {
+        color: #4ECCA3;
+        font-weight: bold;
+    }
+    .metric-value-blue {
+        color: #00D2FF;
+        font-weight: bold;
+    }
+    .metric-value-orange {
+        color: #FFB347;
+        font-weight: bold;
+    }
+    .section-title {
+        color: #4ECCA3;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+    .interpretation-text {
+        margin: 5px 0;
+        font-size: 13px;
+    }
+    hr {
+        margin: 15px 0;
+        border-color: #1e293b;
+    }
     @keyframes pulse-glow {
         0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
         100% { transform: scale(1.04); filter: drop-shadow(0 0 15px rgba(0,210,255,0.5)); }
@@ -524,52 +588,52 @@ def create_launch_analyzer():
                 st.plotly_chart(fig_elasticidad, use_container_width=True)
             
             with col_e2:
+                # Panel simplificado sin HTML complejo
                 st.markdown(f"""
-                <div style="background:#0d111a; padding:20px; border-radius:12px; border:1px solid rgba(0,210,255,0.2);">
-                    <p style="color:#00D2FF; font-family:'Orbitron'; margin-bottom:15px; font-size:14px;">🎯 PRECIO ÓPTIMO</p>
-                    <p style="font-size:32px; font-weight:700; margin:0; color:#FFB347;">{format_cop(precio_optimo)}</p>
-                    <p style="color:#94a3b8; font-size:12px; margin-top:5px;">Maximiza ingresos totales</p>
+                <div class="metric-panel">
+                    <div class="metric-title">🎯 PRECIO ÓPTIMO</div>
+                    <div class="metric-value">{format_cop(precio_optimo)}</div>
+                    <div class="metric-label">Maximiza ingresos totales</div>
                     
-                    <hr style="margin:15px 0; border-color:#1e293b;">
+                    <hr>
                     
-                    <p style="color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;">📊 MÉTRICAS CLAVE</p>
+                    <div class="section-title">📊 MÉTRICAS CLAVE</div>
                     
-                    <div style="width:100%; font-size:13px; margin-bottom:15px;">
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b;">
-                            <span style="color:#94a3b8;">Ingreso Máximo:</span>
-                            <span style="color:#4ECCA3; font-weight:bold;">{format_cop(revenue_optimo)}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b;">
-                            <span style="color:#94a3b8;">Demanda Óptima:</span>
-                            <span style="color:#00D2FF; font-weight:bold;">{demanda_optima:,.0f} und</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span style="color:#94a3b8;">Elasticidad Precio:</span>
-                            <span style="color:#FFB347; font-weight:bold;">{elasticidad_arco:.2f}</span>
-                        </div>
+                    <div class="metric-row">
+                        <span class="metric-key">Ingreso Máximo:</span>
+                        <span class="metric-value-green">{format_cop(revenue_optimo)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-key">Demanda Óptima:</span>
+                        <span class="metric-value-blue">{demanda_optima:,.0f} und</span>
+                    </div>
+                    <div class="metric-row-last">
+                        <span class="metric-key">Elasticidad Precio:</span>
+                        <span class="metric-value-orange">{elasticidad_arco:.2f}</span>
                     </div>
                     
-                    <hr style="margin:15px 0; border-color:#1e293b;">
+                    <hr>
                     
-                    <p style="color:#FFB347; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;">⚡ INTERPRETACIÓN</p>
+                    <div class="section-title">⚡ INTERPRETACIÓN</div>
+                </div>
                 """, unsafe_allow_html=True)
                 
                 if elasticidad_arco > 1:
-                    st.markdown("<p style='margin:5px 0; font-size:13px;'>✅ Demanda <b>elástica</b> - Pequeños cambios en precio afectan significativamente la demanda.</p>", unsafe_allow_html=True)
+                    st.markdown('<p class="interpretation-text">✅ Demanda <b>elástica</b> - Pequeños cambios en precio afectan significativamente la demanda.</p>', unsafe_allow_html=True)
                 elif elasticidad_arco < 0.5:
-                    st.markdown("<p style='margin:5px 0; font-size:13px;'>📌 Demanda <b>inelástica</b> - Los consumidores son poco sensibles al precio.</p>", unsafe_allow_html=True)
+                    st.markdown('<p class="interpretation-text">📌 Demanda <b>inelástica</b> - Los consumidores son poco sensibles al precio.</p>', unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='margin:5px 0; font-size:13px;'>⚖️ Demanda <b>elasticidad unitaria</b> - Cambios proporcionales en precio y demanda.</p>", unsafe_allow_html=True)
+                    st.markdown('<p class="interpretation-text">⚖️ Demanda <b>elasticidad unitaria</b> - Cambios proporcionales en precio y demanda.</p>', unsafe_allow_html=True)
                 
-                st.markdown("<hr style='margin:15px 0; border-color:#1e293b;'>", unsafe_allow_html=True)
-                st.markdown("<p style='color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px; font-size:14px;'>💡 ESTRATEGIA RECOMENDADA</p>", unsafe_allow_html=True)
+                st.markdown("<hr>", unsafe_allow_html=True)
+                st.markdown('<p class="section-title">💡 ESTRATEGIA RECOMENDADA</p>', unsafe_allow_html=True)
                 
                 if precio_optimo > st.session_state.base_price * 1.1:
-                    st.markdown(f"<p style='margin:0; font-size:13px;'>✅ El mercado tolera un precio <b>superior</b> (+{((precio_optimo/st.session_state.base_price)-1)*100:.0f}%). Considere reposicionamiento <b>premium</b>.</p>", unsafe_allow_html=True)
+                    st.markdown(f'<p class="interpretation-text">✅ El mercado tolera un precio <b>superior</b> (+{((precio_optimo/st.session_state.base_price)-1)*100:.0f}%). Considere reposicionamiento <b>premium</b>.</p>', unsafe_allow_html=True)
                 elif precio_optimo < st.session_state.base_price * 0.9:
-                    st.markdown(f"<p style='margin:0; font-size:13px;'>⚠️ El precio actual es <b>elevado</b> (óptimo es -{((1-precio_optimo/st.session_state.base_price))*100:.0f}%). Evaluar reducción para <b>maximizar volumen</b>.</p>", unsafe_allow_html=True)
+                    st.markdown(f'<p class="interpretation-text">⚠️ El precio actual es <b>elevado</b> (óptimo es -{((1-precio_optimo/st.session_state.base_price))*100:.0f}%). Evaluar reducción para <b>maximizar volumen</b>.</p>', unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='margin:0; font-size:13px;'>✅ El precio base está <b>alineado</b> con el óptimo de mercado. Excelente estrategia de pricing.</p>", unsafe_allow_html=True)
+                    st.markdown('<p class="interpretation-text">✅ El precio base está <b>alineado</b> con el óptimo de mercado. Excelente estrategia de pricing.</p>', unsafe_allow_html=True)
                 
                 st.markdown("</div>", unsafe_allow_html=True)
         
@@ -611,11 +675,11 @@ def create_launch_analyzer():
             with col_s2:
                 top_segment = seg_df.iloc[0]
                 st.markdown(f"""
-                <div style="background:#0d111a; padding:20px; border-radius:12px; border:1px solid rgba(78,204,163,0.3);">
-                    <p style="color:#4ECCA3; font-family:'Orbitron'; margin-bottom:10px;">🏆 BUYER PERSONA DOMINANTE</p>
-                    <p style="font-size:20px; font-weight:700; margin:0;">{top_segment['Segmento']}</p>
-                    <p style="font-size:32px; color:#00D2FF; margin:10px 0 5px 0;">{top_segment['Intención de Compra']:.1f}%</p>
-                    <p style="color:#94a3b8; font-size:11px;">Intención de compra | Muestra: {top_segment['Muestra']:,} perfiles</p>
+                <div class="metric-panel" style="border-color: rgba(78,204,163,0.3);">
+                    <div class="section-title" style="color:#4ECCA3;">🏆 BUYER PERSONA DOMINANTE</div>
+                    <div style="font-size:20px; font-weight:700; margin:0;">{top_segment['Segmento']}</div>
+                    <div style="font-size:32px; color:#00D2FF; margin:10px 0 5px 0;">{top_segment['Intención de Compra']:.1f}%</div>
+                    <div style="color:#94a3b8; font-size:11px;">Intención de compra | Muestra: {top_segment['Muestra']:,} perfiles</div>
                 </div>
                 """, unsafe_allow_html=True)
         
