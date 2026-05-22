@@ -1,4 +1,4 @@
-# app.py - Versión 5.5 PRODUCTION ENGINE (FULL CODE & HARDENED INLINE UI)
+# app.py - Versión 6.0 PRODUCTION ENGINE (FULL CODE & FIXED UI)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -202,7 +202,29 @@ def apply_professional_ai_theme():
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Animación para el icono */
+        /* Estilos específicos inyectados para el Login (Fix de contraste) */
+        div.stButton > button:first-child {
+            width: 100% !important;
+            background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
+            color: #ffffff !important;
+            text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 15px 20px !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            letter-spacing: 1px !important;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.4) !important;
+            margin-top: -10px !important;
+            display: block !important;
+        }
+        div.stButton > button:first-child:hover {
+            background: linear-gradient(135deg, #0072FF 0%, #00D2FF 100%) !important;
+            box-shadow: 0 6px 20px rgba(0,210,255,0.6) !important;
+            color: #ffffff !important;
+        }
+
         @keyframes pulse-glow {
             0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
             100% { transform: scale(1.04); filter: drop-shadow(0 0 15px rgba(0,210,255,0.5)); }
@@ -495,15 +517,13 @@ def main():
         col1, col2, col3 = st.columns([1, 1.8, 1])
         
         with col2:
-            # COMPONENTE INDESTRUCTIBLE EN UNA SOLA LÍNEA SIN IDENTACIONES PARA CASTRAR EL COMPORTAMIENTO DE CODE BLOCK DE STREAMLIT
-            st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-brain"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:5px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p><a href="?login=true" style="width:100%; background:linear-gradient(135deg, #00D2FF 0%, #0072FF 100%); color:#ffffff !important; border:none; border-radius:8px; padding:15px 20px; font-family:\'Orbitron\', sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; cursor:pointer; box-shadow:0 4px 15px rgba(0,210,255,0.3); transition:all 0.3s ease; margin-top:30px; display:block; text-decoration:none;">🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE</a></div>', unsafe_allow_html=True)
+            # BLOQUE VISUAL INDESTRUCTIBLE CON NUEVO ICONO DE RED DE NODOS IA (FONT-AWESOME)
+            st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-circle-nodes"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
             
-            # Interceptamos la interacción del botón HTML leyendo los parámetros de la URL
-            query_params = st.query_params
-            if "login" in query_params:
+            # EL BOTÓN SE MANEJA COMO ACCIÓN NATIVA INTERNA DE STREAMLIT (EVITA NUEVAS VENTANAS Y REFUERZA COLOR BLANCO)
+            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
-                st.query_params.clear()
                 st.rerun()
             
     else:
