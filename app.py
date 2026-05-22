@@ -1,4 +1,4 @@
-# app.py - Versión 7.5 PRODUCTION ENGINE (HTML completamente simplificado)
+# app.py - Versión 7.6 PRODUCTION ENGINE (Sin HTML complejo)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -83,7 +83,7 @@ class AIModel:
         }
 
 
-# --- INYECCIÓN DE CSS AVANZADO: UI DE SOFTWARE DE IA ---
+# --- INYECCIÓN DE CSS SIMPLIFICADO ---
 def apply_professional_ai_theme():
     st.markdown("""
     <style>
@@ -91,73 +91,7 @@ def apply_professional_ai_theme():
     
     .stApp {
         background-color: #06070d !important;
-        background-image: radial-gradient(circle at 10% 20%, rgba(0, 210, 255, 0.03) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(78, 204, 163, 0.03) 0%, transparent 50%) !important;
         color: #e2e8f0 !important;
-    }
-    
-    div[data-testid="stDialog"] div[role="dialog"] {
-        background-color: #0d111a !important;
-        border: 1px solid rgba(0, 210, 255, 0.2) !important;
-        border-radius: 16px !important;
-    }
-    
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        background-color: #0d111a;
-        padding: 10px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        font-family: 'Orbitron', sans-serif !important;
-        height: 45px;
-        background-color: transparent;
-        border-radius: 8px;
-        color: #64748b !important;
-        border: none;
-        transition: all 0.3s ease;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important;
-        color: #00D2FF !important;
-        border: 1px solid rgba(0, 210, 255, 0.3) !important;
-    }
-    
-    div[data-testid="stRadio"] > label {
-        font-family: 'Orbitron', sans-serif !important;
-        color: #94a3b8 !important;
-        font-size: 14px !important;
-        letter-spacing: 1px;
-    }
-    
-    div[data-testid="stRadio"] div[role="radiogroup"] {
-        background-color: #0d111a !important;
-        padding: 10px !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    }
-    
-    div[data-testid="stMetric"] {
-        background: #0d111a !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-left: 4px solid #00D2FF !important;
-        border-radius: 12px !important;
-        padding: 20px !important;
-    }
-    
-    div[data-testid="stMetric"] [data-testid="stMetricLabel"] {
-        font-family: 'Rajdhani', sans-serif !important;
-        color: #94a3b8 !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-        font-family: 'Orbitron', sans-serif !important;
-        color: #ffffff !important;
-        font-size: 24px !important;
     }
     
     .stButton>button {
@@ -168,9 +102,6 @@ def apply_professional_ai_theme():
         border-radius: 8px !important;
         padding: 12px 24px !important;
         font-weight: 700 !important;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
-        transition: all 0.3s ease !important;
     }
     
     .report-box {
@@ -201,105 +132,26 @@ def apply_professional_ai_theme():
         -webkit-text-fill-color: transparent;
         font-weight: 700;
         font-size: calc(1.8rem + 1.5vw) !important;
-        line-height: 1.2 !important;
-        margin-bottom: 5px;
         font-family: 'Orbitron', sans-serif !important;
     }
     
-    .diag-card {
-        background: #0d111a;
-        border: 1px solid rgba(0, 210, 255, 0.1);
-        padding: 20px;
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        background-color: #0d111a;
+        padding: 10px;
         border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     
-    div.login-btn-container div.stButton > button:first-child {
-        max-width: 440px !important;
-        width: 100% !important;
-        margin: 15px auto 0 auto !important;
-        background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
-        color: #ffffff !important;
-        text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8) !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 15px 20px !important;
-        font-family: 'Orbitron', sans-serif !important;
-        font-weight: 700 !important;
-        font-size: 14px !important;
-        letter-spacing: 1px !important;
-        box-shadow: 0 4px 15px rgba(0,210,255,0.4) !important;
-        display: block !important;
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important;
+        color: #00D2FF !important;
     }
     
-    /* Estilos para el panel de métricas */
-    .metric-panel {
-        background: #0d111a;
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 210, 255, 0.2);
-    }
-    .metric-title {
-        color: #00D2FF;
-        font-family: 'Orbitron', sans-serif;
-        margin-bottom: 15px;
-        font-size: 14px;
-    }
-    .metric-value {
-        font-size: 32px;
-        font-weight: 700;
-        margin: 0;
-        color: #FFB347;
-    }
-    .metric-label {
-        color: #94a3b8;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-    .metric-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #1e293b;
-    }
-    .metric-row-last {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-    }
-    .metric-key {
-        color: #94a3b8;
-    }
-    .metric-value-green {
-        color: #4ECCA3;
-        font-weight: bold;
-    }
-    .metric-value-blue {
-        color: #00D2FF;
-        font-weight: bold;
-    }
-    .metric-value-orange {
-        color: #FFB347;
-        font-weight: bold;
-    }
-    .section-title {
-        color: #4ECCA3;
-        font-family: 'Orbitron', sans-serif;
-        margin-bottom: 10px;
-        font-size: 14px;
-    }
-    .interpretation-text {
-        margin: 5px 0;
-        font-size: 13px;
-    }
-    hr {
-        margin: 15px 0;
-        border-color: #1e293b;
-    }
-    @keyframes pulse-glow {
-        0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
-        100% { transform: scale(1.04); filter: drop-shadow(0 0 15px rgba(0,210,255,0.5)); }
+    div[data-testid="stMetric"] {
+        background: #0d111a !important;
+        border-left: 4px solid #00D2FF !important;
+        border-radius: 12px !important;
+        padding: 20px !important;
     }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -318,7 +170,7 @@ def format_percentage(value):
 # --- VENTANAS EMERGENTES DE PROCESAMIENTO (MODALES) ---
 @st.dialog("⚙️ SISTEMA DE DATOS")
 def modal_generar_data(size):
-    st.markdown("<p style='font-family:\"Orbitron\"; color:#00D2FF;'>SINTETIZANDO BIG DATA...</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-family:Orbitron; color:#00D2FF;'>SINTETIZANDO BIG DATA...</p>", unsafe_allow_html=True)
     progress_bar = st.progress(0)
     status_text = st.empty()
     
@@ -334,7 +186,7 @@ def modal_generar_data(size):
 
 @st.dialog("🧠 PROCESAMIENTO NEURAL")
 def modal_optimizar_modelos():
-    st.markdown("<p style='font-family:\"Orbitron\"; color:#4ECCA3;'>OPTIMIZANDO CAPAS DE DECISIÓN...</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-family:Orbitron; color:#4ECCA3;'>OPTIMIZANDO CAPAS DE DECISIÓN...</p>", unsafe_allow_html=True)
     with st.spinner("Computando matrices de covarianza..."):
         time.sleep(1.5)
     
@@ -464,10 +316,10 @@ def create_launch_analyzer():
         """, unsafe_allow_html=True)
         
         col1, col2, col3, col4 = st.columns(4)
-        col1.metric("CLIENTES POTENCIALES", f"{res['estimated_buyers']:,}", help="Estimación de compradores en el mercado objetivo")
-        col2.metric("RATIO DE CONVERSIÓN", format_percentage(res['purchase_percentage']), help="% del mercado objetivo que compraría")
-        col3.metric("ROI ESTIMADO", format_percentage(res['estimated_roi']), delta="vs umbral" if res['estimated_roi'] > 0 else None)
-        col4.metric("TAMAÑO DE MUESTRA", f"{sample_size:,}", help="Perfiles analizados")
+        col1.metric("CLIENTES POTENCIALES", f"{res['estimated_buyers']:,}")
+        col2.metric("RATIO DE CONVERSIÓN", format_percentage(res['purchase_percentage']))
+        col3.metric("ROI ESTIMADO", format_percentage(res['estimated_roi']))
+        col4.metric("TAMAÑO DE MUESTRA", f"{sample_size:,}")
         
         st.markdown("---")
         
@@ -537,105 +389,57 @@ def create_launch_analyzer():
                 ))
                 
                 fig_elasticidad.update_layout(
-                    title=dict(
-                        text="<b>Curva de Demanda vs Ingresos Totales</b>",
-                        font=dict(size=16, color='#e2e8f0', family='Orbitron'),
-                        x=0.05
-                    ),
-                    xaxis=dict(
-                        title=dict(text="<b>Precio del Producto (COP)</b>", font=dict(size=12, color='#94a3b8')),
-                        tickformat=',.0f',
-                        tickfont=dict(size=11, color='#cbd5e1'),
-                        gridcolor='rgba(255,255,255,0.08)',
-                        showgrid=True,
-                        zeroline=False
-                    ),
-                    yaxis=dict(
-                        title=dict(text="<b>Unidades Demandadas</b>", font=dict(size=12, color='#00D2FF')),
-                        tickfont=dict(size=11, color='#cbd5e1'),
-                        gridcolor='rgba(255,255,255,0.08)',
-                        showgrid=True,
-                        zeroline=False,
-                        side='left'
-                    ),
-                    yaxis2=dict(
-                        title=dict(text="<b>Ingresos Totales (COP)</b>", font=dict(size=12, color='#4ECCA3')),
-                        tickfont=dict(size=11, color='#cbd5e1'),
-                        tickformat=',.0f',
-                        side='right',
-                        overlaying='y',
-                        showgrid=False
-                    ),
+                    title=dict(text="Curva de Demanda vs Ingresos Totales", font=dict(size=14)),
+                    xaxis=dict(title="Precio del Producto (COP)", tickformat=',.0f'),
+                    yaxis=dict(title="Unidades Demandadas", side='left'),
+                    yaxis2=dict(title="Ingresos Totales (COP)", tickformat=',.0f', side='right', overlaying='y'),
                     template="plotly_dark",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)',
                     height=450,
                     hovermode='x unified',
-                    legend=dict(
-                        orientation='h',
-                        yanchor='bottom',
-                        y=1.02,
-                        xanchor='right',
-                        x=1,
-                        bgcolor='rgba(13,17,26,0.8)',
-                        bordercolor='rgba(255,255,255,0.1)',
-                        borderwidth=1,
-                        font=dict(size=11)
-                    ),
-                    margin=dict(l=60, r=80, t=80, b=50)
+                    legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
                 )
                 
                 st.plotly_chart(fig_elasticidad, use_container_width=True)
             
             with col_e2:
-                # Panel simplificado sin HTML complejo
-                st.markdown(f"""
-                <div class="metric-panel">
-                    <div class="metric-title">🎯 PRECIO ÓPTIMO</div>
-                    <div class="metric-value">{format_cop(precio_optimo)}</div>
-                    <div class="metric-label">Maximiza ingresos totales</div>
+                # Usando componentes nativos de Streamlit en lugar de HTML personalizado
+                with st.container(border=True):
+                    st.markdown("**🎯 PRECIO ÓPTIMO**")
+                    st.markdown(f"<p style='font-size:32px; font-weight:700; color:#FFB347;'>{format_cop(precio_optimo)}</p>", unsafe_allow_html=True)
+                    st.caption("Maximiza ingresos totales")
                     
-                    <hr>
+                    st.divider()
                     
-                    <div class="section-title">📊 MÉTRICAS CLAVE</div>
+                    st.markdown("**📊 MÉTRICAS CLAVE**")
+                    col_a, col_b = st.columns([1, 1])
+                    with col_a:
+                        st.markdown("Ingreso Máximo:")
+                        st.markdown("Demanda Óptima:")
+                        st.markdown("Elasticidad Precio:")
+                    with col_b:
+                        st.markdown(f"<span style='color:#4ECCA3; font-weight:bold;'>{format_cop(revenue_optimo)}</span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='color:#00D2FF; font-weight:bold;'>{demanda_optima:,.0f} und</span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='color:#FFB347; font-weight:bold;'>{elasticidad_arco:.2f}</span>", unsafe_allow_html=True)
                     
-                    <div class="metric-row">
-                        <span class="metric-key">Ingreso Máximo:</span>
-                        <span class="metric-value-green">{format_cop(revenue_optimo)}</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-key">Demanda Óptima:</span>
-                        <span class="metric-value-blue">{demanda_optima:,.0f} und</span>
-                    </div>
-                    <div class="metric-row-last">
-                        <span class="metric-key">Elasticidad Precio:</span>
-                        <span class="metric-value-orange">{elasticidad_arco:.2f}</span>
-                    </div>
+                    st.divider()
                     
-                    <hr>
+                    st.markdown("**⚡ INTERPRETACIÓN**")
+                    if elasticidad_arco > 1:
+                        st.markdown("✅ Demanda **elástica** - Pequeños cambios en precio afectan significativamente la demanda.")
+                    elif elasticidad_arco < 0.5:
+                        st.markdown("📌 Demanda **inelástica** - Los consumidores son poco sensibles al precio.")
+                    else:
+                        st.markdown("⚖️ Demanda **elasticidad unitaria** - Cambios proporcionales en precio y demanda.")
                     
-                    <div class="section-title">⚡ INTERPRETACIÓN</div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                if elasticidad_arco > 1:
-                    st.markdown('<p class="interpretation-text">✅ Demanda <b>elástica</b> - Pequeños cambios en precio afectan significativamente la demanda.</p>', unsafe_allow_html=True)
-                elif elasticidad_arco < 0.5:
-                    st.markdown('<p class="interpretation-text">📌 Demanda <b>inelástica</b> - Los consumidores son poco sensibles al precio.</p>', unsafe_allow_html=True)
-                else:
-                    st.markdown('<p class="interpretation-text">⚖️ Demanda <b>elasticidad unitaria</b> - Cambios proporcionales en precio y demanda.</p>', unsafe_allow_html=True)
-                
-                st.markdown("<hr>", unsafe_allow_html=True)
-                st.markdown('<p class="section-title">💡 ESTRATEGIA RECOMENDADA</p>', unsafe_allow_html=True)
-                
-                if precio_optimo > st.session_state.base_price * 1.1:
-                    st.markdown(f'<p class="interpretation-text">✅ El mercado tolera un precio <b>superior</b> (+{((precio_optimo/st.session_state.base_price)-1)*100:.0f}%). Considere reposicionamiento <b>premium</b>.</p>', unsafe_allow_html=True)
-                elif precio_optimo < st.session_state.base_price * 0.9:
-                    st.markdown(f'<p class="interpretation-text">⚠️ El precio actual es <b>elevado</b> (óptimo es -{((1-precio_optimo/st.session_state.base_price))*100:.0f}%). Evaluar reducción para <b>maximizar volumen</b>.</p>', unsafe_allow_html=True)
-                else:
-                    st.markdown('<p class="interpretation-text">✅ El precio base está <b>alineado</b> con el óptimo de mercado. Excelente estrategia de pricing.</p>', unsafe_allow_html=True)
-                
-                st.markdown("</div>", unsafe_allow_html=True)
+                    st.divider()
+                    
+                    st.markdown("**💡 ESTRATEGIA RECOMENDADA**")
+                    if precio_optimo > st.session_state.base_price * 1.1:
+                        st.markdown(f"✅ El mercado tolera un precio **superior** (+{((precio_optimo/st.session_state.base_price)-1)*100:.0f}%). Considere reposicionamiento **premium**.")
+                    elif precio_optimo < st.session_state.base_price * 0.9:
+                        st.markdown(f"⚠️ El precio actual es **elevado** (óptimo es -{((1-precio_optimo/st.session_state.base_price))*100:.0f}%). Evaluar reducción para **maximizar volumen**.")
+                    else:
+                        st.markdown("✅ El precio base está **alineado** con el óptimo de mercado. Excelente estrategia de pricing.")
         
         if 'segment_analysis' in st.session_state and st.session_state.segment_analysis:
             st.markdown("### 👥 Desglose por Perfil de Cliente")
@@ -655,33 +459,24 @@ def create_launch_analyzer():
                         marker_color=seg_df['Intención de Compra'],
                         marker_colorscale=[[0, '#0072FF'], [1, '#4ECCA3']],
                         text=seg_df['Intención de Compra'].apply(lambda x: f"{x:.1f}%"),
-                        textposition='outside',
-                        textfont=dict(size=12, color='white')
+                        textposition='outside'
                     )
                 ])
                 fig_seg.update_layout(
-                    title=dict(text="<b>Intención de Compra por Segmento</b>", font=dict(size=14)),
-                    xaxis_title="Segmento de Mercado",
+                    title="Intención de Compra por Segmento",
                     yaxis_title="Intención de Compra (%)",
-                    yaxis=dict(range=[0, max(seg_df['Intención de Compra']) * 1.15]),
                     template="plotly_dark",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    height=400,
-                    showlegend=False
+                    height=400
                 )
                 st.plotly_chart(fig_seg, use_container_width=True)
             
             with col_s2:
                 top_segment = seg_df.iloc[0]
-                st.markdown(f"""
-                <div class="metric-panel" style="border-color: rgba(78,204,163,0.3);">
-                    <div class="section-title" style="color:#4ECCA3;">🏆 BUYER PERSONA DOMINANTE</div>
-                    <div style="font-size:20px; font-weight:700; margin:0;">{top_segment['Segmento']}</div>
-                    <div style="font-size:32px; color:#00D2FF; margin:10px 0 5px 0;">{top_segment['Intención de Compra']:.1f}%</div>
-                    <div style="color:#94a3b8; font-size:11px;">Intención de compra | Muestra: {top_segment['Muestra']:,} perfiles</div>
-                </div>
-                """, unsafe_allow_html=True)
+                with st.container(border=True):
+                    st.markdown("**🏆 BUYER PERSONA DOMINANTE**")
+                    st.markdown(f"<p style='font-size:20px; font-weight:700;'>{top_segment['Segmento']}</p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:32px; color:#00D2FF;'>{top_segment['Intención de Compra']:.1f}%</p>", unsafe_allow_html=True)
+                    st.caption(f"Intención de compra | Muestra: {top_segment['Muestra']:,} perfiles")
         
         st.markdown("### 💰 Proyección Financiera")
         st.caption(f"Estimación a {st.session_state.meses_estudio} meses | Tasa de costo variable: {st.session_state.cost_ratio_launch * 100:.1f}%")
@@ -704,9 +499,9 @@ def create_launch_analyzer():
         col_p2.metric("Margen Mensual Neto", format_cop(margen_mensual), delta="antes de impuestos")
         col_p3.metric("Inversión Inicial Estimada", format_cop(inversion_inicial))
         if break_even:
-            col_p4.metric("Punto de Equilibrio", f"{break_even} meses", help="Meses para recuperar inversión")
+            col_p4.metric("Punto de Equilibrio", f"{break_even} meses")
         else:
-            col_p4.metric("Punto de Equilibrio", "> 36 meses", help="No se alcanza en el horizonte proyectado")
+            col_p4.metric("Punto de Equilibrio", "> 36 meses")
         
         textos_barras = [format_cop(val) for val in flujo_mensual]
         
@@ -734,21 +529,16 @@ def create_launch_analyzer():
         if break_even:
             fig_proy.add_vline(x=break_even, line_dash="dash", line_color="#FFB347", opacity=0.9, line_width=2,
                                annotation_text=f"⚡ Break-even mes {break_even}",
-                               annotation_position="top",
-                               annotation_font_size=11,
-                               annotation_font_color="#FFB347")
+                               annotation_position="top")
         
         fig_proy.update_layout(
-            title=dict(text="<b>Flujo de Caja Proyectado</b>", font=dict(size=14)),
-            xaxis=dict(title="Mes", tickmode='linear', dtick=3),
-            yaxis=dict(title="Flujo Mensual (COP)", tickformat=',.0f'),
-            yaxis2=dict(title="Flujo Acumulado (COP)", tickformat=',.0f', overlaying='y', side='right'),
+            title="Flujo de Caja Proyectado",
+            xaxis_title="Mes",
+            yaxis_title="Flujo Mensual (COP)",
+            yaxis2_title="Flujo Acumulado (COP)",
+            yaxis2=dict(overlaying='y', side='right'),
             template="plotly_dark",
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=450,
-            hovermode='x unified',
-            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
+            height=450
         )
         st.plotly_chart(fig_proy, use_container_width=True)
         
@@ -775,16 +565,7 @@ def create_launch_analyzer():
         
         riesgo_df = pd.DataFrame(riesgos, columns=["Nivel", "Riesgo Identificado", "Mitigación Recomendada"])
         
-        st.dataframe(
-            riesgo_df, 
-            use_container_width=True, 
-            hide_index=True,
-            column_config={
-                "Nivel": st.column_config.TextColumn("Nivel", width="small"),
-                "Riesgo Identificado": st.column_config.TextColumn("Riesgo Identificado", width="medium"),
-                "Mitigación Recomendada": st.column_config.TextColumn("Mitigación Recomendada", width="large")
-            }
-        )
+        st.dataframe(riesgo_df, use_container_width=True, hide_index=True)
         
         st.markdown("---")
         
@@ -906,14 +687,14 @@ def create_investment_analyzer():
             fig_sens = go.Figure()
             fig_sens.add_trace(go.Bar(x=escenarios, y=valores_ingreso, name="Ingresos Proyectados", marker_color="#00D2FF"))
             fig_sens.add_trace(go.Bar(x=escenarios, y=valores_margen, name="Margen Neto Libre", marker_color="#4ECCA3"))
-            fig_sens.update_layout(barmode='group', template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=280, margin=dict(l=20, r=20, t=40, b=20))
+            fig_sens.update_layout(barmode='group', template="plotly_dark", height=280)
             st.plotly_chart(fig_sens, use_container_width=True)
 
 
 # --- INTERFAZ GENERAL DEL DASHBOARD ---
 def run_professional_dashboard():
     st.markdown("<h1 class='ai-title'>CORE ENGINE // ESTRATEGA IA</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:12px; font-family:\"Orbitron\";'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #64748b; margin-top:-5px; font-size:12px; font-family:Orbitron;'>SISTEMA AUTÓNOMO DE PREDICCIÓN RETAIL</p>", unsafe_allow_html=True)
     
     tabs = st.tabs(["Consola Central", "Vectores de Datos", "Diagnóstico ML", "Simulaciones"])
     
@@ -954,18 +735,18 @@ def run_professional_dashboard():
             with g_col1:
                 counts, bins = np.histogram(df['edad'], bins=25)
                 bin_centers = 0.5 * (bins[:-1] + bins[1:])
-                fig_edad = go.Figure(data=[go.Bar(x=bin_centers, y=counts, marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']], showscale=True))])
-                fig_edad.update_layout(title="DISTRIBUCIÓN PORCENTUAL DE EDADES", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
+                fig_edad = go.Figure(data=[go.Bar(x=bin_centers, y=counts, marker=dict(color=counts, colorscale=[[0, '#0072FF'], [0.5, '#00D2FF'], [1, '#4ECCA3']]))])
+                fig_edad.update_layout(title="DISTRIBUCIÓN DE EDADES", template="plotly_dark", height=380)
                 st.plotly_chart(fig_edad, use_container_width=True)
             with g_col2:
                 city_counts = df['ciudad'].value_counts().reset_index()
                 city_counts.columns = ['ciudad', 'count']
-                fig_ciudad = go.Figure(data=[go.Pie(labels=city_counts['ciudad'], values=city_counts['count'], hole=.4, marker=dict(colors=['#00D2FF', '#0072FF', '#4ECCA3', '#3b82f6', '#10b981', '#1e293b']))])
-                fig_ciudad.update_layout(title="PARTICIPACIÓN PORCENTUAL POR CIUDAD", template="plotly_dark", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=380)
+                fig_ciudad = go.Figure(data=[go.Pie(labels=city_counts['ciudad'], values=city_counts['count'], hole=.4)])
+                fig_ciudad.update_layout(title="PARTICIPACIÓN POR CIUDAD", template="plotly_dark", height=380)
                 st.plotly_chart(fig_ciudad, use_container_width=True)
             
             st.markdown("---")
-            st.markdown("<h3 style='font-family:\"Orbitron\"; color:#00D2FF; font-size:18px; letter-spacing:1px; margin-bottom:15px;'><i class='fa-solid fa-database'></i> MATRIZ DE VECTORES DE DATOS EN TIEMPO REAL</h3>", unsafe_allow_html=True)
+            st.markdown("### 📋 MATRIZ DE VECTORES DE DATOS")
             st.dataframe(df.head(20), use_container_width=True)
         else:
             st.info("Consola vacía. Por favor inicie la carga de Big Data en la Consola Central.")
@@ -978,19 +759,19 @@ def run_professional_dashboard():
         
         col1, col2 = st.columns(2)
         with col1:
-            fig_acc = go.Figure(go.Indicator(mode="gauge+number", value=acc_val * 100, title={'text': "PRECISIÓN SEGMENTACIÓN", 'font': {'family': 'Orbitron', 'color': '#00D2FF', 'size': 16}}, gauge={'axis': {'range': [0, 100], 'tickcolor': "#00D2FF"}, 'bar': {'color': "#00D2FF"}, 'bgcolor': "rgba(0,0,0,0)"}, number={'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}))
-            fig_acc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=300)
+            fig_acc = go.Figure(go.Indicator(mode="gauge+number", value=acc_val * 100, title={'text': "PRECISIÓN SEGMENTACIÓN"}, gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#00D2FF"}}, number={'suffix': "%"}))
+            fig_acc.update_layout(height=300)
             st.plotly_chart(fig_acc, use_container_width=True)
         with col2:
-            fig_r2 = go.Figure(go.Indicator(mode="gauge+number", value=r2_val * 100, title={'text': "CONFIANZA DE IMPACTO (R²)", 'font': {'family': 'Orbitron', 'color': '#4ECCA3', 'size': 16}}, gauge={'axis': {'range': [0, 100], 'tickcolor': "#4ECCA3"}, 'bar': {'color': "#4ECCA3"}, 'bgcolor': "rgba(0,0,0,0)"}, number={'suffix': "%", 'font': {'color': 'white', 'family': 'Orbitron', 'size': 35}}))
-            fig_r2.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}, height=300)
+            fig_r2 = go.Figure(go.Indicator(mode="gauge+number", value=r2_val * 100, title={'text': "CONFIANZA DE IMPACTO (R²)"}, gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#4ECCA3"}}, number={'suffix': "%"}))
+            fig_r2.update_layout(height=300)
             st.plotly_chart(fig_r2, use_container_width=True)
         
-        st.markdown("<br>#### LOG DE ENTRENAMIENTO CRÍTICO", unsafe_allow_html=True)
+        st.markdown("#### LOG DE ENTRENAMIENTO")
         c1, c2, c3 = st.columns(3)
-        c1.markdown(f"<div class='diag-card'><h5>Última Optimización</h5><h2 style='color:#00D2FF; font-family:\"Orbitron\"; margin:5px 0 0 0;'>{time_log}</h2></div>", unsafe_allow_html=True)
-        c2.markdown("<div class='diag-card'><h5>Algoritmo Base</h5><h2 style='color:#4ECCA3; font-family:\"Orbitron\"; margin:5px 0 0 0;'>RF-Regressor</h2></div>", unsafe_allow_html=True)
-        c3.markdown("<div class='diag-card'><h5>Estatus Operativo</h5><h2 style='color:white; font-family:\"Orbitron\"; margin:5px 0 0 0;'>OPTIMIZADO</h2></div>", unsafe_allow_html=True)
+        c1.metric("Última Optimización", time_log)
+        c2.metric("Algoritmo Base", "RF-Regressor")
+        c3.metric("Estatus Operativo", "OPTIMIZADO")
     
     with tabs[3]:
         if st.session_state.customer_data is not None and st.session_state.ai_model.is_trained:
@@ -1026,13 +807,17 @@ def main():
         st.markdown("<br><br><br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1, 1.8, 1])
         with col2:
-            st.markdown('<div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; box-shadow:0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(0,210,255,0.1); text-align:center; max-width:440px; margin:0 auto;"><div style="font-size:65px; background:linear-gradient(135deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; display:inline-block; animation:pulse-glow 3s infinite alternate;"><i class="fa-solid fa-circle-nodes"></i></div><h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:\'Orbitron\', sans-serif; margin:5px 0 10px 0; font-weight:700; border:none; padding:0; background-color:transparent; line-height:1.2;">ESTRATEGA IA</h1><p style="letter-spacing:4px; color:#4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight:700; margin-bottom:25px; background:transparent; border:none; padding:0;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p></div>', unsafe_allow_html=True)
-            st.markdown('<div class="login-btn-container">', unsafe_allow_html=True)
+            st.markdown("""
+            <div style="background:#0d111a; border:1px solid rgba(0,210,255,0.25); padding:40px 35px; border-radius:20px; text-align:center;">
+                <div style="font-size:65px; margin-bottom:15px;">🧠</div>
+                <h1 style="font-size:32px; background:linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Orbitron', sans-serif;">ESTRATEGA IA</h1>
+                <p style="letter-spacing:4px; color:#4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
+            </div>
+            """, unsafe_allow_html=True)
             if st.button("🔑 INICIAR SESIÓN", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
     else:
         with st.sidebar:
             st.markdown("### 🌐 ENGINE ACCESS")
