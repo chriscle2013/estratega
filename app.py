@@ -1,4 +1,4 @@
-# app.py - Versión 4.1 PRODUCTION ENGINE (STABLE & LOGO INTEGRATED)
+# app.py - Versión 4.2 PRODUCTION ENGINE (FULL CODE & LOGIN FIXED)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -487,27 +487,58 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
+        st.markdown("""
+            <style>
+            /* Inyección limpia de la caja contenedora del Login */
+            .login-card-container {
+                background: #0d111a !important; 
+                border: 1px solid rgba(0, 210, 255, 0.2) !important; 
+                padding: 45px 35px !important; 
+                border-radius: 20px !important; 
+                text-align: center !important;
+                box-shadow: 0 4px 35px rgba(0, 210, 255, 0.15) !important;
+            }
+            /* Forzar el estilo premium sobre el botón nativo de login */
+            div.element-container:has(button:contains("INICIAR SESIÓN")) button {
+                width: 100% !important;
+                background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
+                padding: 14px 20px !important;
+                font-size: 14px !important;
+                margin-top: 15px !important;
+            }
+            /* Asegurar que la imagen se renderice centrada */
+            [data-testid="stImage"] {
+                display: flex !important;
+                justify-content: center !important;
+                margin: 0 auto !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 2, 1])
+        col1, col2, col3 = st.columns([1, 1.6, 1])
+        
         with col2:
-            # Contenedor del Login Box estilizado exactamente igual al original
-            st.markdown('<div style="background: #0d111a; border: 1px solid rgba(0, 210, 255, 0.2); padding: 50px 40px; border-radius: 20px; text-align: center;">', unsafe_allow_html=True)
+            # Abrimos el layout de la tarjeta corporativa
+            st.markdown('<div class="login-card-container">', unsafe_allow_html=True)
             
-            # Renderizado nativo y centrado del Logo (.webp) desde el directorio raíz de la app
-            st.image("logo_estratega.webp", width=110)
+            # 1. El Logo se posiciona arriba de manera simétrica y con un tamaño ideal
+            st.image("logo_estratega.webp", width=100)
             
-            # Título y Subtítulo de Estratega IA
+            # 2. Textos del Core Engine inyectados limpiamente
             st.markdown("""
-                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin-top: 15px;">ESTRATEGA IA</h1>
-                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Orbitron', sans-serif; font-size:11px; margin-bottom: 25px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
-                </div>
+                <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin-top: 15px; margin-bottom: 5px;">ESTRATEGA IA</h1>
+                <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 25px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
             """, unsafe_allow_html=True)
             
-            st.markdown("<br>", unsafe_allow_html=True)
+            # 3. El botón nativo queda perfectamente anidado DENTRO de la estructura de la tarjeta
             if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
+                
+            # Cerramos la tarjeta de Login de manera segura
+            st.markdown('</div>', unsafe_allow_html=True)
     else:
         with st.sidebar:
             st.markdown("### 🌐 ENGINE ACCESS")
