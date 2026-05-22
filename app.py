@@ -1,5 +1,5 @@
-# app.py - Versión 3.4 HOTFIX BUG TRACKER
-# Corrige el error de atributo en la paleta de colores de Plotly (Cyanal)
+# app.py - Versión 3.5 PRODUCTION ENGINE
+# Código completo blindado sin dependencias de paletas de strings para evitar AttributeError.
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -386,14 +386,14 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # 2. Histograma de Edades con el Atributo Corregido (Cyanal)
+            # 2. Histograma de Edades con Lista de Colores Fija Blindada contra Errores
             fig_edad = px.histogram(
                 df, x="edad", nbins=25,
                 title="DISTRIBUCIÓN PORCENTUAL DE EDADES (GRADIENTE DE DENSIDAD)",
                 labels={'edad': 'Edad (Años)', 'count': 'Frecuencia'},
                 template="plotly_dark",
                 color="edad",  
-                color_continuous_scale=px.colors.sequential.Cyanal
+                color_continuous_scale=["#00D2FF", "#0072FF", "#4ECCA3"]  # Mapeo manual seguro
             )
             fig_edad.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=400)
             st.plotly_chart(fig_edad, use_container_width=True)
@@ -405,7 +405,7 @@ def run_professional_dashboard():
                 df, names="educacion",
                 title="COMPOSICIÓN POR NIVEL DE EDUCACIÓN",
                 template="plotly_dark",
-                color_discrete_sequence=px.colors.sequential.Agsunset
+                color_discrete_sequence=["#FF5E5E", "#FFAA00", "#00D2FF", "#4ECCA3", "#94A3B8"]
             )
             fig_edu.update_traces(
                 textposition='outside', 
