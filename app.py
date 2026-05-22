@@ -1,4 +1,4 @@
-# app.py - Versión 4.5 PRODUCTION ENGINE (FULL CODE & LOGIN UI REBUILT)
+# app.py - Versión 5.0 PRODUCTION ENGINE (FULL CODE & BLINDED LOGIN UI)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -146,8 +146,8 @@ def apply_professional_ai_theme():
             font-size: 24px !important;
         }
 
-        /* Botones del Sistema (General) */
-        .stButton>button {
+        /* Botones generales de la aplicación post-login */
+        .stButton>button:not([key="btn_login_fallback"]) {
             font-family: 'Orbitron', sans-serif !important;
             background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
             color: white !important;
@@ -159,12 +159,7 @@ def apply_professional_ai_theme():
             box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
             transition: all 0.3s ease !important;
         }
-        .stButton>button:hover {
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.5) !important;
-            transform: translateY(-1px);
-        }
 
-        /* Contenedores de Reportes Financieros */
         .report-box {
             background: #0d111a;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -206,7 +201,61 @@ def apply_professional_ai_theme():
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
+
+        /* --- CONTENEDOR INTEGRAL DE LOGIN SIN QUIPOS --- */
+        .full-login-card {
+            background: #0d111a;
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 210, 255, 0.1);
+            text-align: center;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .login-icon-web {
+            font-size: 65px;
+            background: linear-gradient(135deg, #00D2FF, #4ECCA3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
+            100% { transform: scale(1.04); filter: drop-shadow(0 0 15px rgba(0,210,255,0.5)); }
+        }
+
+        /* Botón de Login 100% nativo en HTML */
+        .html-login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%);
+            color: #ffffff !important;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 30px;
+            display: block;
+            text-decoration: none;
+        }
+        .html-login-btn:hover {
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+            transform: translateY(-2px);
+            color: #ffffff !important;
+        }
         </style>
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     """, unsafe_allow_html=True)
 
 # --- FORMATOS AUXILIARES ---
@@ -487,86 +536,31 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # 1. Inyección de CSS ultra-preciso para la tarjeta de Login sin romper el Layout de Streamlit
-        st.markdown("""
-            <style>
-            /* Contenedor unificado para la tarjeta de login */
-            .login-box {
-                background: #0d111a !important;
-                border: 1px solid rgba(0, 210, 255, 0.25) !important;
-                padding: 40px 30px 20px 30px !important;
-                border-radius: 20px !important;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 210, 255, 0.1) !important;
-                text-align: center !important;
-                max-width: 450px;
-                margin: 0 auto !important;
-            }
-
-            /* Estilo para el icono web animado */
-            .login-icon-web {
-                font-size: 65px;
-                background: linear-gradient(135deg, #00D2FF, #4ECCA3);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                margin-bottom: 15px;
-                display: inline-block;
-                animation: pulse-glow 3s infinite alternate;
-            }
-
-            @keyframes pulse-glow {
-                0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,210,255,0.2)); }
-                100% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(0,210,255,0.6)); }
-            }
-
-            /* Forzar el botón nativo de Streamlit para que calce perfecto abajo de la tarjeta */
-            div.element-container button[key="btn_login"] {
-                width: 100% !important;
-                max-width: 450px !important;
-                margin: 15px auto 0 auto !important;
-                display: block !important;
-                background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
-                color: white !important;
-                border: none !important;
-                border-radius: 8px !important;
-                padding: 14px 20px !important;
-                font-family: 'Orbitron', sans-serif !important;
-                font-weight: 700 !important;
-                font-size: 13px !important;
-                letter-spacing: 1px !important;
-                box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3) !important;
-                transition: all 0.3s ease !important;
-            }
-            
-            div.element-container button[key="btn_login"]:hover {
-                box-shadow: 0 0 25px rgba(0, 210, 255, 0.6) !important;
-                transform: translateY(-2px) !important;
-            }
-            </style>
-            
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        """, unsafe_allow_html=True)
-
         st.markdown("<br><br><br>", unsafe_allow_html=True)
         
-        # Estructura limpia usando columnas para centrar la tarjeta en la pantalla
         col1, col2, col3 = st.columns([1, 1.8, 1])
         
         with col2:
-            # 2. Todo el diseño visual unificado en un solo bloque HTML sin quiebres
+            # 1. TODO el Login unificado en una sola plantilla de texto HTML sin romper el DOM
             st.markdown("""
-                <div class="login-box">
+                <div class="full-login-card">
                     <div class="login-icon-web"><i class="fa-solid fa-brain"></i></div>
                     
-                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin: 5px 0; font-weight: 700;">ESTRATEGA IA</h1>
+                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin: 5px 0 10px 0; font-weight: 700; border: none; padding: 0; background-color: transparent;">ESTRATEGA IA</h1>
                     
-                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 5px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
+                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 5px; background: none;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
+                    
+                    <a href="?login=true" class="html-login-btn">🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE</a>
                 </div>
             """, unsafe_allow_html=True)
             
-            # 3. El botón nativo de Streamlit se acopla abajo con un ID único para el CSS
-            if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True, key="btn_login"):
+            # 2. Interceptamos la interacción del botón HTML leyendo los parámetros de la URL de Streamlit
+            query_params = st.query_params
+            if "login" in query_params:
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
+                # Limpiamos los parámetros para mantener la URL limpia y recargamos
+                st.query_params.clear()
                 st.rerun()
             
     else:
