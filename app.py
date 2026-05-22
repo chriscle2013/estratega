@@ -1,4 +1,4 @@
-# app.py - Versión 8.1 PRODUCTION ENGINE (Colores RGBA para Plotly)
+# app.py - Versión 8.2 PRODUCTION ENGINE (Inputs con fondo oscuro)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -83,7 +83,7 @@ class AIModel:
         }
 
 
-# --- INYECCIÓN DE CSS MEJORADO (Textos en #ffffff8a) ---
+# --- INYECCIÓN DE CSS MEJORADO (Con fondos oscuros para inputs) ---
 def apply_professional_ai_theme():
     st.markdown("""
     <style>
@@ -157,15 +157,62 @@ def apply_professional_ai_theme():
         color: #ffffff !important;
     }
     
-    /* Selectores */
-    .stSelectbox div[data-baseweb="select"] span {
-        color: rgba(255, 255, 255, 0.54) !important;
+    /* ========== CORRECCIÓN DE INPUTS (FONDO OSCURO) ========== */
+    /* Number Input */
+    .stNumberInput input, .stTextInput input {
+        background-color: #1a1f2e !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        border-radius: 8px !important;
     }
     
-    /* Input numbers */
-    .stNumberInput input, .stTextInput input {
-        color: rgba(255, 255, 255, 0.54) !important;
+    .stNumberInput input:focus, .stTextInput input:focus {
+        border-color: #00D2FF !important;
+        box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2) !important;
     }
+    
+    /* Selectbox */
+    .stSelectbox div[data-baseweb="select"] > div {
+        background-color: #1a1f2e !important;
+        border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        border-radius: 8px !important;
+    }
+    
+    .stSelectbox div[data-baseweb="select"] span {
+        color: #ffffff !important;
+    }
+    
+    /* Slider */
+    .stSlider div[data-baseweb="slider"] div[role="slider"] {
+        background-color: #00D2FF !important;
+    }
+    
+    /* Multiselect */
+    .stMultiSelect div[data-baseweb="select"] > div {
+        background-color: #1a1f2e !important;
+        border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        border-radius: 8px !important;
+    }
+    
+    .stMultiSelect div[data-baseweb="select"] span {
+        color: #ffffff !important;
+    }
+    
+    /* Option menu (dropdown) */
+    div[data-baseweb="popover"] div[role="listbox"] {
+        background-color: #1a1f2e !important;
+        border: 1px solid rgba(0, 210, 255, 0.3) !important;
+    }
+    
+    div[data-baseweb="popover"] div[role="option"] {
+        color: #ffffff !important;
+    }
+    
+    div[data-baseweb="popover"] div[role="option"]:hover {
+        background-color: rgba(0, 210, 255, 0.2) !important;
+    }
+    
+    /* ========== FIN CORRECCIÓN INPUTS ========== */
     
     /* Report boxes */
     .report-box {
@@ -236,6 +283,12 @@ def apply_professional_ai_theme():
     /* Toast y notificaciones */
     .stToast {
         color: rgba(255, 255, 255, 0.54) !important;
+    }
+    
+    /* Containers con borde */
+    .stContainer {
+        background-color: #0d111a;
+        border-radius: 12px;
     }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
