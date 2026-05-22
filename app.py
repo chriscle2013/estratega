@@ -1,5 +1,5 @@
-# app.py - Versión 3.7 PRODUCTION ENGINE (STABLE GRADIENT)
-# Corrige la visualización del histograma usando un gradiente dinámico real por densidad.
+# app.py - Versión 3.8 PRODUCTION ENGINE (ENTERPRISE FINANCIAL REPORTING)
+# Rediseña el output de simulaciones para entregar un análisis de CAPEX viable para directivos.
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -59,6 +59,7 @@ class AIModel:
         }
         
     def evaluate_infrastructure_investment(self, test_data, investment_required, variable_cost_ratio):
+        # Simulación de ingresos basada en la capacidad económica del segmento indexado
         revenue_pot = sum([c['salario'] for c in test_data]) * 0.08
         margin = revenue_pot * (1 - variable_cost_ratio)
         payback = (investment_required / (margin / 12)) if margin > 0 else 99
@@ -71,7 +72,8 @@ class AIModel:
             'projected_annual_income': revenue_pot,
             'contribution_margin': margin,
             'payback_months': payback,
-            'profitability_percentage': profitability
+            'profitability_percentage': profitability,
+            'sample_size_evaluated': len(test_data)
         }
 
 # --- INYECCIÓN DE CSS AVANZADO: UI DE SOFTWARE DE IA ---
@@ -300,6 +302,8 @@ def create_investment_analyzer():
                 test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
                 res = st.session_state.ai_model.evaluate_infrastructure_investment(test_c, investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
                 st.session_state.investment_result = res
+                st.session_state.current_cost_ratio = cost_ratio / 100.0
+                st.session_state.current_capex = investment
                 
                 # Motor de Contrapropuesta Estratégica
                 st.session_state.alternativas = []
@@ -321,26 +325,95 @@ def create_investment_analyzer():
 
     if 'investment_result' in st.session_state:
         res = st.session_state.investment_result
+        cost_ratio = st.session_state.current_cost_ratio
+        capex = st.session_state.current_capex
+        
         is_viable = '✅' in res['recommendation']
         header_class = "report-header-success" if is_viable else "report-header-error"
         
+        # 1. BLOQUE PRINCIPAL DE DICTAMEN (CORREGIDO Y AMPLIADO)
         st.markdown(f"""
             <div class="report-box">
                 <h4 class="{header_class}">DICTAMEN EXPLICABLE DE INVERSIÓN FINANCIERA (CAPEX)</h4>
                 <p style="font-size:16px; margin-top:10px;"><b>Análisis de Viabilidad:</b> {res['recommendation']}</p>
+                <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza estadística del modelo predictivo: <b>{res['confidence']:.2f}%</b> basado en {res['sample_size_evaluated']} perfiles económicos válidos en los mercados seleccionados.</p>
             </div>
         """, unsafe_allow_html=True)
         
+        # 2. SECCIÓN DE MÉTRICAS CLAVE
         col1, col2, col3 = st.columns(3)
         col1.metric("INGRESOS ANUALES PROYECTADOS", format_cop(res['projected_annual_income']))
         col2.metric("MARGEN DE CONTRIBUCIÓN NETO", format_cop(res['contribution_margin']))
         col3.metric("PERIODO DE RETORNO (PAYBACK)", f"{res['payback_months']:.1f} Meses")
         
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # 3. VALOR AGREGADO CORPORATIVO: DESGLOSE ANALÍTICO PARA GERENTES
+        c_analisis, c_grafico = st.columns([1, 1])
+        
+        with c_analisis:
+            st.markdown("#### 🔬 DESGLOSE ESTRUCTURAL DEL MODELO")
+            
+            # Tabla de desglose de costos fijos/variables simulados
+            costos_operativos = res['projected_annual_income'] * cost_ratio
+            rentabilidad_anual = (res['contribution_margin'] / capex) * 100
+            
+            data_breakdown = {
+                "Concepto Financiero": [
+                    "Inversión Inicial Requerida (CAPEX)",
+                    "Ingreso Operativo Mensual Est.",
+                    "Costos Variables Estimados (Anual)",
+                    "Margen de Contribución Real (%)",
+                    "Retorno de Inversión Anualizado (ROI)"
+                ],
+                "Valor Estructurado": [
+                    format_cop(capex),
+                    format_cop(res['projected_annual_income'] / 12),
+                    format_cop(costos_operativos),
+                    f"{((1 - cost_ratio)*100):.1f}%",
+                    f"{rentabilidad_anual:.2f}% por año"
+                ]
+            }
+            st.table(pd.DataFrame(data_breakdown))
+            
+            # Nota explicativa de viabilidad gerencial
+            if is_viable:
+                st.success(f"💡 **Criterio de Aprobación:** El proyecto paga su infraestructura en {res['payback_months']:.1f} meses, lo cual se sitúa por debajo del límite corporativo estándar (24 meses). La rentabilidad estimada del {rentabilidad_anual:.1f}% supera el costo de capital promedio ponderado de la industria.")
+            else:
+                st.error(f"⚠️ **Criterio de Rechazo:** El tiempo de recuperación de {res['payback_months']:.1f} meses excede los horizontes máximos tolerables de liquidez. Se recomienda mitigar el riesgo reduciendo el CAPEX inicial o revisando la estructura de costos variables.")
+
+        with c_grafico:
+            st.markdown("#### 📊 ANÁLISIS DE SENSIBILIDAD (ESTRÉS DE MERCADO)")
+            
+            # Simulación de escenarios de riesgo para la toma de decisiones
+            ingreso_base = res['projected_annual_income']
+            escenarios = ["Estresado (-20%)", "Conservador (-10%)", "Base Original", "Optimista (+10%)"]
+            valores_ingreso = [ingreso_base * 0.8, ingreso_base * 0.9, ingreso_base, ingreso_base * 1.1]
+            valores_margen = [v * (1 - cost_ratio) for v in valores_ingreso]
+            
+            fig_sens = go.Figure()
+            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_ingreso, name="Ingresos Proyectados", marker_color="#00D2FF"))
+            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_margen, name="Margen Neto Libre", marker_color="#4ECCA3"))
+            
+            fig_sens.update_layout(
+                title="Impacto en Flujo de Caja según Escenario de Demanda",
+                barmode='group',
+                template="plotly_dark",
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font_family="Rajdhani",
+                height=300,
+                margin=dict(l=20, r=20, t=40, b=20)
+            )
+            st.plotly_chart(fig_sens, use_container_width=True)
+
+        # 4. PLAN DE PIVOTAJE (Si la opción original falló)
         if not is_viable and 'alternativas' in st.session_state and st.session_state.alternativas:
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("""
                 <div style="background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2); padding: 20px; border-radius: 12px;">
                     <h5 style="color:#00D2FF; font-family:'Orbitron'; margin:0 0 10px 0;"><i class="fa-solid fa-compass"></i> PLAN DE PIVOTAJE ESTRATÉGICO AUTOMÁTICO</h5>
+                    <p style="font-size:13px; color:#94a3b8; margin:0;">El mercado seleccionado no cumple con los mínimos de liquidez. El motor de IA identificó plazas geográficas alternativas donde el mismo nivel de inversión inicial genera un retorno óptimo:</p>
                 </div>
             """, unsafe_allow_html=True)
             st.dataframe(pd.DataFrame(st.session_state.alternativas), use_container_width=True)
@@ -386,7 +459,7 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # 2. Histograma Reconstruido con Gradiente de Densidad Dinámico por Frecuencias (Inmune a Fallos)
+            # 2. Histograma Seguro con Gradiente de Densidad Dinámico por Frecuencias (Inmune a Fallos)
             counts, bins = np.histogram(df['edad'], bins=25)
             bin_centers = 0.5 * (bins[:-1] + bins[1:])
             
