@@ -73,11 +73,130 @@ class AIModel:
             'sample_size_evaluated': len(test_data)
         }
 
-# --- INYECCIÓN DE CSS AVANZADO (CORREGIDO SIN TEXTO PLANO) ---
+# --- INYECCIÓN DE CSS NATIVA (CORREGIDA SIN TEXTO PLANO Y CON SOPORTE GLOBAL) ---
 def apply_professional_ai_theme():
-    # Usamos un formato html plano y directo en una sola línea limpia para evitar fallos de renderizado
-    css_code = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');.stApp {background-color: #06070d !important; color: #e2e8f0 !important;}.stTabs [data-baseweb="tab-list"] {gap: 10px; background-color: #0d111a; padding: 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);}.stTabs [data-baseweb="tab"] {font-family: 'Orbitron', sans-serif !important; height: 45px; background-color: transparent; border-radius: 8px; color: #64748b !important; border: none; transition: all 0.3s ease;}.stTabs [aria-selected="true"] {background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important; color: #00D2FF !important; border: 1px solid rgba(0, 210, 255, 0.3) !important;}div[data-testid="stMetric"] {background: #0d111a !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; border-left: 4px solid #00D2FF !important; border-radius: 12px !important; padding: 20px !important;}div[data-testid="stMetric"] [data-testid="stMetricLabel"] {font-family: 'Rajdhani', sans-serif !important; color: #94a3b8 !important; text-transform: uppercase; letter-spacing: 1px;}div[data-testid="stMetric"] [data-testid="stMetricValue"] {font-family: 'Orbitron', sans-serif !important; color: #ffffff !important; font-size: 24px !important;}.stButton>button {font-family: 'Orbitron', sans-serif !important; border-radius: 8px !important; letter-spacing: 1px; transition: all 0.3s ease !important;}.login-frame-container {display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; background-color: #010409; min-height: 70vh;}.login-frame {background-color: #06070d; border: 2px solid #00D2FF; box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 50px 40px; width: 100%; max-width: 550px; text-align: center; margin-bottom: 20px;}.login-icon-box {font-size: 55px; color: #00D2FF; margin-bottom: 15px;}.login-title {font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 700; color: #00D2FF; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px;}.login-subtitle {font-family: 'Rajdhani', sans-serif; font-size: 14px; color: #4ECCA3; text-transform: uppercase; letter-spacing: 5px;}div.login-btn-container button {background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%) !important; color: #ffffff !important; font-family: 'Orbitron', sans-serif !important; font-size: 14px !important; font-weight: 600 !important; border: none !important; padding: 14px 20px !important; width: 100% !important; box-shadow: 0 0 20px rgba(67, 100, 247, 0.4) !important;}div.login-btn-container button:hover {box-shadow: 0 0 30px rgba(0, 210, 255, 0.8) !important; transform: scale(1.01);}</style>"""
-    st.components.v1.html(css_code, height=0, width=0)
+    # Usamos st.html para inyectar estilos directamente en el DOM principal sin iframes
+    st.html("""
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        
+        /* Fondo y Contenedor Principal */
+        .stApp {
+            background-color: #06070d !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* Estilización de Pestañas (Tabs) */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 10px;
+            background-color: #0d111a;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .stTabs [data-baseweb="tab"] {
+            font-family: 'Orbitron', sans-serif !important;
+            height: 45px;
+            background-color: transparent;
+            border-radius: 8px;
+            color: #64748b !important;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(90deg, rgba(0,210,255,0.15), rgba(78,204,163,0.15)) !important;
+            color: #00D2FF !important;
+            border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        }
+
+        /* Bloques de Métricas */
+        div[data-testid="stMetric"] {
+            background: #0d111a !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-left: 4px solid #00D2FF !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+        }
+        div[data-testid="stMetric"] [data-testid="stMetricLabel"] {
+            font-family: 'Rajdhani', sans-serif !important;
+            color: #94a3b8 !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+            font-family: 'Orbitron', sans-serif !important;
+            color: #ffffff !important;
+            font-size: 24px !important;
+        }
+
+        /* Botones del Ecosistema */
+        .stButton>button {
+            font-family: 'Orbitron', sans-serif !important;
+            border-radius: 8px !important;
+            letter-spacing: 1px;
+            transition: all 0.3s ease !important;
+        }
+
+        /* Diseño del Bloque de Login */
+        .login-frame-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background-color: #010409;
+            min-height: 60vh;
+        }
+        .login-frame {
+            background-color: #06070d;
+            border: 2px solid #00D2FF;
+            box-shadow: 0 0 35px rgba(0, 210, 255, 0.2);
+            border-radius: 16px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .login-icon-box {
+            font-size: 55px;
+            color: #00D2FF;
+            margin-bottom: 15px;
+        }
+        .login-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #00D2FF;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+        .login-subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            color: #4ECCA3;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+        div.login-btn-container button {
+            background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%) !important;
+            color: #ffffff !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            border: none !important;
+            padding: 14px 20px !important;
+            width: 100% !important;
+            box-shadow: 0 0 20px rgba(67, 100, 247, 0.4) !important;
+        }
+        div.login-btn-container button:hover {
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.8) !important;
+            transform: scale(1.01);
+        }
+        </style>
+    """)
 
 # --- FORMATOS AUXILIARES ---
 def format_cop(value): return f"${value:,.0f} COP"
@@ -268,19 +387,19 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # Contenedor HTML del login aislado y seguro
+        # Estructura limpia de la caja de login usando divs convencionales
         st.markdown("""
-            <div style='display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; min-height: 60vh;'>
-                <div style='background-color: #06070d; border: 2px solid #00D2FF; box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 50px 40px; width: 100%; max-width: 550px; text-align: center; margin-bottom: 25px;'>
-                    <div style='font-size: 55px; color: #00D2FF; margin-bottom: 15px;'><i class='fa-solid fa-compass-drafting'></i></div>
-                    <div style='font-family: "Orbitron", sans-serif; font-size: 36px; font-weight: 700; color: #00D2FF; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px;'>ESTRATEGA IA</div>
-                    <div style='font-family: "Rajdhani", sans-serif; font-size: 14px; color: #4ECCA3; text-transform: uppercase; letter-spacing: 5px;'>PREDICCIÓN · ESTRATEGIA · ÉXITO</div>
+            <div class='login-frame-container'>
+                <div class='login-frame'>
+                    <div class='login-icon-box'><i class='fa-solid fa-compass-drafting'></i></div>
+                    <div class='login-title'>ESTRATEGA IA</div>
+                    <div class='login-subtitle'>PREDICCIÓN · ESTRATEGIA · ÉXITO</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
-        # Botón de Login Nativo posicionado exactamente abajo
-        st.markdown("<div class='login-btn-container' style='width:100%; max-width:550px; margin: -100px auto 0 auto;'>", unsafe_allow_html=True)
+        # Contenedor para el botón nativo de Streamlit
+        st.markdown("<div class='login-btn-container' style='width:100%; max-width:550px; margin: -60px auto 40px auto;'>", unsafe_allow_html=True)
         if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
             st.session_state.autenticado = True
             st.session_state.usuario_email = "directorio@estratega.ia"
