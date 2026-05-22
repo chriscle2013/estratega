@@ -1,5 +1,5 @@
-# app.py - Versión 3.3 SELF-CONTAINED & PRODUCTION READY
-# Integra motores de datos y lógica IA directamente para eliminar NameError de importación
+# app.py - Versión 3.4 HOTFIX BUG TRACKER
+# Corrige el error de atributo en la paleta de colores de Plotly (Cyanal)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # ==========================================
-# MOTOR LOGÍCO COPIADO E INTEGRADO (AI & DATA)
+# MOTOR LOGÍCO INTEGRADO (AI & DATA)
 # ==========================================
 class DataGenerator:
     def __init__(self):
@@ -386,14 +386,14 @@ def run_professional_dashboard():
             st.markdown("---")
             st.markdown("### 📈 DISTRIBUCIÓN Y ANÁLISIS ESTRUCTURAL")
             
-            # 2. Histograma de Edades con Gradiente Cromático Continuo
+            # 2. Histograma de Edades con el Atributo Corregido (Cyanal)
             fig_edad = px.histogram(
                 df, x="edad", nbins=25,
                 title="DISTRIBUCIÓN PORCENTUAL DE EDADES (GRADIENTE DE DENSIDAD)",
                 labels={'edad': 'Edad (Años)', 'count': 'Frecuencia'},
                 template="plotly_dark",
                 color="edad",  
-                color_continuous_scale=px.colors.sequential.Cyanalg
+                color_continuous_scale=px.colors.sequential.Cyanal
             )
             fig_edad.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font_family="Rajdhani", height=400)
             st.plotly_chart(fig_edad, use_container_width=True)
@@ -481,7 +481,6 @@ def run_professional_dashboard():
 def main():
     apply_professional_ai_theme()
     
-    # Instanciación interna inmediata garantizada
     if 'data_generator' not in st.session_state: st.session_state.data_generator = DataGenerator()
     if 'ai_model' not in st.session_state: st.session_state.ai_model = AIModel()
     if 'customer_data' not in st.session_state: st.session_state.customer_data = None
