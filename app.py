@@ -1,4 +1,4 @@
-# app.py - Versión 7.7 PRODUCTION ENGINE (Totalmente Corregido)
+# app.py - Versión 7.8 PRODUCTION ENGINE (Investment Analyzer Mejorado)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -165,6 +165,10 @@ def format_cop(value):
 
 def format_percentage(value):
     return f"{value:.1f}%"
+
+
+def format_number(value):
+    return f"{value:,.0f}"
 
 
 # --- VENTANAS EMERGENTES DE PROCESAMIENTO (MODALES) ---
@@ -530,7 +534,6 @@ def create_launch_analyzer():
                                annotation_text=f"⚡ Break-even mes {break_even}",
                                annotation_position="top")
         
-        # CORRECCIÓN: Definir yaxis2 correctamente sin duplicar
         fig_proy.update_layout(
             title="Flujo de Caja Proyectado",
             xaxis_title="Mes",
@@ -612,7 +615,9 @@ def create_launch_analyzer():
 
 
 def create_investment_analyzer():
-    st.markdown("### 💼 SIMULACIÓN DE INFRAESTRUCTURA FINANCIERA")
+    st.markdown("### 💼 SIMULACIÓN DE INVERSIÓN ESTRUCTURAL")
+    st.caption("Análisis de rentabilidad, flujo de caja, punto de equilibrio y análisis de sensibilidad")
+    
     with st.container(border=True):
         ciudades_disponibles = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena']
         sel_ciudades = st.multiselect("Mercados a Evaluar:", options=ciudades_disponibles, default=['Cali', 'Bogotá'])
@@ -625,11 +630,23 @@ def create_investment_analyzer():
                 min_value=10000000,
                 max_value=20000000000,
                 value=500000000,
-                step=50000000
+                step=50000000,
+                help="Inversión inicial en infraestructura, maquinaria, equipo, etc."
             )
+            meses_proyeccion = st.selectbox("Horizonte de Proyección (Meses):", [12, 24, 36, 48, 60], index=2, key="inv_meses")
+            
         with c2:
             rango_salario = st.slider("Filtro Macroeconómico - Salario (COP):", 1000000, 20000000, (3000000, 7000000), step=500000, key="inv_sal")
-            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 93, key="inv_cost")
+            cost_ratio = st.slider("Tasa de Costo Variable Est. (% sobre ingreso):", 5, 100, 93, key="inv_cost", 
+                                   help="Porcentaje de los ingresos que se destina a costos operativos variables")
+            costo_fijo_mensual = st.number_input(
+                "Costos Fijos Mensuales Estimados (COP):",
+                min_value=0,
+                max_value=500000000,
+                value=5000000,
+                step=1000000,
+                help="Arriendos, nómina administrativa, servicios públicos, etc."
+            )
         
         if st.button("RUN FINANCIAL SIMULATION", use_container_width=True):
             df = st.session_state.customer_data
@@ -643,8 +660,52 @@ def create_investment_analyzer():
             
             if len(filtered) > 10:
                 test_c = filtered.sample(n=min(500, len(filtered))).to_dict(orient='records')
-                res = st.session_state.ai_model.evaluate_infrastructure_investment(test_c, investment_required=investment, variable_cost_ratio=cost_ratio/100.0)
+                res = st.session_state.ai_model.evaluate_infrastructure_investment(
+                    test_c, 
+                    investment_required=investment, 
+                    variable_cost_ratio=cost_ratio/100.0
+                )
+                
+                # Calcular métricas adicionales
+                ingreso_mensual = res['projected_annual_income'] / 12
+                costo_variable_mensual = ingreso_mensual * (cost_ratio / 100.0)
+                flujo_neto_mensual = ingreso_mensual - costo_variable_mensual - costo_fijo_mensual
+                
+                # Proyección de flujo de caja
+                meses = np.arange(1, meses_proyeccion + 1)
+                flujo_mensual = np.full(len(meses), flujo_neto_mensual)
+                flujo_acumulado = np.cumsum(flujo_mensual)
+                flujo_con_inversion = flujo_acumulado - investment
+                
+                # Punto de equilibrio en meses
+                break_even_meses = np.where(flujo_acumulado >= investment)[0]
+                break_even = break_even_meses[0] + 1 if len(break_even_meses) > 0 else None
+                
+                # Calcular VAN y TIR simplificados
+                tasa_descuento = 0.12  # 12% anual (costo de capital estándar)
+                van = np.sum(flujo_mensual / (1 + tasa_descuento/12) ** meses) - investment
+                
+                # Métricas de rentabilidad
+                roe = (res['profitability_percentage'])  # Return on Equity
+                margen_neto = (flujo_neto_mensual / ingreso_mensual * 100) if ingreso_mensual > 0 else 0
+                
                 st.session_state.investment_result = res
+                st.session_state.investment_extra = {
+                    'investment': investment,
+                    'costo_fijo_mensual': costo_fijo_mensual,
+                    'ingreso_mensual': ingreso_mensual,
+                    'costo_variable_mensual': costo_variable_mensual,
+                    'flujo_neto_mensual': flujo_neto_mensual,
+                    'flujo_mensual': flujo_mensual,
+                    'flujo_acumulado': flujo_acumulado,
+                    'flujo_con_inversion': flujo_con_inversion,
+                    'break_even': break_even,
+                    'van': van,
+                    'roe': roe,
+                    'margen_neto': margen_neto,
+                    'meses_proyeccion': meses_proyeccion,
+                    'tasa_descuento': tasa_descuento
+                }
                 st.session_state.current_cost_ratio = cost_ratio / 100.0
                 st.session_state.current_capex = investment
                 st.rerun()
@@ -653,48 +714,378 @@ def create_investment_analyzer():
     
     if 'investment_result' in st.session_state:
         res = st.session_state.investment_result
+        extra = st.session_state.investment_extra
         cost_ratio = st.session_state.current_cost_ratio
         capex = st.session_state.current_capex
         is_viable = '✅' in res['recommendation']
         header_class = "report-header-success" if is_viable else "report-header-error"
         
+        # Calcular nivel de confianza mejorado
+        confidence_level = res['confidence']
+        
         st.markdown(f"""
         <div class="report-box">
-            <h4 class="{header_class}">DICTAMEN EXPLICABLE DE INVERSIÓN FINANCIERA (CAPEX)</h4>
-            <p style="font-size:16px; margin-top:10px;"><b>Análisis de Viabilidad:</b> {res['recommendation']}</p>
-            <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza estadística del modelo predictivo: <b>{res['confidence']:.2f}%</b> basado en {res['sample_size_evaluated']} perfiles económicos válidos.</p>
+            <h4 class="{header_class}">REPORTE EJECUTIVO DE INVERSIÓN ESTRUCTURAL</h4>
+            <p style="font-size:16px; margin-top:10px;"><b>Dictamen del Motor:</b> {res['recommendation']}</p>
+            <p style="font-size:13px; color:#94a3b8; margin-top:-5px;">Confianza del modelo predictivo: <b>{confidence_level:.1f}%</b> | Basado en {res['sample_size_evaluated']:,} perfiles económicos válidos</p>
         </div>
         """, unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns(3)
-        col1.metric("INGRESOS ANUALES PROYECTADOS", format_cop(res['projected_annual_income']))
-        col2.metric("MARGEN DE CONTRIBUCIÓN NETO", format_cop(res['contribution_margin']))
-        col3.metric("PERIODO DE RETORNO (PAYBACK)", f"{res['payback_months']:.1f} Meses")
+        # KPIs principales
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("INVERSIÓN TOTAL (CAPEX)", format_cop(capex), help="Capital requerido para la expansión")
+        col2.metric("INGRESOS ANUALES PROYECTADOS", format_cop(res['projected_annual_income']), help="Estimación de ingresos anuales")
+        col3.metric("MARGEN DE CONTRIBUCIÓN", format_cop(res['contribution_margin']), help="Ingresos - Costos variables")
+        col4.metric("PERIODO DE RETORNO", f"{res['payback_months']:.1f} meses" if res['payback_months'] < 99 else "> 8 años", 
+                    delta="Objetivo < 24 meses" if res['payback_months'] <= 24 else "Fuera de rango")
         
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("---")
         
-        c_analisis, c_grafico = st.columns([1, 1])
-        with c_analisis:
-            st.markdown("#### 🔬 DESGLOSE ESTRUCTURAL DEL MODELO")
-            costos_operativos = res['projected_annual_income'] * cost_ratio
-            rentabilidad_anual = (res['contribution_margin'] / capex) * 100
-            data_breakdown = {
-                "Concepto Financiero": ["Inversión Inicial Requerida (CAPEX)", "Ingreso Operativo Mensual Est.", "Costos Variables Estimados (Anual)", "Margen de Contribución Real (%)", "Retorno de Inversión Anualizado (ROI)"],
-                "Valor Estructurado": [format_cop(capex), format_cop(res['projected_annual_income'] / 12), format_cop(costos_operativos), f"{((1 - cost_ratio)*100):.1f}%", f"{rentabilidad_anual:.2f}% por año"]
-            }
-            st.table(pd.DataFrame(data_breakdown))
+        # ========== SECCIÓN 1: MÉTRICAS CLAVE DE RENTABILIDAD ==========
+        st.markdown("### 📊 Análisis de Rentabilidad")
         
-        with c_grafico:
-            st.markdown("#### 📊 ANÁLISIS DE SENSIBILIDAD (ESTRÉS DE MERCADO)")
-            ingreso_base = res['projected_annual_income']
-            escenarios = ["Estresado (-20%)", "Conservador (-10%)", "Base Original", "Optimista (+10%)"]
-            valores_ingreso = [ingreso_base * 0.8, ingreso_base * 0.9, ingreso_base, ingreso_base * 1.1]
-            valores_margen = [v * (1 - cost_ratio) for v in valores_ingreso]
+        col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+        with col_r1:
+            st.metric("ROE (Retorno sobre Inversión)", format_percentage(extra['roe']), 
+                     delta="Mínimo 15%" if extra['roe'] >= 15 else "Por debajo del mínimo")
+        with col_r2:
+            st.metric("VAN (Valor Actual Neto)", format_cop(extra['van']),
+                     delta="Positivo" if extra['van'] > 0 else "Negativo")
+        with col_r3:
+            st.metric("Margen Neto Mensual", format_percentage(extra['margen_neto']),
+                     delta="Objetivo > 15%" if extra['margen_neto'] >= 15 else "Margen ajustado")
+        with col_r4:
+            if extra['break_even']:
+                st.metric("Punto de Equilibrio", f"{extra['break_even']} meses",
+                         delta=f"vs {extra['meses_proyeccion']} meses")
+            else:
+                st.metric("Punto de Equilibrio", "No alcanzado", delta="En el horizonte proyectado")
+        
+        st.markdown("---")
+        
+        # ========== SECCIÓN 2: FLUJO DE CAJA PROYECTADO ==========
+        st.markdown("### 💰 Flujo de Caja Proyectado")
+        st.caption(f"Proyección a {extra['meses_proyeccion']} meses | Tasa de costo variable: {cost_ratio * 100:.1f}% | Costos fijos: {format_cop(extra['costo_fijo_mensual'])}/mes")
+        
+        textos_barras = [format_cop(val) for val in extra['flujo_mensual']]
+        
+        fig_flujo = go.Figure()
+        
+        # Barras de flujo mensual
+        fig_flujo.add_trace(go.Bar(
+            x=np.arange(1, extra['meses_proyeccion'] + 1),
+            y=extra['flujo_mensual'],
+            name='Flujo de Caja Mensual',
+            marker_color='#00D2FF',
+            opacity=0.7,
+            text=textos_barras,
+            textposition='outside',
+            textfont=dict(size=9)
+        ))
+        
+        # Línea de flujo acumulado
+        fig_flujo.add_trace(go.Scatter(
+            x=np.arange(1, extra['meses_proyeccion'] + 1),
+            y=extra['flujo_acumulado'],
+            name='Flujo Acumulado (pre-inversión)',
+            line=dict(color='#4ECCA3', width=3),
+            yaxis='y2'
+        ))
+        
+        # Línea de flujo neto (con inversión descontada)
+        fig_flujo.add_trace(go.Scatter(
+            x=np.arange(1, extra['meses_proyeccion'] + 1),
+            y=extra['flujo_con_inversion'],
+            name='Flujo Neto (post-inversión)',
+            line=dict(color='#FFB347', width=3, dash='dot'),
+            yaxis='y2'
+        ))
+        
+        # Línea de cero
+        fig_flujo.add_hline(y=0, line_dash="dash", line_color="#FF5E5E", opacity=0.7, line_width=2)
+        
+        # Línea de inversión inicial
+        fig_flujo.add_hline(y=-capex, line_dash="dash", line_color="#FF6B6B", opacity=0.5, line_width=1.5,
+                            annotation_text=f"Inversión: {format_cop(capex)}", annotation_position="bottom right")
+        
+        # Punto de equilibrio
+        if extra['break_even']:
+            fig_flujo.add_vline(x=extra['break_even'], line_dash="dash", line_color="#FFB347", opacity=0.9, line_width=2,
+                               annotation_text=f"⚡ Break-even mes {extra['break_even']}",
+                               annotation_position="top")
+        
+        fig_flujo.update_layout(
+            title="Evolución del Flujo de Caja",
+            xaxis_title="Mes",
+            yaxis_title="Flujo Mensual (COP)",
+            yaxis=dict(tickformat=',.0f'),
+            yaxis2=dict(
+                title="Flujo Acumulado (COP)",
+                tickformat=',.0f',
+                overlaying='y',
+                side='right'
+            ),
+            template="plotly_dark",
+            height=450,
+            hovermode='x unified',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
+        )
+        st.plotly_chart(fig_flujo, use_container_width=True)
+        
+        st.markdown("---")
+        
+        # ========== SECCIÓN 3: ANÁLISIS DE SENSIBILIDAD ==========
+        st.markdown("### 📈 Análisis de Sensibilidad (Estrés de Mercado)")
+        st.caption("Cómo varían los indicadores clave ante cambios en los ingresos proyectados")
+        
+        ingreso_base = res['projected_annual_income']
+        escenarios = ["Optimista\n+20%", "Optimista\n+10%", "Base", "Conservador\n-10%", "Estresado\n-20%"]
+        factores = [1.2, 1.1, 1.0, 0.9, 0.8]
+        
+        van_escenarios = []
+        payback_escenarios = []
+        roi_escenarios = []
+        
+        for factor in factores:
+            ingreso_ajustado = ingreso_base * factor
+            margen_ajustado = ingreso_ajustado * (1 - cost_ratio)
+            flujo_mensual_ajustado = (margen_ajustado / 12) - extra['costo_fijo_mensual']
+            flujo_acumulado_ajustado = np.cumsum(np.full(extra['meses_proyeccion'], flujo_mensual_ajustado))
+            van_ajustado = np.sum(np.full(extra['meses_proyeccion'], flujo_mensual_ajustado) / (1 + extra['tasa_descuento']/12) ** np.arange(1, extra['meses_proyeccion'] + 1)) - capex
+            payback_ajustado = np.where(flujo_acumulado_ajustado >= capex)[0]
+            payback_meses = payback_ajustado[0] + 1 if len(payback_ajustado) > 0 else extra['meses_proyeccion'] + 12
+            roi_ajustado = ((margen_ajustado / capex) * 100) if capex > 0 else 0
+            
+            van_escenarios.append(van_ajustado)
+            payback_escenarios.append(payback_meses)
+            roi_escenarios.append(roi_ajustado)
+        
+        col_s1, col_s2 = st.columns([1.5, 1])
+        
+        with col_s1:
             fig_sens = go.Figure()
-            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_ingreso, name="Ingresos Proyectados", marker_color="#00D2FF"))
-            fig_sens.add_trace(go.Bar(x=escenarios, y=valores_margen, name="Margen Neto Libre", marker_color="#4ECCA3"))
-            fig_sens.update_layout(barmode='group', template="plotly_dark", height=280)
+            
+            # Barras para VAN
+            fig_sens.add_trace(go.Bar(
+                x=escenarios,
+                y=van_escenarios,
+                name='VAN (COP)',
+                marker_color='#00D2FF',
+                yaxis='y',
+                text=[format_cop(v) for v in van_escenarios],
+                textposition='outside',
+                textfont=dict(size=10)
+            ))
+            
+            # Línea para Payback
+            fig_sens.add_trace(go.Scatter(
+                x=escenarios,
+                y=payback_escenarios,
+                name='Payback (meses)',
+                mode='lines+markers',
+                line=dict(color='#FFB347', width=3),
+                marker=dict(size=10, color='#FFB347'),
+                yaxis='y2'
+            ))
+            
+            # Línea objetivo de payback
+            fig_sens.add_hline(y=24, line_dash="dash", line_color="#4ECCA3", opacity=0.7, 
+                               annotation_text="Payback objetivo (24 meses)", annotation_position="bottom right")
+            
+            fig_sens.update_layout(
+                title="Análisis de Sensibilidad por Escenario",
+                xaxis_title="Escenario",
+                yaxis_title="VAN (COP)",
+                yaxis=dict(tickformat=',.0f'),
+                yaxis2=dict(
+                    title="Payback (meses)",
+                    overlaying='y',
+                    side='right',
+                    tickformat='d'
+                ),
+                template="plotly_dark",
+                height=400,
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)
+            )
             st.plotly_chart(fig_sens, use_container_width=True)
+        
+        with col_s2:
+            with st.container(border=True):
+                st.markdown("**📊 TABLA DE SENSIBILIDAD**")
+                
+                sens_df = pd.DataFrame({
+                    "Escenario": escenarios,
+                    "VAN (COP)": [format_cop(v) for v in van_escenarios],
+                    "Payback (meses)": [f"{p:.0f}" for p in payback_escenarios],
+                    "ROI (%)": [f"{r:.1f}%" for r in roi_escenarios]
+                })
+                st.dataframe(sens_df, use_container_width=True, hide_index=True)
+        
+        st.markdown("---")
+        
+        # ========== SECCIÓN 4: DESGLOSE ESTRUCTURAL ==========
+        st.markdown("### 🔬 Desglose Estructural del Modelo")
+        
+        col_d1, col_d2 = st.columns(2)
+        
+        with col_d1:
+            with st.container(border=True):
+                st.markdown("**📋 COMPONENTES FINANCIEROS**")
+                
+                detalle_data = {
+                    "Concepto": [
+                        "Inversión Inicial (CAPEX)",
+                        "Ingreso Mensual Proyectado",
+                        "Costo Variable Mensual",
+                        "Costo Fijo Mensual",
+                        "Flujo Neto Mensual",
+                        "Margen de Contribución Anual",
+                        "ROE (Return on Equity)"
+                    ],
+                    "Valor": [
+                        format_cop(capex),
+                        format_cop(extra['ingreso_mensual']),
+                        format_cop(extra['costo_variable_mensual']),
+                        format_cop(extra['costo_fijo_mensual']),
+                        format_cop(extra['flujo_neto_mensual']),
+                        format_cop(res['contribution_margin']),
+                        format_percentage(extra['roe'])
+                    ]
+                }
+                st.table(pd.DataFrame(detalle_data))
+        
+        with col_d2:
+            with st.container(border=True):
+                st.markdown("**📈 INDICADORES DE VIABILIDAD**")
+                
+                # Evaluación de cada indicador
+                indicators = []
+                
+                # Payback
+                if res['payback_months'] <= 24:
+                    indicators.append(("✅", "Payback", f"{res['payback_months']:.1f} meses", "Excelente"))
+                elif res['payback_months'] <= 36:
+                    indicators.append(("⚠️", "Payback", f"{res['payback_months']:.1f} meses", "Aceptable"))
+                else:
+                    indicators.append(("❌", "Payback", f"{res['payback_months']:.1f} meses", "Crítico"))
+                
+                # VAN
+                if extra['van'] > 0:
+                    indicators.append(("✅", "VAN", format_cop(extra['van']), "Positivo"))
+                else:
+                    indicators.append(("❌", "VAN", format_cop(extra['van']), "Negativo"))
+                
+                # ROE
+                if extra['roe'] >= 20:
+                    indicators.append(("✅", "ROE", format_percentage(extra['roe']), "Excelente"))
+                elif extra['roe'] >= 15:
+                    indicators.append(("⚠️", "ROE", format_percentage(extra['roe']), "Aceptable"))
+                else:
+                    indicators.append(("❌", "ROE", format_percentage(extra['roe']), "Bajo"))
+                
+                # Margen Neto
+                if extra['margen_neto'] >= 20:
+                    indicators.append(("✅", "Margen Neto", format_percentage(extra['margen_neto']), "Excelente"))
+                elif extra['margen_neto'] >= 10:
+                    indicators.append(("⚠️", "Margen Neto", format_percentage(extra['margen_neto']), "Aceptable"))
+                else:
+                    indicators.append(("❌", "Margen Neto", format_percentage(extra['margen_neto']), "Bajo"))
+                
+                for icon, name, value, status in indicators:
+                    st.markdown(f"{icon} **{name}:** {value} - *{status}*")
+        
+        st.markdown("---")
+        
+        # ========== SECCIÓN 5: RIESGOS Y MITIGACIONES ==========
+        st.markdown("### ⚠️ Análisis de Riesgos y Mitigaciones")
+        
+        riesgos = []
+        
+        # Riesgo de payback
+        if res['payback_months'] > 36:
+            riesgos.append(("🔴 Crítica", "Payback superior a 36 meses", "Reevaluar la inversión o buscar financiamiento con mejores condiciones"))
+        elif res['payback_months'] > 24:
+            riesgos.append(("🟡 Media", "Payback entre 24-36 meses", "Monitorear de cerca el flujo de caja en los primeros 2 años"))
+        
+        # Riesgo de VAN negativo
+        if extra['van'] < 0:
+            riesgos.append(("🔴 Crítica", "VAN negativo", "La inversión no genera valor. Revisar supuestos de ingresos o reducir costos"))
+        
+        # Riesgo de margen bajo
+        if extra['margen_neto'] < 10:
+            riesgos.append(("🟡 Media", "Margen neto bajo (<10%)", "Optimizar estructura de costos o aumentar precios"))
+        
+        # Riesgo de muestra pequeña
+        if res['sample_size_evaluated'] < 200:
+            riesgos.append(("🟠 Alta", "Muestra pequeña para inferencia robusta", "Ampliar dataset o realizar estudio cualitativo complementario"))
+        
+        # Riesgo de confianza baja
+        if confidence_level < 85:
+            riesgos.append(("🟠 Alta", "Confianza del modelo baja (<85%)", "Generar más datos o ajustar parámetros de segmentación"))
+        
+        if not riesgos:
+            riesgos.append(("🟢 Baja", "No se identificaron riesgos significativos", "Proceder con la ejecución del plan de inversión"))
+        
+        riesgo_df = pd.DataFrame(riesgos, columns=["Nivel", "Riesgo Identificado", "Mitigación Recomendada"])
+        st.dataframe(riesgo_df, use_container_width=True, hide_index=True)
+        
+        st.markdown("---")
+        
+        # ========== SECCIÓN 6: EXPORTACIÓN ==========
+        col_export1, col_export2 = st.columns([1, 1])
+        
+        with col_export1:
+            if st.button("📥 Exportar Reporte Completo (JSON)", key="export_inv_json", use_container_width=True):
+                reporte_completo = {
+                    "fecha_generacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "tipo_analisis": "Inversión Estructural",
+                    "dictamen": res['recommendation'],
+                    "confianza_modelo": confidence_level,
+                    "metricas_clave": {
+                        "capex": capex,
+                        "ingresos_anuales": res['projected_annual_income'],
+                        "margen_contribucion": res['contribution_margin'],
+                        "payback_meses": res['payback_months'],
+                        "roe": extra['roe'],
+                        "van": extra['van'],
+                        "margen_neto": extra['margen_neto'],
+                        "break_even": extra['break_even']
+                    },
+                    "parametros_entrada": {
+                        "ciudades": sel_ciudades,
+                        "rango_edad": rango_edad,
+                        "rango_salario": rango_salario,
+                        "capex": investment,
+                        "costo_variable_pct": cost_ratio * 100,
+                        "costo_fijo_mensual": costo_fijo_mensual,
+                        "meses_proyeccion": meses_proyeccion
+                    },
+                    "analisis_sensibilidad": {
+                        "escenarios": escenarios,
+                        "van": van_escenarios,
+                        "payback": payback_escenarios,
+                        "roi": roi_escenarios
+                    },
+                    "riesgos_identificados": riesgos
+                }
+                st.json(reporte_completo)
+                st.toast("Reporte exportado correctamente", icon="✅")
+        
+        with col_export2:
+            # Crear CSV con datos de proyección
+            export_df = pd.DataFrame({
+                "Mes": range(1, extra['meses_proyeccion'] + 1),
+                "Flujo_Mensual_COP": extra['flujo_mensual'],
+                "Flujo_Acumulado_Pre_Inversion_COP": extra['flujo_acumulado'],
+                "Flujo_Neto_Post_Inversion_COP": extra['flujo_con_inversion']
+            })
+            st.download_button(
+                label="📊 Exportar Datos de Flujo de Caja (CSV)",
+                data=export_df.to_csv(index=False).encode('utf-8'),
+                file_name=f"flujo_caja_inversion_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
 
 
 # --- INTERFAZ GENERAL DEL DASHBOARD ---
