@@ -1,4 +1,4 @@
-# app.py - Versión 4.3 PRODUCTION ENGINE (FULL CODE & LOGIN STRUCTURAL FIX)
+# app.py - Versión 4.4 PRODUCTION ENGINE (FULL CODE & LOGIN RENDER FIXED)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -487,31 +487,31 @@ def main():
     if 'autenticado' not in st.session_state: st.session_state.autenticado = False
 
     if not st.session_state.autenticado:
-        # ESTRATEGIA DEFINITIVA: Estructura unificada en un solo contenedor real usando flexbox y posiciones relativas
+        # INYECCIÓN DE ESTILOS DEFINITIVA: Modificamos el contenedor nativo de la columna de Streamlit directamente
         st.markdown("""
             <style>
-            /* Contenedor principal de Login */
-            .login-wrapper {
+            /* 1. Modificar el contenedor interno de la columna central de Streamlit para que sea la tarjeta de login */
+            div[data-testid="stVerticalBlock"] > div:has(.login-card-anchor) {
                 background: #0d111a !important; 
                 border: 1px solid rgba(0, 210, 255, 0.25) !important; 
-                padding: 40px 30px !important; 
+                padding: 45px 35px !important; 
                 border-radius: 20px !important; 
                 box-shadow: 0 4px 35px rgba(0, 210, 255, 0.15) !important;
+                text-align: center !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                text-align: center !important;
-                position: relative !important;
             }
             
-            /* Contenedor interno del botón nativo de Streamlit */
-            .custom-btn-container {
-                width: 100% !important;
-                margin-top: 15px !important;
+            /* 2. Forzar alineación y centrado del logo nativo de Streamlit */
+            div:has(.login-card-anchor) [data-testid="stImage"] {
+                display: flex !important;
+                justify-content: center !important;
+                margin: 0 auto 15px auto !important;
             }
 
-            /* Forzamos al botón nativo que está adentro a verse exactamente como el diseño */
-            .custom-btn-container div.element-container button {
+            /* 3. Forzar el estilo del botón nativo de Streamlit para que encaje perfectamente en la base */
+            div:has(.login-card-anchor) div.element-container button {
                 width: 100% !important;
                 background: linear-gradient(135deg, #00D2FF 0%, #0072FF 100%) !important;
                 color: white !important;
@@ -523,10 +523,11 @@ def main():
                 font-size: 13px !important;
                 letter-spacing: 1px !important;
                 box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2) !important;
+                margin-top: 20px !important;
                 transition: all 0.3s ease !important;
             }
             
-            .custom-btn-container div.element-container button:hover {
+            div:has(.login-card-anchor) div.element-container button:hover {
                 box-shadow: 0 0 25px rgba(0, 210, 255, 0.5) !important;
                 transform: translateY(-1px) !important;
             }
@@ -537,23 +538,21 @@ def main():
         col1, col2, col3 = st.columns([1, 1.5, 1])
         
         with col2:
-            # Abrimos la tarjeta unificada en HTML
-            st.markdown("""
-                <div class="login-wrapper">
-                    <img src="app/static/logo_estratega.webp" width="100" style="margin-bottom: 15px;" onerror="this.onerror=null; this.src='./logo_estratega.webp';">
-                    
-                    <h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:'Orbitron', sans-serif; margin-top: 5px; margin-bottom: 5px;">ESTRATEGA IA</h1>
-                    <p style="letter-spacing: 4px; color: #4ECCA3; font-family:'Rajdhani', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 20px;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>
-                </div>
-            """, unsafe_allow_html=True)
+            # MARCADOR ANCLA: Permite al CSS identificar esta columna específica y aplicarle el diseño de tarjeta corporativa
+            st.markdown('<div class="login-card-anchor"></div>', unsafe_allow_html=True)
             
-            # 3. El botón nativo de Streamlit, envuelto en su clase CSS personalizada para obligarlo a encajar perfectamente abajo
-            st.markdown('<div class="custom-btn-container">', unsafe_allow_html=True)
+            # 1. El Logo se renderiza mediante el componente nativo de forma limpia
+            st.image("logo_estratega.webp", width=105)
+            
+            # 2. Los títulos en un bloque de Markdown plano SIN abrir ni cerrar divs manuales
+            st.markdown('<h1 style="font-size: 32px; background: linear-gradient(90deg, #00D2FF, #4ECCA3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family:\'Orbitron\', sans-serif; margin-top: 5px; margin-bottom: 5px; text-align: center;">ESTRATEGA IA</h1>', unsafe_allow_html=True)
+            st.markdown('<p style="letter-spacing: 4px; color: #4ECCA3; font-family:\'Rajdhani\', sans-serif; font-size:12px; font-weight: 700; margin-bottom: 10px; text-align: center;">PREDICCIÓN · ESTRATEGIA · ÉXITO</p>', unsafe_allow_html=True)
+            
+            # 3. El botón nativo que ejecuta la lógica de sesión
             if st.button("🔑 INICIAR SESIÓN CON GOOGLE WORKSPACE", use_container_width=True):
                 st.session_state.autenticado = True
                 st.session_state.usuario_email = "comite.directivo@empresa.com"
                 st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
             
     else:
         with st.sidebar:
